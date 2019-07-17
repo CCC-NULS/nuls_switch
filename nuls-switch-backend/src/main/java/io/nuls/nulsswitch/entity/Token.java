@@ -2,7 +2,10 @@ package io.nuls.nulsswitch.entity;
 
 import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
 import java.io.Serializable;
 
 /**
@@ -21,7 +24,7 @@ public class Token implements Serializable {
     /**
      * 代币唯一标识
      */
-    @TableField("token_id")
+    @TableId(value = "token_id",type = IdType.AUTO)
     private Integer tokenId;
     /**
      * 代币中文名称,例如:NULS

@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="io.nuls.nulsswitch.entity.Token">
-        <result column="token_id" property="tokenId" />
+        <id column="token_id" property="tokenId" />
         <result column="token_name" property="tokenName" />
         <result column="token_symbol" property="tokenSymbol" />
         <result column="create_time" property="createTime" />
