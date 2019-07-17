@@ -1,0 +1,39 @@
+server:
+  port: 8010
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    max-connections: 20000
+spring:
+  application:
+    name: nuls-switch
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/nuls_switch?useUnicode=true&characterEncoding=utf8
+    initialize: true #指定初始化数据源，是否用data.sql来初始化，默认: true
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password:
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    continue-on-error: true
+    # schema: classpath:db/nuls_switch_init.sql
+    initialization-mode: always
+  cloud:
+    refresh:
+      refreshable: none
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+swagger:
+  basePackage: io.nuls.nulsswitch.controller
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
