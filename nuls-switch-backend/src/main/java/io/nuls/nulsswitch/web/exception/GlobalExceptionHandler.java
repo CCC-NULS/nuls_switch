@@ -3,8 +3,8 @@ package io.nuls.nulsswitch.web.exception;
 
 
 import io.nuls.nulsswitch.web.eums.ErrorCodeEnum;
-import io.nuls.nulsswitch.wrapper.WrapMapper;
-import io.nuls.nulsswitch.wrapper.Wrapper;
+import io.nuls.nulsswitch.web.wrapper.WrapMapper;
+import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;

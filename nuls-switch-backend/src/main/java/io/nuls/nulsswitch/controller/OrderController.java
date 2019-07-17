@@ -3,11 +3,11 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import io.nuls.nulsswitch.dto.GetAllAsksRequestDto;
+import io.nuls.nulsswitch.web.dto.QueryAllAsksRequestDto;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.service.OrderService;
-import io.nuls.nulsswitch.wrapper.WrapMapper;
-import io.nuls.nulsswitch.wrapper.Wrapper;
+import io.nuls.nulsswitch.web.wrapper.WrapMapper;
+import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -24,20 +24,20 @@ public class OrderController {
     private OrderService orderService;
 
     @ApiOperation(value="获取所有的买单", notes = "分页获取所有的买单")
-    @GetMapping("getAllAsks")
-    public Wrapper<Page<Order>> getAllAsksWithPage(GetAllAsksRequestDto getAllAsksDto){
+    @GetMapping("queryAllAsksWithPage")
+    public Wrapper<Page<Order>> queryAllAsksWithPage(QueryAllAsksRequestDto queryAllAsksRequestDto){
         Page<Order> orderPage = new Page<>();
         Order order = new Order();
         order.setTxType(1);
-        BeanUtils.copyProperties(getAllAsksDto, order);
-        orderPage.setCurrent(getAllAsksDto.getCurrent() == null ?  1 : getAllAsksDto.getCurrent());
-        orderPage.setSize(getAllAsksDto.getSize() == null ? 10 : getAllAsksDto.getSize());
+        BeanUtils.copyProperties(queryAllAsksRequestDto, order);
+        orderPage.setCurrent(queryAllAsksRequestDto.getCurrent() == null ?  1 : queryAllAsksRequestDto.getCurrent());
+        orderPage.setSize(queryAllAsksRequestDto.getSize() == null ? 10 : queryAllAsksRequestDto.getSize());
         EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
-        if (getAllAsksDto.getStartQueryTime() != null) {
-            eWrapper.gt("create_time",getAllAsksDto.getStartQueryTime());
+        if (queryAllAsksRequestDto.getStartQueryTime() != null) {
+            eWrapper.gt("create_time",queryAllAsksRequestDto.getStartQueryTime());
         }
-        if (getAllAsksDto.getEndQueryTime() != null) {
-            eWrapper.lt("create_time",getAllAsksDto.getEndQueryTime());
+        if (queryAllAsksRequestDto.getEndQueryTime() != null) {
+            eWrapper.lt("create_time",queryAllAsksRequestDto.getEndQueryTime());
         }
         orderService.selectPage(orderPage, eWrapper);
         log.info("getAllAsksWithPage response:{}",JSON.toJSONString(WrapMapper.ok(orderPage)));

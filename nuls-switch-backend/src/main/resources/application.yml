@@ -25,6 +25,9 @@ spring:
   cloud:
     refresh:
       refreshable: none
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
 
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml

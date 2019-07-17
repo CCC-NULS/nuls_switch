@@ -1,5 +1,5 @@
 
-package io.nuls.nulsswitch.dto;
+package io.nuls.nulsswitch.web.dto;
 
 import lombok.Data;
 

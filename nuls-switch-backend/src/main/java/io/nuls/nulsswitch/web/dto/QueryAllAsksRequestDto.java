@@ -1,4 +1,4 @@
-package io.nuls.nulsswitch.dto;
+package io.nuls.nulsswitch.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -13,7 +13,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel
-public class GetAllAsksRequestDto extends BaseQuery {
+public class QueryAllAsksRequestDto extends BaseQuery {
 
 	private static final long serialVersionUID = 3967075132487249652L;
 

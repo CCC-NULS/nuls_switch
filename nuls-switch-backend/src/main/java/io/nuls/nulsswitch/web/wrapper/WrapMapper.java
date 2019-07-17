@@ -9,7 +9,7 @@
  * 项目官网: http://paascloud.net
  */
 
-package io.nuls.nulsswitch.wrapper;
+package io.nuls.nulsswitch.web.wrapper;
 
 import org.apache.commons.lang3.StringUtils;
 

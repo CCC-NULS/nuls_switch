@@ -5,6 +5,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.Transient;
@@ -20,12 +22,10 @@ import java.io.Serializable;
  */
 @TableName("tx_order")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
-
 
     /**
      * 交易单号
@@ -84,120 +84,4 @@ public class Order implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
-
-
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Integer getTxType() {
-        return txType;
-    }
-
-    public void setTxType(Integer txType) {
-        this.txType = txType;
-    }
-
-    public Integer getFromTokenId() {
-        return fromTokenId;
-    }
-
-    public void setFromTokenId(Integer fromTokenId) {
-        this.fromTokenId = fromTokenId;
-    }
-
-    public Integer getToTokenId() {
-        return toTokenId;
-    }
-
-    public void setToTokenId(Integer toTokenId) {
-        this.toTokenId = toTokenId;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getTotalNum() {
-        return totalNum;
-    }
-
-    public void setTotalNum(Integer totalNum) {
-        this.totalNum = totalNum;
-    }
-
-    public Integer getTxNum() {
-        return txNum;
-    }
-
-    public void setTxNum(Integer txNum) {
-        this.txNum = txNum;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-        ", orderId=" + orderId +
-        ", address=" + address +
-        ", txType=" + txType +
-        ", fromTokenId=" + fromTokenId +
-        ", toTokenId=" + toTokenId +
-        ", price=" + price +
-        ", totalNum=" + totalNum +
-        ", txNum=" + txNum +
-        ", totalAmount=" + totalAmount +
-        ", status=" + status +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
-    }
 }
