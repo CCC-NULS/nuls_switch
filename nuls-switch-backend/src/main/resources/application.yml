@@ -30,7 +30,17 @@ spring:
     default-property-inclusion: non_null
 
 mybatis:
+  #开启驼峰命名法
+  configuration:
+    map-underscore-to-camel-case: true
+mybatis-plus:
+  # xml地址
   mapper-locations: classpath:mybatis/mapper/*.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: io.nuls.nulsswitch.entity   #自己的实体类地址
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 swagger:
   basePackage: io.nuls.nulsswitch.controller
