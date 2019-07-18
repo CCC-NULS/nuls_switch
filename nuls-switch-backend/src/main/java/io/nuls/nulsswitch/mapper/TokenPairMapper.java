@@ -18,10 +18,9 @@ import java.util.List;
 public interface TokenPairMapper extends BaseMapper<TokenPair> {
 
     /**
+     * 查询交易对列表
      * @return
      */
-    //@Select("SELECT tp.*,t.`token_symbol`,t.`token_name` FROM tx_token_pair tp,tx_token t WHERE tp.to_token_id=t.token_id")
     List<TokenPairVO> queryTokenPairList();
 
-    List<TokenPair> selectAll();
 }

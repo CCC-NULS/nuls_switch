@@ -47,13 +47,12 @@ public class ToeknController {
     @GetMapping("list")
     public Wrapper<List<TokenPairDto>> getTokenList() {
         List<TokenPairDto> tokenPairDtos = Lists.newArrayList();
+        // 查询所有token
         List<Token> tokenList = tokenService.selectList(null);
-        System.out.println(tokenList.size());
-
-        List<TokenPair> list = tokenPairService.selectAll();
-
+        // 查询交易对
         Map<Integer, List<TokenPairVO>> tokenPairMap = Optional.ofNullable(tokenPairService.queryTokenPairList()).orElse(Collections.emptyList()).stream().collect(Collectors.groupingBy(TokenPair::getFromTokenId));
         tokenList.forEach(token -> {
+            // 封装交易对
             TokenPairDto tokenPairDto = new TokenPairDto();
             BeanUtils.copyProperties(token, tokenPairDto);
             List<TokenPairVO> tokenPairVOS = tokenPairMap.get(token.getTokenId());
