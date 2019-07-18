@@ -29,10 +29,14 @@ public class TokenServiceTest {
     @Test
     public void insert() {
         Token token = new Token();
-//        token.setTokenName("NULS");
-//        token.setTokenSymbol("纳世币");
-        token.setTokenName("USDT");
-        token.setTokenSymbol("泰达币");
+//        token.setTokenSymbol("NULS");
+//        token.setTokenName("纳世币");
+//        token.setTokenSymbol("USDT");
+//        token.setTokenName("泰达币");
+//        token.setTokenSymbol("ETH");
+//        token.setTokenName("以太坊");
+        token.setTokenSymbol("BTC");
+        token.setTokenName("比特币");
         token.setCreateTime(new Date());
         tokenService.insert(token);
     }

@@ -1,12 +1,12 @@
 package io.nuls.nulsswitch.entity;
 
-import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -24,23 +24,27 @@ public class Token implements Serializable {
     /**
      * 代币唯一标识
      */
-    @TableId(value = "token_id",type = IdType.AUTO)
+    @TableId(value = "token_id", type = IdType.AUTO)
     private Integer tokenId;
+
     /**
-     * 代币中文名称,例如:NULS
-     */
-    @TableField("token_name")
-    private String tokenName;
-    /**
-     * 代币名称,例如:纳世币
+     * 代币符号,例如:NULS
      */
     @TableField("token_symbol")
     private String tokenSymbol;
+
+    /**
+     * 代币中文名称,例如:纳世币
+     */
+    @TableField("token_name")
+    private String tokenName;
+
     /**
      * 创建时间
      */
     @TableField("create_time")
     private Date createTime;
+
     /**
      * 更新时间
      */
@@ -91,11 +95,11 @@ public class Token implements Serializable {
     @Override
     public String toString() {
         return "Token{" +
-        ", tokenId=" + tokenId +
-        ", tokenName=" + tokenName +
-        ", tokenSymbol=" + tokenSymbol +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                ", tokenId=" + tokenId +
+                ", tokenName=" + tokenName +
+                ", tokenSymbol=" + tokenSymbol +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }
