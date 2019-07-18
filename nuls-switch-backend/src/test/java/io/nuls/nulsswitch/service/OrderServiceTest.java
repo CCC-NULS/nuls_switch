@@ -22,14 +22,17 @@ public class OrderServiceTest {
     public void insert() {
         Order order = new Order();
         order.setOrderId(System.currentTimeMillis() + "");
-        order.setAddress("测试地址2");
+        order.setAddress("my");
+        //order.setAddress("tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG");
+        //order.setAddress("tNULSeBaMnrs6JKrCy6TQdzYJZkMZJDng7QAsD");
         order.setTxType(1);
-        order.setStatus(1);
+        order.setStatus(2);
         order.setFromTokenId(1);
-        order.setToTokenId(1);
+        order.setToTokenId(3);
         order.setPrice(new BigDecimal(0.001d));
         order.setTotalNum(1000);
         order.setTotalAmount(new BigDecimal(1));
+        order.setTxNum(100);
         orderService.insert(order);
     }
 

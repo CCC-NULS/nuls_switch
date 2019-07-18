@@ -28,8 +28,4 @@ public class TokenPairServiceImpl extends ServiceImpl<TokenPairMapper, TokenPair
         return this.tokenPairMapper.queryTokenPairList();
     }
 
-    @Override
-    public List<TokenPair> selectAll() {
-        return this.tokenPairMapper.selectAll();
-    }
 }

@@ -37,7 +37,7 @@ public class Order implements Serializable {
      */
     private String address;
     /**
-     * 交易类型：1-买入、2-卖出
+     * 订单类型：1-买入、2-卖出
      */
     @TableField("tx_type")
     private Integer txType;
@@ -73,6 +73,7 @@ public class Order implements Serializable {
     /**
      * 状态：0-未交易、1-部分交易、2-完成交易、9-撤销
      */
+    @TableField("status")
     private Integer status;
     /**
      * 创建时间

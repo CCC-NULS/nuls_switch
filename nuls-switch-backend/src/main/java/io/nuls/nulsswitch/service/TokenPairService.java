@@ -18,6 +18,4 @@ public interface TokenPairService extends IService<TokenPair> {
 
     List<TokenPairVO> queryTokenPairList();
 
-    List<TokenPair> selectAll();
-
 }

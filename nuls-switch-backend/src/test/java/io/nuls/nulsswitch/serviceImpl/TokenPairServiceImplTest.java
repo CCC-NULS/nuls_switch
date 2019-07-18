@@ -19,8 +19,6 @@ public class TokenPairServiceImplTest {
     @Test
     public void test(){
 
-        tokenPairService.selectAll();
-
     }
 
 
