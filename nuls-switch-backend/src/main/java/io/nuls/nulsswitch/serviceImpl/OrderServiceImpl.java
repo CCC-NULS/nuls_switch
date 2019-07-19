@@ -35,10 +35,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
         EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
         if (reqDto.getStartQueryTime() != null) {
-            eWrapper.gt("create_time", reqDto.getStartQueryTime());
+            eWrapper.ge("create_time", reqDto.getStartQueryTime());
         }
         if (reqDto.getEndQueryTime() != null) {
-            eWrapper.lt("create_time", reqDto.getEndQueryTime());
+            eWrapper.le("create_time", reqDto.getEndQueryTime());
         }
         eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         eWrapper.notIn("address", reqDto.getAddress());

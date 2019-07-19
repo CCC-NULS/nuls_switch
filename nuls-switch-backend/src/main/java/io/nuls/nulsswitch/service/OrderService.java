@@ -1,12 +1,9 @@
 package io.nuls.nulsswitch.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import io.nuls.nulsswitch.entity.Order;
 import com.baomidou.mybatisplus.service.IService;
+import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
-import io.nuls.nulsswitch.web.vo.token.TokenPairVO;
-
-import java.util.List;
 
 /**
  * <p>
@@ -18,5 +15,11 @@ import java.util.List;
  */
 public interface OrderService extends IService<Order> {
 
+    /**
+     * 查询当前有效委托，包含未交易、部分交易的挂单
+     *
+     * @param reqDto
+     * @return
+     */
     Page<Order> queryOrderByPage(QueryOrderReqDto reqDto);
 }
