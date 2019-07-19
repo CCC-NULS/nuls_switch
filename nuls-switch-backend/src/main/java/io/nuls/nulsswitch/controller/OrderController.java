@@ -1,6 +1,7 @@
 package io.nuls.nulsswitch.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 
 @RestController
@@ -98,7 +100,7 @@ public class OrderController extends BaseController {
     }
 
     @ApiOperation(value = "用户撤单", notes = "用户撤单")
-    @GetMapping("cancelOrder")
+    @PostMapping("cancelOrder")
     public Wrapper<Long> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
         try {
             String token = orderReq.getToken();
@@ -106,14 +108,15 @@ public class OrderController extends BaseController {
             // check parameters
             Preconditions.checkNotNull(token, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(order.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
             // check auth
-            checkAuth(token, order.getAddress());
-
+            checkAuth(token, null);
+            order = orderService.selectById(order.getOrderId());
             // cancel order
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
+            EntityWrapper<Order> eWrapper = new EntityWrapper<>();
+            eWrapper.notIn("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_DONE));
             orderService.updateById(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());

@@ -18,4 +18,5 @@ public interface CommonErrorCode {
     ErrorCode DB_SAVE_ERROR = ErrorCode.init(10006);
     ErrorCode DB_QUERY_ERROR = ErrorCode.init(10007);
     ErrorCode SIGNATURE_ERROR = ErrorCode.init(10008);
+    ErrorCode NO_AUTH = ErrorCode.init(10009);
 }
