@@ -15,7 +15,7 @@ spring:
     initialize: true #指定初始化数据源，是否用data.sql来初始化，默认: true
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-    password: 123456
+    password:
     initialSize: 1
     minIdle: 3
     maxActive: 20
