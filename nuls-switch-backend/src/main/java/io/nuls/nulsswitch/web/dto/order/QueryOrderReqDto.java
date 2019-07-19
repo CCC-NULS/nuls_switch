@@ -1,5 +1,6 @@
 package io.nuls.nulsswitch.web.dto.order;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.nuls.nulsswitch.web.dto.BaseQuery;
 import io.swagger.annotations.ApiModel;
@@ -56,4 +57,9 @@ public class QueryOrderReqDto extends BaseQuery {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date endQueryTime;
+
+    /**
+     * 订单类型：1-买入、2-卖出
+     */
+    private Integer txType;
 }

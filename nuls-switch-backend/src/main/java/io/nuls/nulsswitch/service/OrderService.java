@@ -1,7 +1,12 @@
 package io.nuls.nulsswitch.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.nulsswitch.entity.Order;
 import com.baomidou.mybatisplus.service.IService;
+import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
+import io.nuls.nulsswitch.web.vo.token.TokenPairVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +18,5 @@ import com.baomidou.mybatisplus.service.IService;
  */
 public interface OrderService extends IService<Order> {
 
+    Page<Order> queryOrderByPage(QueryOrderReqDto reqDto);
 }

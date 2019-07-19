@@ -3,11 +3,14 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.service.OrderService;
+import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.QueryAllAsksRequestDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
+import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import io.swagger.annotations.ApiOperation;
@@ -19,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-
 
 @RestController
 @RequestMapping("/v1/order")
@@ -30,75 +31,37 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @ApiOperation(value = "获取可购买挂单", notes = "分页获取可购买挂单")
-    @GetMapping("listOnBuy")
-    public Wrapper<Page<Order>> listOnBuy(QueryOrderReqDto reqDto) {
-        // 查询当前可购买的等待出售列表，排除自己发布的出售委托
-        Page<Order> orderPage = new Page<>();
-        Order order = new Order();
-        order.setTxType(SwitchConstant.TX_TYPE_SELL);
-        BeanUtils.copyProperties(reqDto, order);
-        order.setAddress(null);
-        orderPage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
-        orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
-        EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
-        if (reqDto.getStartQueryTime() != null) {
-            eWrapper.gt("create_time", reqDto.getStartQueryTime());
-        }
-        if (reqDto.getEndQueryTime() != null) {
-            eWrapper.lt("create_time", reqDto.getEndQueryTime());
-        }
-        eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
-        eWrapper.notIn("address", reqDto.getAddress());
-        orderService.selectPage(orderPage, eWrapper);
-        log.info("listOnBuy response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
-        return WrapMapper.ok(orderPage);
-    }
-
-    @ApiOperation(value = "获取可卖出挂单", notes = "分页获取可卖出挂单")
+    @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
     public Wrapper<Page<Order>> listOnSell(QueryOrderReqDto reqDto) {
-        // 查询当前可出售的等待购买列表，排除自己发布的购买委托
-        Page<Order> orderPage = new Page<>();
-        Order order = new Order();
-        order.setTxType(SwitchConstant.TX_TYPE_BUY);
-        BeanUtils.copyProperties(reqDto, order);
-        order.setAddress(null);
-        orderPage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
-        orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
-        EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
-        if (reqDto.getStartQueryTime() != null) {
-            eWrapper.gt("create_time", reqDto.getStartQueryTime());
+        // 查询当前卖出单，等待购买列表，排除自己发布的出售委托
+        Page<Order> orderPage;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(reqDto.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            reqDto.setTxType(SwitchConstant.TX_TYPE_SELL);
+            orderPage = orderService.queryOrderByPage(reqDto);
+            log.info("listOnSell response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
         }
-        if (reqDto.getEndQueryTime() != null) {
-            eWrapper.lt("create_time", reqDto.getEndQueryTime());
-        }
-        eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
-        eWrapper.notIn("address", reqDto.getAddress());
-        orderService.selectPage(orderPage, eWrapper);
-        log.info("listOnSell response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
         return WrapMapper.ok(orderPage);
     }
 
-
-    @ApiOperation(value = "获取所有的买单", notes = "分页获取所有的买单")
-    @GetMapping("queryAllAsksWithPage")
-    public Wrapper<Page<Order>> queryAllAsksWithPage(QueryAllAsksRequestDto reqDto) {
-        Page<Order> orderPage = new Page<>();
-        Order order = new Order();
-        order.setTxType(1);
-        BeanUtils.copyProperties(reqDto, order);
-        orderPage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
-        orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
-        EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
-        if (reqDto.getStartQueryTime() != null) {
-            eWrapper.gt("create_time", reqDto.getStartQueryTime());
+    @ApiOperation(value = "获取买入挂单", notes = "分页获取买入挂单")
+    @GetMapping("listOnBuy")
+    public Wrapper<Page<Order>> listOnBuy(QueryOrderReqDto reqDto) {
+        // 查询当前卖入单，等待卖出列表，排除自己发布的购买委托
+        Page<Order> orderPage;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(reqDto.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            reqDto.setTxType(SwitchConstant.TX_TYPE_BUY);
+            orderPage = orderService.queryOrderByPage(reqDto);
+            log.info("listOnBuy response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
         }
-        if (reqDto.getEndQueryTime() != null) {
-            eWrapper.lt("create_time", reqDto.getEndQueryTime());
-        }
-        orderService.selectPage(orderPage, eWrapper);
-        log.info("getAllAsksWithPage response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
         return WrapMapper.ok(orderPage);
     }
 

@@ -8,6 +8,15 @@ package io.nuls.nulsswitch.constant;
  * @date 2019/7/18 21:23
  */
 public class SwitchConstant {
+    /**
+     * 系统使用的编码方式
+     * The encoding used by the nuls system.
+     */
+    public static String DEFAULT_ENCODING = "UTF-8";
+
+    public static final String LANGUAGE = "en";
+    public static final String LANGUAGE_PATH =  "languages";
+
     /** 订单相关 */
     /**
      * 订单类型：1-买入、2-卖出

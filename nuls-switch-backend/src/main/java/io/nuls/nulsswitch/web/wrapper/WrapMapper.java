@@ -11,6 +11,7 @@
 
 package io.nuls.nulsswitch.web.wrapper;
 
+import io.nuls.nulsswitch.web.exception.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -112,6 +113,17 @@ public class WrapMapper {
      */
     public static <E> Wrapper<E> error(String message) {
         return wrap(Wrapper.ERROR_CODE, StringUtils.isBlank(message) ? Wrapper.ERROR_MESSAGE : message);
+    }
+
+    /**
+     * Error wrapper.
+     *
+     * @param <E>       the type parameter
+     * @param errorCode the message
+     * @return the wrapper
+     */
+    public static <E> Wrapper<E> error(ErrorCode errorCode) {
+        return wrap(errorCode.getCode(), StringUtils.isBlank(errorCode.getMsg()) ? Wrapper.ERROR_MESSAGE : errorCode.getMsg());
     }
 
     /**

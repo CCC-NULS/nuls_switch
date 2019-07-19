@@ -1,15 +1,13 @@
 package io.nuls.nulsswitch;
 
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
-import com.github.pagehelper.PageHelper;
+import io.nuls.nulsswitch.constant.SwitchConstant;
+import io.nuls.nulsswitch.util.I18nUtils;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.util.Properties;
 
 @SpringBootApplication
 @MapperScan("io.nuls.nulsswitch.mapper")
@@ -17,6 +15,7 @@ import java.util.Properties;
 public class NulsSwitchApplication {
     public static void main(String[] args) {
         SpringApplication.run(NulsSwitchApplication.class, args);
+        I18nUtils.loadLanguage(I18nUtils.class, SwitchConstant.LANGUAGE_PATH, SwitchConstant.LANGUAGE);
     }
 
 
