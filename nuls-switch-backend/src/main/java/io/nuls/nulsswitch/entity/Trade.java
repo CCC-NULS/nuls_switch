@@ -28,7 +28,7 @@ public class Trade implements Serializable {
      * 委托挂单ID
      */
     @TableField("order_id")
-    private Integer orderId;
+    private String orderId;
     /**
      * 交易用户地址
      */
@@ -41,7 +41,7 @@ public class Trade implements Serializable {
     /**
      * 状态：0-未交易、1-完成交易、9-撤销
      */
-    private String status;
+    private Integer status;
     /**
      * 创建时间
      */
@@ -62,11 +62,11 @@ public class Trade implements Serializable {
         this.txId = txId;
     }
 
-    public Integer getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
@@ -86,11 +86,11 @@ public class Trade implements Serializable {
         this.txNum = txNum;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

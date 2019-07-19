@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
+import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
+import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.BigDecimalUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.BaseReq;
@@ -30,6 +32,8 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private TradeService tradeService;
 
     @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
@@ -125,9 +129,38 @@ public class OrderController extends BaseController {
     }
 
     @ApiOperation(value = "用户吃单", notes = "用户吃单")
-    @GetMapping("tradingOrder")
-    public Wrapper<Long> tradingOrder(@RequestBody Order param) {
-        return null;
+    @PostMapping("tradingOrder")
+    public Wrapper<Long> tradingOrder(@RequestBody BaseReq<Order> orderReq) {
+        try {
+            String token = orderReq.getToken();
+            Order order = orderReq.getParams();
+            int txNum = order.getTxNum();
+            // check parameters
+            Preconditions.checkNotNull(token, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(order.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(order.getOrderId(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(order.getTxNum(), CommonErrorCode.PARAMETER_NULL);
+
+            // check auth
+            checkAuth(token, null);
+            order = orderService.selectById(order.getOrderId());
+            int remainNum = order.getTotalNum() - order.getTxNum();
+            Preconditions.checkArgument(txNum > 0 && txNum <= remainNum, CommonErrorCode.PARAMETER_ERROR);
+
+            // create order trade
+            Trade trade = new Trade();
+            // TODO 交易ID生成规则
+            trade.setTxId(System.currentTimeMillis() + "");
+            trade.setAddress(order.getAddress());
+            trade.setOrderId(order.getOrderId());
+            trade.setTxNum(order.getTxNum());
+            trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
+            tradeService.insert(trade);
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok();
     }
 
     @ApiOperation(value = "确认订单", notes = "确认订单")

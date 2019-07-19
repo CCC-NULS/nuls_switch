@@ -75,11 +75,11 @@ CREATE TABLE `tx_token_pair` (
 DROP TABLE IF EXISTS `tx_trade`;
 CREATE TABLE `tx_trade` (
   `tx_id` varchar(255) NOT NULL COMMENT '交易流水号',
-  `order_id` int(11) NOT NULL COMMENT '委托挂单ID',
+  `order_id` varchar(32) NOT NULL COMMENT '委托挂单ID',
   `address` varchar(255) DEFAULT NULL COMMENT '交易用户地址',
   `tx_num` int(11) DEFAULT NULL COMMENT '交易数量',
   `tx_hash` varchar (255) DEFAULT NULL COMMENT '交易发送到区块链后的Hash值',
-  `status` varchar(255) NOT NULL COMMENT '状态：0-未交易、1-完成交易、9-撤销',
+  `status` tinyint(4) NOT NULL COMMENT '状态：0-未交易、1-完成交易、9-撤销',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`tx_id`)
