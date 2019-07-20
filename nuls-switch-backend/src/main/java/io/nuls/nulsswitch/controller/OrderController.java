@@ -38,14 +38,14 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
-    public Wrapper<Page<Order>> listOnSell(QueryOrderReqDto reqDto) {
+    public Wrapper<Page<Order>> listOnSell(QueryOrderReqDto orderReq) {
         // 查询当前卖出单，等待购买列表，排除自己发布的出售委托
         Page<Order> orderPage;
         try {
             // check parameters
-            Preconditions.checkNotNull(reqDto.getAddress(), CommonErrorCode.PARAMETER_NULL);
-            reqDto.setTxType(SwitchConstant.TX_TYPE_SELL);
-            orderPage = orderService.queryOrderByPage(reqDto);
+            Preconditions.checkNotNull(orderReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            orderReq.setTxType(SwitchConstant.TX_TYPE_SELL);
+            orderPage = orderService.queryCanTxOrderByPage(orderReq);
             log.info("listOnSell response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
@@ -55,14 +55,14 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "获取买入挂单", notes = "分页获取买入挂单")
     @GetMapping("listOnBuy")
-    public Wrapper<Page<Order>> listOnBuy(QueryOrderReqDto reqDto) {
+    public Wrapper<Page<Order>> listOnBuy(QueryOrderReqDto orderReq) {
         // 查询当前卖入单，等待卖出列表，排除自己发布的购买委托
         Page<Order> orderPage;
         try {
             // check parameters
-            Preconditions.checkNotNull(reqDto.getAddress(), CommonErrorCode.PARAMETER_NULL);
-            reqDto.setTxType(SwitchConstant.TX_TYPE_BUY);
-            orderPage = orderService.queryOrderByPage(reqDto);
+            Preconditions.checkNotNull(orderReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            orderReq.setTxType(SwitchConstant.TX_TYPE_BUY);
+            orderPage = orderService.queryCanTxOrderByPage(orderReq);
             log.info("listOnBuy response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
@@ -170,10 +170,40 @@ public class OrderController extends BaseController {
         return null;
     }
 
-    @ApiOperation(value = "查询用户委托历史", notes = "查询用户委托历史")
-    @GetMapping("getMyOrder")
-    public Wrapper<Long> getMyOrder(@RequestBody Order param) {
-        return null;
+    @ApiOperation(value = "查询用户当前委托订单", notes = "查询用户当前委托订单")
+    @GetMapping("queryMyCurrentOrder")
+    public Wrapper<Long> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
+        // 查询用户当前委托订单，包含未交易、部分交易的订单
+        Page<Order> orderPage;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(orderReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            // 只查询可交易的订单
+            orderReq.setCanTx(true);
+            orderPage = orderService.queryOrderByPage(orderReq);
+            log.info("queryMyCurrentOrder response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok();
+    }
+
+    @ApiOperation(value = "查询用户历史委托订单", notes = "查询用户历史委托订单")
+    @GetMapping("queryMyHisOrder")
+    public Wrapper<Long> queryMyHisOrder(QueryOrderReqDto orderReq) {
+        // 查询用户历史委托订单，包含所有交易状态的订单
+        Page<Order> orderPage;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(orderReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            orderPage = orderService.queryOrderByPage(orderReq);
+            log.info("queryMyHisOrder response:{}", JSON.toJSONString(WrapMapper.ok(orderPage)));
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok();
     }
 
     @ApiOperation(value = "查询订单明细", notes = "查询订单明细")

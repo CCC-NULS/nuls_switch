@@ -61,5 +61,17 @@ public class QueryOrderReqDto extends BaseQuery {
     /**
      * 订单类型：1-买入、2-卖出
      */
+	@ApiModelProperty(value = "订单类型")
     private Integer txType;
+
+	/**
+	 * 状态：0-未交易、1-部分交易、2-完成交易、9-撤销
+	 */
+	@ApiModelProperty(value = "交易状态")
+	private Integer status;
+
+	/**
+	 * 可交易订单，只包含未交易、部分交易订单
+	 */
+	private Boolean canTx;
 }
