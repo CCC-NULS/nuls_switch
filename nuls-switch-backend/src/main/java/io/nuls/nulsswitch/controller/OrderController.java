@@ -10,6 +10,7 @@ import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.BigDecimalUtils;
+import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.BaseReq;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
@@ -92,8 +93,8 @@ public class OrderController extends BaseController {
             // check balance
 
             // save order
-            // TODO 订单ID生成规则
-            order.setOrderId(System.currentTimeMillis() + "");
+            // 订单ID生成
+            order.setOrderId(IdUtils.getIncreaseIdByNanoTime());
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
             order.setTotalAmount(BigDecimalUtils.mul(new BigDecimal(order.getTotalNum()), order.getPrice()));
             orderService.insert(order);
@@ -150,8 +151,8 @@ public class OrderController extends BaseController {
 
             // create order trade
             Trade trade = new Trade();
-            // TODO 交易ID生成规则
-            trade.setTxId(System.currentTimeMillis() + "");
+            // 交易ID生成
+            trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
             trade.setAddress(order.getAddress());
             trade.setOrderId(order.getOrderId());
             trade.setTxNum(order.getTxNum());
