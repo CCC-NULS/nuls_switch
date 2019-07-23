@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/v1/token")
 @Slf4j
-public class ToeknController {
+public class ToeknController extends BaseController {
 
     @Autowired
     private TokenService tokenService;

@@ -7,6 +7,7 @@ import io.nuls.nulsswitch.service.UserAuthService;
 import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * 类描述：
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version v1.0
  * @date 2019/7/19 17:33
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class BaseController {
 
     @Autowired

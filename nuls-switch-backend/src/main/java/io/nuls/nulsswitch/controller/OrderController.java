@@ -41,6 +41,7 @@ public class OrderController extends BaseController {
     @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
     public Wrapper<Page<Order>> listOnSell(QueryOrderReqDto orderReq) {
+        //response.setHeader("Access-Control-Allow-Origin", "*");
         // 查询当前卖出单，等待购买列表，排除自己发布的出售委托
         Page<Order> orderPage;
         try {
