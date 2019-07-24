@@ -18,7 +18,6 @@ public class NulsSwitchApplication {
         I18nUtils.loadLanguage(I18nUtils.class, SwitchConstant.LANGUAGE_PATH, SwitchConstant.LANGUAGE);
     }
 
-
     //配置mybatis的分页插件pageHelper
     @Bean
     public PaginationInterceptor paginationInterceptor() {
