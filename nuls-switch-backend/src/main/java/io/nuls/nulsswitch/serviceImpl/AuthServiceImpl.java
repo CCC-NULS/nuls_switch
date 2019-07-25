@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String getToken(String dataHex, String signatureHex, String publicKeyHex) {
+    public String getToken(String dataHex, String publicKeyHex, String signatureHex) {
         String address;
         boolean verifyResult = false;
         byte[] dataBytes, pubBytes = null;
@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
             log.error("", e);
         }
         Assert.isTrue(verifyResult,"数字签名验证失败");
-        address = AddressTool.getStringAddressByBytes(pubBytes);
+        address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(pubBytes,2));
         String token = jwtTokenUtil.generateAccessToken(address);
         UserAuth userAuth = new UserAuth();
         userAuth.setAddress(address);
