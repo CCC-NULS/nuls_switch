@@ -41,7 +41,6 @@ public class OrderController extends BaseController {
     @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
     public Wrapper<Page<Order>> listOnSell(QueryOrderReqDto orderReq) {
-        //response.setHeader("Access-Control-Allow-Origin", "*");
         // 查询当前卖出单，等待购买列表，排除自己发布的出售委托
         Page<Order> orderPage;
         try {
@@ -217,7 +216,7 @@ public class OrderController extends BaseController {
 
             // query order trade detail
             EntityWrapper<Trade> eWrapper = new EntityWrapper<>();
-            eWrapper.notIn("order_id", orderReq.getOrderId());
+            eWrapper.in("order_id", orderReq.getOrderId());
             tradeList = tradeService.selectList(eWrapper);
             log.info("getMyOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradeList)));
         } catch (NulsRuntimeException ex) {
