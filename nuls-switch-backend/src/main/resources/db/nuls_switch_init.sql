@@ -91,9 +91,10 @@ CREATE TABLE `tx_trade` (
 DROP TABLE IF EXISTS `user_auth`;
 CREATE TABLE `user_auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `token` varchar(64) NOT NULL COMMENT '用户登录token',
+  `token` varchar(512) NOT NULL COMMENT '用户登录token',
   `address` varchar(50) NOT NULL COMMENT '钱包地址',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `index_token` (`token`) USING HASH COMMENT 'Token索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户认证表：存储用户登录token与钱包地址关系';
