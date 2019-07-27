@@ -74,13 +74,10 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户挂单", notes = "用户挂单")
     @PostMapping("createOrder")
-    public Wrapper<Long> createOrder(@RequestBody BaseReq<Order> orderReq) {
+    public Wrapper<Long> createOrder(@RequestBody Order order) {
         //用户Token、交易对、单价、数量
         try {
-            String token = orderReq.getToken();
-            Order order = orderReq.getParams();
             // check parameters
-            Preconditions.checkNotNull(token, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getTxType(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getAddress(), CommonErrorCode.PARAMETER_NULL);
@@ -88,9 +85,6 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(order.getToTokenId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkArgument(order.getPrice() != null && order.getPrice().doubleValue() > 0, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkArgument(order.getTotalNum() != null && order.getTotalNum() > 0, CommonErrorCode.PARAMETER_NULL);
-
-            // check auth
-            checkAuth(token, order.getAddress());
 
             // check balance
 

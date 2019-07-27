@@ -33,10 +33,10 @@ public class IdUtils {
      *  Map Size:   100000
      * </pre>
      *
-     * @return ID长度32位
+     * @return ID长度35位
      */
     public static String getIncreaseIdByNanoTime() {
-        // 时间戳-14位 + 标志-8位 + 3位线程标志 + 随机7位数
+        // 时间戳-17位 + 标志-8位 + 3位线程标志 + 随机7位数
         return System.nanoTime() +
                 middle +
                 MathUtils.makeUpNewData(Thread.currentThread().hashCode() + "", 3) +

@@ -28,7 +28,7 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `tx_order`;
 CREATE TABLE `tx_order` (
-  `order_id` varchar(32) NOT NULL COMMENT '交易单号',
+  `order_id` varchar(35) NOT NULL COMMENT '交易单号',
   `address` varchar(255) DEFAULT NULL COMMENT '挂单账户地址',
   `tx_type` tinyint(4) NOT NULL COMMENT '交易类型：1-买入、2-卖出',
   `from_token_id` int(11) NOT NULL COMMENT '原token',
