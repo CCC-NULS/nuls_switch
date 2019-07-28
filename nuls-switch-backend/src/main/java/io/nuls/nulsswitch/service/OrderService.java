@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
+import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 
 /**
  * <p>
@@ -28,5 +29,5 @@ public interface OrderService extends IService<Order> {
      * @param reqDto
      * @return
      */
-    Page<Order> queryOrderByPage(QueryOrderReqDto reqDto);
+    Page<QueryOrderResDto> queryOrderByPage(QueryOrderReqDto reqDto);
 }

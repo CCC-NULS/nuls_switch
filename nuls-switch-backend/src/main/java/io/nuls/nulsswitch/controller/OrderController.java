@@ -15,6 +15,7 @@ import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.BaseReq;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
+import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
@@ -166,9 +167,9 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "查询用户当前委托订单", notes = "查询用户当前委托订单")
     @GetMapping("queryMyCurrentOrder")
-    public Wrapper<Page<Order>> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
+    public Wrapper<Page<QueryOrderResDto>> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
         // 查询用户当前委托订单，包含未交易、部分交易的订单
-        Page<Order> orderPage;
+        Page<QueryOrderResDto> orderPage;
         try {
             // check parameters
             Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
@@ -185,9 +186,9 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "查询用户历史委托订单", notes = "查询用户历史委托订单")
     @GetMapping("queryMyHisOrder")
-    public Wrapper<Page<Order>> queryMyHisOrder(QueryOrderReqDto orderReq) {
+    public Wrapper<Page<QueryOrderResDto>> queryMyHisOrder(QueryOrderReqDto orderReq) {
         // 查询用户历史委托订单，包含所有交易状态的订单
-        Page<Order> orderPage;
+        Page<QueryOrderResDto> orderPage;
         try {
             // check parameters
             Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);

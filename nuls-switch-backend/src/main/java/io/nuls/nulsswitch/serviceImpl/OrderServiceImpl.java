@@ -3,15 +3,21 @@ package io.nuls.nulsswitch.serviceImpl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
+import io.nuls.nulsswitch.entity.Token;
 import io.nuls.nulsswitch.mapper.OrderMapper;
+import io.nuls.nulsswitch.mapper.TokenMapper;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
+import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -23,6 +29,9 @@ import java.util.Arrays;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
+
+    @Resource
+    TokenMapper tokenMapper;
 
     @Override
     public Page<Order> queryCanTxOrderByPage(QueryOrderReqDto reqDto) {
@@ -45,7 +54,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public Page<Order> queryOrderByPage(QueryOrderReqDto reqDto) {
+    public Page<QueryOrderResDto> queryOrderByPage(QueryOrderReqDto reqDto) {
+        Page<QueryOrderResDto> orderDtoPage = new Page<>();
         Page<Order> orderPage = new Page<>();
         Order order = new Order();
         BeanUtils.copyProperties(reqDto, order);
@@ -62,6 +72,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         }
         eWrapper.orderBy("create_time", false);
-        return this.selectPage(orderPage, eWrapper);
+        orderPage = this.selectPage(orderPage, eWrapper);
+        BeanUtils.copyProperties(orderPage, orderDtoPage);
+        Map<Integer, String> tokenMap = getTokenMap();
+        if (orderPage != null && orderPage.getRecords() != null) {
+            List<QueryOrderResDto> list = Lists.newArrayList();
+            orderPage.getRecords().forEach(obj -> {
+                QueryOrderResDto orderResDto = new QueryOrderResDto();
+                BeanUtils.copyProperties(obj, orderResDto);
+                orderResDto.setTokenPair(tokenMap.get(obj.getFromTokenId()) + "_" + tokenMap.get(obj.getToTokenId()));
+                list.add(orderResDto);
+            });
+            orderDtoPage.setRecords(list);
+        }
+        return orderDtoPage;
+    }
+
+    public Map<Integer, String> getTokenMap() {
+        // 查询所有token
+        Map<Integer, String> tokenMap = Optional.ofNullable(tokenMapper.selectList(null)).orElse(Collections.emptyList()).stream().collect(Collectors.toMap(Token::getTokenId, Token::getTokenSymbol));
+        return tokenMap;
     }
 }
