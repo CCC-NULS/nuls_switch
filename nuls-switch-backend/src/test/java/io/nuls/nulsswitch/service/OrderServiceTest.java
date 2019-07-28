@@ -30,9 +30,9 @@ public class OrderServiceTest {
         order.setFromTokenId(1);
         order.setToTokenId(3);
         order.setPrice(new BigDecimal(0.001d));
-        order.setTotalNum(1000);
+        order.setTotalNum(1000L);
         order.setTotalAmount(new BigDecimal(1));
-        order.setTxNum(100);
+        order.setTxNum(100L);
         orderService.insert(order);
     }
 

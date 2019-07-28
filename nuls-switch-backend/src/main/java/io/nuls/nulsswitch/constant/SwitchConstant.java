@@ -25,6 +25,11 @@ public class SwitchConstant {
     public final static int TX_TYPE_SELL = 2;
 
     /**
+     * 代币精确位数
+     */
+    public final static int TOKEN_DECIMALS = 100000000;
+
+    /**
      * 状态：0-未交易、1-部分交易、2-完成交易、9-撤销
      */
     public final static int TX_ORDER_STATUS_INIT = 0;

@@ -21,7 +21,7 @@ public class BaseQuery implements Serializable {
     /**
      * 每页条数
      */
-    private Integer size = 10;
+    private Integer pageSize = 10;
 
     /**
      * 排序

@@ -31,7 +31,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         BeanUtils.copyProperties(reqDto, order);
         order.setAddress(null);
         orderPage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
-        orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
+        orderPage.setSize(reqDto.getPageSize() == null ? 10 : reqDto.getPageSize());
         EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
         if (reqDto.getStartQueryTime() != null) {
             eWrapper.ge("create_time", reqDto.getStartQueryTime());
@@ -50,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = new Order();
         BeanUtils.copyProperties(reqDto, order);
         orderPage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
-        orderPage.setSize(reqDto.getSize() == null ? 10 : reqDto.getSize());
+        orderPage.setSize(reqDto.getPageSize() == null ? 10 : reqDto.getPageSize());
         EntityWrapper<Order> eWrapper = new EntityWrapper<>(order);
         if (reqDto.getStartQueryTime() != null) {
             eWrapper.ge("create_time", reqDto.getStartQueryTime());
@@ -61,6 +61,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (reqDto.getCanTx()) {
             eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         }
+        eWrapper.orderBy("create_time", false);
         return this.selectPage(orderPage, eWrapper);
     }
 }

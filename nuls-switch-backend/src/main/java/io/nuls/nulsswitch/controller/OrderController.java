@@ -74,7 +74,7 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户挂单", notes = "用户挂单")
     @PostMapping("createOrder")
-    public Wrapper<Long> createOrder(@RequestBody Order order) {
+    public Wrapper<String> createOrder(@RequestBody Order order) {
         //用户Token、交易对、单价、数量
         try {
             // check parameters
@@ -92,17 +92,19 @@ public class OrderController extends BaseController {
             // 订单ID生成
             order.setOrderId(IdUtils.getIncreaseIdByNanoTime());
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            order.setTotalAmount(BigDecimalUtils.mul(new BigDecimal(order.getTotalNum()), order.getPrice()));
+            order.setTotalAmount(BigDecimalUtils.mul(new BigDecimal(BigDecimalUtils.divide(order.getTotalNum(), SwitchConstant.TOKEN_DECIMALS)), new BigDecimal(BigDecimalUtils.divide(order.getPrice().doubleValue(), SwitchConstant.TOKEN_DECIMALS))));
+            order.setTxNum(0L);
+            //order.setTotalNum(order.getTotalNum() * SwitchConstant.TOKEN_DECIMALS);
             orderService.insert(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(order.getOrderId());
     }
 
     @ApiOperation(value = "用户撤单", notes = "用户撤单")
     @PostMapping("cancelOrder")
-    public Wrapper<Long> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
+    public Wrapper<String> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
         try {
             String token = orderReq.getToken();
             Order order = orderReq.getParams();
@@ -111,8 +113,7 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
-            // check auth
-            checkAuth(token, null);
+            // check data
             order = orderService.selectById(order.getOrderId());
             // cancel order
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
@@ -127,7 +128,7 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户吃单", notes = "用户吃单")
     @PostMapping("tradingOrder")
-    public Wrapper<Long> tradingOrder(@RequestBody BaseReq<Trade> orderReq) {
+    public Wrapper<String> tradingOrder(@RequestBody BaseReq<Trade> orderReq) {
         try {
             String token = orderReq.getToken();
             Trade trade = orderReq.getParams();
@@ -149,7 +150,7 @@ public class OrderController extends BaseController {
                 throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
 
-            int remainNum = order.getTotalNum() - order.getTxNum();
+            long remainNum = order.getTotalNum() - order.getTxNum();
             Preconditions.checkArgument(txNum > 0 && txNum <= remainNum, CommonErrorCode.PARAMETER_ERROR);
 
             // create order trade
@@ -165,7 +166,7 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "查询用户当前委托订单", notes = "查询用户当前委托订单")
     @GetMapping("queryMyCurrentOrder")
-    public Wrapper<Long> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
+    public Wrapper<Page<Order>> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
         // 查询用户当前委托订单，包含未交易、部分交易的订单
         Page<Order> orderPage;
         try {
@@ -179,12 +180,12 @@ public class OrderController extends BaseController {
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(orderPage);
     }
 
     @ApiOperation(value = "查询用户历史委托订单", notes = "查询用户历史委托订单")
     @GetMapping("queryMyHisOrder")
-    public Wrapper<Long> queryMyHisOrder(QueryOrderReqDto orderReq) {
+    public Wrapper<Page<Order>> queryMyHisOrder(QueryOrderReqDto orderReq) {
         // 查询用户历史委托订单，包含所有交易状态的订单
         Page<Order> orderPage;
         try {
@@ -196,7 +197,7 @@ public class OrderController extends BaseController {
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(orderPage);
     }
 
     @ApiOperation(value = "查询订单明细", notes = "查询订单明细")
