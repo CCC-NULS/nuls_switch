@@ -106,13 +106,10 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户撤单", notes = "用户撤单")
     @PostMapping("cancelOrder")
-    public Wrapper<Boolean> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
+    public Wrapper<Boolean> cancelOrder(@RequestBody Order order) {
         Boolean result;
         try {
-            String token = orderReq.getToken();
-            Order order = orderReq.getParams();
             // check parameters
-            Preconditions.checkNotNull(token, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
@@ -131,14 +128,11 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户吃单", notes = "用户吃单")
     @PostMapping("tradingOrder")
-    public Wrapper<Boolean> tradingOrder(@RequestBody BaseReq<Trade> orderReq) {
+    public Wrapper<Boolean> tradingOrder(@RequestBody Trade trade) {
         Boolean result;
         try {
-            String token = orderReq.getToken();
-            Trade trade = orderReq.getParams();
             int txNum = trade.getTxNum();
             // check parameters
-            Preconditions.checkNotNull(token, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getOrderId(), CommonErrorCode.PARAMETER_NULL);
