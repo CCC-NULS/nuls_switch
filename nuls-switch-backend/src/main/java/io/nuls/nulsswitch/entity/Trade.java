@@ -1,10 +1,11 @@
 package io.nuls.nulsswitch.entity;
 
-import java.util.Date;
-import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -38,9 +39,17 @@ public class Trade implements Serializable {
      */
     @TableField("tx_num")
     private Integer txNum;
+
+    /**
+     * 交易hash
+     */
+    @TableField("tx_hash")
+    private Integer txHash;
+
     /**
      * 状态：0-未交易、1-完成交易、9-撤销
      */
+    @TableField("status")
     private Integer status;
     /**
      * 创建时间
@@ -86,6 +95,14 @@ public class Trade implements Serializable {
         this.txNum = txNum;
     }
 
+    public Integer getTxHash() {
+        return txHash;
+    }
+
+    public void setTxHash(Integer txHash) {
+        this.txHash = txHash;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -113,13 +130,13 @@ public class Trade implements Serializable {
     @Override
     public String toString() {
         return "Trade{" +
-        ", txId=" + txId +
-        ", orderId=" + orderId +
-        ", address=" + address +
-        ", txNum=" + txNum +
-        ", status=" + status +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                ", txId=" + txId +
+                ", orderId=" + orderId +
+                ", address=" + address +
+                ", txNum=" + txNum +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

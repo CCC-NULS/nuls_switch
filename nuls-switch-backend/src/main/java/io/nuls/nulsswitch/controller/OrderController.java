@@ -13,8 +13,6 @@ import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.BigDecimalUtils;
 import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
-import io.nuls.nulsswitch.util.StringUtils;
-import io.nuls.nulsswitch.web.dto.BaseReq;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
@@ -137,6 +135,7 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getOrderId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getTxNum(), CommonErrorCode.PARAMETER_NULL);
+            //Preconditions.checkNotNull(trade.getTxHash(), CommonErrorCode.PARAMETER_NULL);
 
             // check data
             Order order = orderService.selectById(trade.getOrderId());
@@ -149,10 +148,8 @@ public class OrderController extends BaseController {
             Preconditions.checkArgument(txNum > 0 && txNum <= remainNum, CommonErrorCode.PARAMETER_ERROR);
 
             // create order trade
-            // 交易ID应该由前端生成
-            if (StringUtils.isBlank(trade.getTxId())) {
-                trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
-            }
+            // 交易ID生成
+            trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
             trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
             result = tradeService.insert(trade);
         } catch (NulsRuntimeException ex) {
@@ -198,9 +195,9 @@ public class OrderController extends BaseController {
     }
 
     @ApiOperation(value = "查询订单明细", notes = "查询订单明细")
-    @GetMapping("getMyOrderDetail")
-    public Wrapper<List<Trade>> getMyOrderDetail(@RequestBody Order orderReq) {
-        List<Trade> tradeList = Lists.newArrayList();
+    @GetMapping("getOrderDetail")
+    public Wrapper<List<Trade>> getOrderDetail(@RequestBody Order orderReq) {
+        List<Trade> tradeList;
         try {
             // check parameters
             Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
@@ -210,7 +207,7 @@ public class OrderController extends BaseController {
             EntityWrapper<Trade> eWrapper = new EntityWrapper<>();
             eWrapper.in("order_id", orderReq.getOrderId());
             tradeList = tradeService.selectList(eWrapper);
-            log.info("getMyOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradeList)));
+            log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradeList)));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -220,12 +217,12 @@ public class OrderController extends BaseController {
     @ApiOperation(value = "确认订单", notes = "确认订单")
     @GetMapping("confirmOrder")
     public Wrapper confirmOrder(@RequestBody Trade tradeReq) {
+        Boolean result;
         try {
             // check parameters
             Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(tradeReq.getTxNum(), CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkArgument(tradeReq.getTxNum() > 0, CommonErrorCode.PARAMETER_ERROR);
+            Preconditions.checkNotNull(tradeReq.getTxId(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeReq.getTxHash(), CommonErrorCode.PARAMETER_NULL);
 
             // check data
             Trade trade = tradeService.selectById(tradeReq.getTxId());
@@ -238,12 +235,12 @@ public class OrderController extends BaseController {
 
             // save trade
             trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            boolean update = tradeService.updateById(trade);
-            log.info("confirmOrder response:{}", update);
+            result = tradeService.updateById(trade);
+            log.info("confirmOrder response:{}", result);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(result);
     }
 
 }
