@@ -13,6 +13,7 @@ import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.BigDecimalUtils;
 import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
+import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.BaseReq;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
@@ -105,7 +106,8 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户撤单", notes = "用户撤单")
     @PostMapping("cancelOrder")
-    public Wrapper<String> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
+    public Wrapper<Boolean> cancelOrder(@RequestBody BaseReq<Order> orderReq) {
+        Boolean result;
         try {
             String token = orderReq.getToken();
             Order order = orderReq.getParams();
@@ -120,16 +122,17 @@ public class OrderController extends BaseController {
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
             EntityWrapper<Order> eWrapper = new EntityWrapper<>();
             eWrapper.notIn("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_DONE));
-            orderService.updateById(order);
+            result = orderService.updateById(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(result);
     }
 
     @ApiOperation(value = "用户吃单", notes = "用户吃单")
     @PostMapping("tradingOrder")
-    public Wrapper<String> tradingOrder(@RequestBody BaseReq<Trade> orderReq) {
+    public Wrapper<Boolean> tradingOrder(@RequestBody BaseReq<Trade> orderReq) {
+        Boolean result;
         try {
             String token = orderReq.getToken();
             Trade trade = orderReq.getParams();
@@ -140,9 +143,6 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getOrderId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getTxNum(), CommonErrorCode.PARAMETER_NULL);
-
-            // check auth
-            checkAuth(token, null);
 
             // check data
             Order order = orderService.selectById(trade.getOrderId());
@@ -155,14 +155,16 @@ public class OrderController extends BaseController {
             Preconditions.checkArgument(txNum > 0 && txNum <= remainNum, CommonErrorCode.PARAMETER_ERROR);
 
             // create order trade
-            // 交易ID生成
-            trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
+            // 交易ID应该由前端生成
+            if (StringUtils.isBlank(trade.getTxId())) {
+                trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
+            }
             trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            tradeService.insert(trade);
+            result = tradeService.insert(trade);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok();
+        return WrapMapper.ok(result);
     }
 
     @ApiOperation(value = "查询用户当前委托订单", notes = "查询用户当前委托订单")
@@ -238,7 +240,7 @@ public class OrderController extends BaseController {
                 throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
 
-            // assembled transfer transaction TODO 组装转账交易数据，调用NULS2.0底层
+            // assembled transfer transaction TODO 组装转账交易数据，调用NULS2.0底层，改为前端组装交易！！！
 
             // save trade
             trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
