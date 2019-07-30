@@ -3,7 +3,6 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.google.common.collect.Lists;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -115,6 +115,7 @@ public class OrderController extends BaseController {
             order = orderService.selectById(order.getOrderId());
             // cancel order
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
+            order.setUpdateTime(new Date());
             EntityWrapper<Order> eWrapper = new EntityWrapper<>();
             eWrapper.notIn("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_DONE));
             result = orderService.updateById(order);
@@ -129,7 +130,7 @@ public class OrderController extends BaseController {
     public Wrapper<Boolean> tradingOrder(@RequestBody Trade trade) {
         Boolean result;
         try {
-            int txNum = trade.getTxNum();
+            Long txNum = trade.getTxNum();
             // check parameters
             Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
