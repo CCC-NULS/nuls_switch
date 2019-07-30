@@ -47,7 +47,7 @@ public class Trade implements Serializable {
     private Integer txHash;
 
     /**
-     * 状态：0-未交易、1-完成交易、9-撤销
+     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
      */
     @TableField("status")
     private Integer status;
