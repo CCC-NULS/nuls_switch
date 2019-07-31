@@ -1,23 +1,24 @@
 package io.nuls.nulsswitch.job;
 
-import java.util.Date;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.core.basic.Result;
+import io.nuls.nulsswitch.constant.SwitchConstant;
+import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.v2.util.NulsSDKTool;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDetail;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  */
@@ -68,14 +69,30 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                 log.info("have no not confirm trade record");
             }
             //循环，到区块链中查询交易状态
-            for (Trade tmp : page.getRecords()) {
-                Result result = NulsSDKTool.getTx(tmp.getTxHash());
+            for (Trade trade : page.getRecords()) {
+                Result result = NulsSDKTool.getTx(trade.getTxHash());
                 Map map = (Map) result.getData();
                 Integer status = (Integer) map.get("status");
                 //如果为已经确定，则更新状态为成功
                 if (status == 1) {
-                    tmp.setStatus(2);
-                    tradeService.updateById(tmp);
+                    trade.setStatus(2);
+                    tradeService.updateById(trade);
+
+                    // 修改订单交易数量、状态
+                    Order order = orderService.selectById(trade.getOrderId());
+                    if (order != null) {
+                        // 修改交易数量（原token、目标token）
+                        Long txNum = order.getTxNum() + trade.getTxNum();
+                        Long toNum = order.getToNum() + trade.getToNum();
+                        order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
+                        order.setTxNum(txNum);
+                        order.setToNum(toNum);
+                        // 如果交易数等于挂单总量，则修改订单状态为完成交易
+                        if (Objects.equals(txNum, order.getTotalNum())) {
+                            order.setStatus(SwitchConstant.TX_ORDER_STATUS_DONE);
+                        }
+                        orderService.updateById(order);
+                    }
                 }
             }
             log.info("Job:{} 执行结束！", jobName);

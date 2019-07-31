@@ -15,7 +15,6 @@ import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TradeService;
-import io.nuls.nulsswitch.util.BigDecimalUtils;
 import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.auth.ConfirmTradeReqDto;
@@ -30,8 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 
 @RestController
@@ -98,7 +99,8 @@ public class OrderController extends BaseController {
             // 订单ID生成
             order.setOrderId(IdUtils.getIncreaseIdByNanoTime());
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            order.setTotalAmount(BigDecimalUtils.mul(new BigDecimal(BigDecimalUtils.divide(order.getTotalNum(), SwitchConstant.TOKEN_DECIMALS)), new BigDecimal(BigDecimalUtils.divide(order.getPrice().doubleValue(), SwitchConstant.TOKEN_DECIMALS))));
+            //Long totalAmount = (order.getTotalNum() / SwitchConstant.TOKEN_DECIMALS) * (order.getPrice() / SwitchConstant.TOKEN_DECIMALS) * SwitchConstant.TOKEN_DECIMALS;
+            //order.setTotalAmount(totalAmount);
             order.setTxNum(0L);
             //order.setTotalNum(order.getTotalNum() * SwitchConstant.TOKEN_DECIMALS);
             orderService.insert(order);
@@ -159,6 +161,10 @@ public class OrderController extends BaseController {
             // 交易ID生成
             trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_WAIT);
+            // 根据价格和源代币交易量，计算目标代币数量
+            //Long toNum= (trade.getTxNum()* (Math.pow(10,8))) * order.getPrice();
+            Long toNum = trade.getTxNum() * order.getPrice();
+            trade.setToNum(toNum);
             tradeService.insert(trade);
 
             // 更新订单状态 update order status

@@ -29,10 +29,10 @@ public class OrderServiceTest {
         order.setStatus(2);
         order.setFromTokenId(1);
         order.setToTokenId(3);
-        order.setPrice(new BigDecimal(0.001d));
-        order.setTotalNum(1000L);
-        order.setTotalAmount(new BigDecimal(1));
-        order.setTxNum(100L);
+        order.setPrice(10000000L);
+        order.setTotalNum(101000000000L);
+        order.setTotalAmount(100000000L);
+        order.setTxNum(1000000000L);
         orderService.insert(order);
     }
 

@@ -5,6 +5,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -16,6 +18,7 @@ import java.io.Serializable;
  * @since 2019-07-16
  */
 @TableName("tx_token_pair")
+@Data
 public class TokenPair implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,56 +48,4 @@ public class TokenPair implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
-
-
-    public Integer getPairId() {
-        return pairId;
-    }
-
-    public void setPairId(Integer pairId) {
-        this.pairId = pairId;
-    }
-
-    public Integer getFromTokenId() {
-        return fromTokenId;
-    }
-
-    public void setFromTokenId(Integer fromTokenId) {
-        this.fromTokenId = fromTokenId;
-    }
-
-    public Integer getToTokenId() {
-        return toTokenId;
-    }
-
-    public void setToTokenId(Integer toTokenId) {
-        this.toTokenId = toTokenId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "TokenPair{" +
-        ", pairId=" + pairId +
-        ", fromTokenId=" + fromTokenId +
-        ", toTokenId=" + toTokenId +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
-    }
 }

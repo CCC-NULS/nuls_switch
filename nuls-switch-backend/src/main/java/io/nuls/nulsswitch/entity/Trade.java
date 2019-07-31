@@ -3,6 +3,7 @@ package io.nuls.nulsswitch.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.Date;
  * @since 2019-07-16
  */
 @TableName("tx_trade")
+@Data
 public class Trade implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,11 +37,16 @@ public class Trade implements Serializable {
      */
     private String address;
     /**
-     * 交易数量
+     * 原token已完成交易数量
      */
     @TableField("tx_num")
     private Long txNum;
 
+    /**
+     * 目标token已完成交易数量，通过价格换算得来
+     */
+    @TableField("to_num")
+    private Long toNum;
     /**
      * 交易hash
      */
@@ -61,82 +68,4 @@ public class Trade implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
-
-
-    public String getTxId() {
-        return txId;
-    }
-
-    public void setTxId(String txId) {
-        this.txId = txId;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Long getTxNum() {
-        return txNum;
-    }
-
-    public void setTxNum(Long txNum) {
-        this.txNum = txNum;
-    }
-
-    public String getTxHash() {
-        return txHash;
-    }
-
-    public void setTxHash(String txHash) {
-        this.txHash = txHash;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Trade{" +
-                ", txId=" + txId +
-                ", orderId=" + orderId +
-                ", address=" + address +
-                ", txNum=" + txNum +
-                ", status=" + status +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                "}";
-    }
 }

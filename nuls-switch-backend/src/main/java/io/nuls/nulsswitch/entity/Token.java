@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.Date;
  * @since 2019-07-16
  */
 @TableName("tx_token")
+@Data
 public class Token implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,6 +28,30 @@ public class Token implements Serializable {
      */
     @TableId(value = "token_id", type = IdType.AUTO)
     private Integer tokenId;
+
+    /**
+     * 代币类型：1:Nuls,2:跨链资产,3:NRC20资产
+     */
+    @TableField("token_type")
+    private Integer tokenType;
+
+    /**
+     * 链ID
+     */
+    @TableField("chain_id")
+    private Integer chainId;
+
+    /**
+     * 跨链资产ID
+     */
+    @TableField("asset_id")
+    private Integer assetId;
+
+    /**
+     * 智能合约地址
+     */
+    @TableField("contract_address")
+    private String contractAddress;
 
     /**
      * 代币符号,例如:NULS
@@ -40,6 +66,12 @@ public class Token implements Serializable {
     private String tokenName;
 
     /**
+     * 精度，防止存储数据为小数
+     */
+    @TableField("decimals")
+    private String decimals;
+
+    /**
      * 创建时间
      */
     @TableField("create_time")
@@ -50,56 +82,4 @@ public class Token implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
-
-
-    public Integer getTokenId() {
-        return tokenId;
-    }
-
-    public void setTokenId(Integer tokenId) {
-        this.tokenId = tokenId;
-    }
-
-    public String getTokenName() {
-        return tokenName;
-    }
-
-    public void setTokenName(String tokenName) {
-        this.tokenName = tokenName;
-    }
-
-    public String getTokenSymbol() {
-        return tokenSymbol;
-    }
-
-    public void setTokenSymbol(String tokenSymbol) {
-        this.tokenSymbol = tokenSymbol;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Token{" +
-                ", tokenId=" + tokenId +
-                ", tokenName=" + tokenName +
-                ", tokenSymbol=" + tokenSymbol +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                "}";
-    }
 }

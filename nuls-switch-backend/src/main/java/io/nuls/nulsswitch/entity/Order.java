@@ -55,22 +55,29 @@ public class Order implements Serializable {
     /**
      * 价格
      */
-    private BigDecimal price;
+    private Long price;
     /**
      * 挂单总数量
      */
     @TableField("total_num")
     private Long totalNum;
+
     /**
-     * 已完成交易数量
+     * 原token已完成交易数量
      */
     @TableField("tx_num")
     private Long txNum;
+
+    /**
+     * 目标token已完成交易数量，通过价格换算得来
+     */
+    @TableField("to_num")
+    private Long toNum;
     /**
      * 挂单总金额
      */
     @TableField("total_amount")
-    private BigDecimal totalAmount;
+    private Long totalAmount;
     /**
      * 状态：0-未交易、1-部分交易、2-完成交易、9-撤销
      */
