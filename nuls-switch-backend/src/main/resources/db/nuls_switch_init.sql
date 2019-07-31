@@ -49,6 +49,8 @@ CREATE TABLE `tx_order` (
 DROP TABLE IF EXISTS `tx_token`;
 CREATE TABLE `tx_token` (
   `token_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '代币唯一标识',
+  `chain_id` int(11) NOT NULL COMMENT '链ID',
+  `contract_address` varchar(50) DEFAULT NULL COMMENT '合约地址',
   `token_symbol` varchar(30) NOT NULL COMMENT '代币符号,例如:NULS',
   `token_name` varchar(30) NOT NULL COMMENT '代币中文名称,例如:纳世币',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
