@@ -38,7 +38,7 @@ public class Trade implements Serializable {
      * 交易数量
      */
     @TableField("tx_num")
-    private Integer txNum;
+    private Long txNum;
 
     /**
      * 交易hash
@@ -47,7 +47,7 @@ public class Trade implements Serializable {
     private Integer txHash;
 
     /**
-     * 状态：0-未交易、1-完成交易、9-撤销
+     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
      */
     @TableField("status")
     private Integer status;
@@ -87,11 +87,11 @@ public class Trade implements Serializable {
         this.address = address;
     }
 
-    public Integer getTxNum() {
+    public Long getTxNum() {
         return txNum;
     }
 
-    public void setTxNum(Integer txNum) {
+    public void setTxNum(Long txNum) {
         this.txNum = txNum;
     }
 

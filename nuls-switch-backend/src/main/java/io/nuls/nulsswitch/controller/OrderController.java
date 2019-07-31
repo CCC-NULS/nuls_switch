@@ -3,7 +3,6 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.google.common.collect.Lists;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
@@ -15,16 +14,19 @@ import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
+import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -113,8 +115,10 @@ public class OrderController extends BaseController {
 
             // check data
             order = orderService.selectById(order.getOrderId());
+
             // cancel order
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
+            order.setUpdateTime(new Date());
             EntityWrapper<Order> eWrapper = new EntityWrapper<>();
             eWrapper.notIn("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_DONE));
             result = orderService.updateById(order);
@@ -129,7 +133,7 @@ public class OrderController extends BaseController {
     public Wrapper<Boolean> tradingOrder(@RequestBody Trade trade) {
         Boolean result;
         try {
-            int txNum = trade.getTxNum();
+            Long txNum = trade.getTxNum();
             // check parameters
             Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
@@ -150,8 +154,12 @@ public class OrderController extends BaseController {
             // create order trade
             // 交易ID生成
             trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
-            trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            result = tradeService.insert(trade);
+            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_WAIT);
+            tradeService.insert(trade);
+
+            // 更新订单状态 update order status
+            order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
+            result = orderService.updateById(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -196,26 +204,32 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "查询订单明细", notes = "查询订单明细")
     @GetMapping("getOrderDetail")
-    public Wrapper<List<Trade>> getOrderDetail(@RequestBody Order orderReq) {
-        List<Trade> tradeList;
+    public Wrapper<Page<Trade>> getOrderDetail(QueryTradeReqDto tradeReq) {
+        Page<Trade> tradePage = new Page<>();
+        //List<Trade> tradeList;
         try {
             // check parameters
-            Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(orderReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
             // query order trade detail
-            EntityWrapper<Trade> eWrapper = new EntityWrapper<>();
-            eWrapper.in("order_id", orderReq.getOrderId());
-            tradeList = tradeService.selectList(eWrapper);
-            log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradeList)));
+            Trade trade=new Trade();
+            trade.setOrderId(tradeReq.getOrderId());
+            EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
+            tradePage.setCurrent(tradeReq.getCurrent() == null ?  1 : tradeReq.getCurrent());
+            tradePage.setSize(tradeReq.getPageSize() == null ? 10 : tradeReq.getPageSize());
+            //eWrapper.in("order_id", orderReq.getOrderId());
+            tradeService.selectPage(tradePage,eWrapper);
+            //tradeList = tradeService.selectList(eWrapper);
+            log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradePage)));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok(tradeList);
+        return WrapMapper.ok(tradePage);
     }
 
     @ApiOperation(value = "确认订单", notes = "确认订单")
-    @GetMapping("confirmOrder")
+    @PostMapping("confirmOrder")
     public Wrapper confirmOrder(@RequestBody Trade tradeReq) {
         Boolean result;
         try {
@@ -234,7 +248,7 @@ public class OrderController extends BaseController {
             // assembled transfer transaction TODO 组装转账交易数据，调用NULS2.0底层，改为前端组装交易！！！
 
             // save trade
-            trade.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
+            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
             result = tradeService.updateById(trade);
             log.info("confirmOrder response:{}", result);
         } catch (NulsRuntimeException ex) {
