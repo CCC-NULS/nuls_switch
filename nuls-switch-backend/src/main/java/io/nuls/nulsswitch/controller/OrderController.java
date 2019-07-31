@@ -25,11 +25,8 @@ import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
-import io.nuls.v2.error.AccountErrorCode;
-import io.nuls.v2.util.NulsSDKTool;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
