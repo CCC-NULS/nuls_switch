@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.service.IService;
  * @since 2019-07-16
  */
 public interface TradeService extends IService<Trade> {
-
+    String broadcast(Trade trade, String txHex);
 }

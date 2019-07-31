@@ -3,6 +3,12 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import io.nuls.base.basic.AddressTool;
+import io.nuls.base.basic.NulsByteBuffer;
+import io.nuls.base.data.Transaction;
+import io.nuls.base.signture.MultiSignTxSignature;
+import io.nuls.base.signture.P2PHKSignature;
+import io.nuls.core.crypto.HexUtil;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
@@ -12,12 +18,15 @@ import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.BigDecimalUtils;
 import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
+import io.nuls.nulsswitch.web.dto.auth.ConfirmTradeReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
+import io.nuls.v2.error.AccountErrorCode;
+import io.nuls.v2.util.NulsSDKTool;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -25,9 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -213,13 +220,13 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
             // query order trade detail
-            Trade trade=new Trade();
+            Trade trade = new Trade();
             trade.setOrderId(tradeReq.getOrderId());
             EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
-            tradePage.setCurrent(tradeReq.getCurrent() == null ?  1 : tradeReq.getCurrent());
+            tradePage.setCurrent(tradeReq.getCurrent() == null ? 1 : tradeReq.getCurrent());
             tradePage.setSize(tradeReq.getPageSize() == null ? 10 : tradeReq.getPageSize());
             //eWrapper.in("order_id", orderReq.getOrderId());
-            tradeService.selectPage(tradePage,eWrapper);
+            tradeService.selectPage(tradePage, eWrapper);
             //tradeList = tradeService.selectList(eWrapper);
             log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradePage)));
         } catch (NulsRuntimeException ex) {
@@ -228,33 +235,62 @@ public class OrderController extends BaseController {
         return WrapMapper.ok(tradePage);
     }
 
+    /**
+     * 交易发起方确认交易
+     * 1、将16进制串反序列化为交易
+     * 2、根据tradeId与交易对象对比请求合法性(交易对象的地址是否与交易记录中的相匹配)
+     * 3、更新数据表记录状态为等区块链确认
+     * 4、将请求发送到区块链
+     * 5、响应确认提交成功
+     */
     @ApiOperation(value = "确认订单", notes = "确认订单")
-    @PostMapping("confirmOrder")
-    public Wrapper confirmOrder(@RequestBody Trade tradeReq) {
-        Boolean result;
+    @GetMapping("confirmOrder")
+    public Wrapper confirmOrder(@RequestBody ConfirmTradeReqDto confirmTradeReqDto) {
+        String hash = null;
         try {
             // check parameters
-            Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(tradeReq.getTxId(), CommonErrorCode.PARAMETER_NULL);
-            Preconditions.checkNotNull(tradeReq.getTxHash(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(confirmTradeReqDto.getTxId(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(confirmTradeReqDto.getDataHex(), CommonErrorCode.PARAMETER_NULL);
+            Transaction transaction = Transaction.getInstance(HexUtil.decode(confirmTradeReqDto.getDataHex()));
+            MultiSignTxSignature transactionSignature = new MultiSignTxSignature();
+            List<P2PHKSignature> p2PHKSignatures;
+            List<String> addressList = new ArrayList<>(2);
+            if (transaction.getTransactionSignature() != null) {
+                transactionSignature.parse(new NulsByteBuffer(transaction.getTransactionSignature()));
+                p2PHKSignatures = transactionSignature.getP2PHKSignatures();
+                for (P2PHKSignature p2PHKSignature : p2PHKSignatures) {
+                    String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
+                    addressList.add(address);
+                }
 
-            // check data
-            Trade trade = tradeService.selectById(tradeReq.getTxId());
-            if (trade == null) {
-                log.error("the trade does not exist,txId:{}", tradeReq.getTxId());
-                throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
-
-            // assembled transfer transaction TODO 组装转账交易数据，调用NULS2.0底层，改为前端组装交易！！！
-
-            // save trade
-            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
-            result = tradeService.updateById(trade);
-            log.info("confirmOrder response:{}", result);
+            // check data
+            Trade trade = tradeService.selectById(confirmTradeReqDto.getTxId());
+            if (trade == null) {
+                log.warn("the trade does not exist,txId:{}", confirmTradeReqDto.getTxId());
+                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            }
+            if (!addressList.contains(trade.getAddress())) {
+                log.warn("the txData is incorrect,txId:{}", confirmTradeReqDto.getTxId());
+                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            }
+            Order order = orderService.selectById(trade.getOrderId());
+            if (!addressList.contains(trade.getAddress())) {
+                log.warn("the txData is incorrect,txId:{}", confirmTradeReqDto.getTxId());
+                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            }
+            //更新状态
+            //将交易发送到区块链
+            hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
+            log.info("confirmOrder response:{}", hash);
         } catch (NulsRuntimeException ex) {
+            log.error("", ex);
             return WrapMapper.error(ex.getErrorCode());
+        } catch (Exception e) {
+            log.error("", e);
+            return WrapMapper.error("System Error");
         }
-        return WrapMapper.ok(result);
+        return WrapMapper.ok(hash);
     }
 
 }

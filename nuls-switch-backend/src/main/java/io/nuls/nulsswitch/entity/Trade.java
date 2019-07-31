@@ -44,7 +44,7 @@ public class Trade implements Serializable {
      * 交易hash
      */
     @TableField("tx_hash")
-    private Integer txHash;
+    private String txHash;
 
     /**
      * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
@@ -95,11 +95,11 @@ public class Trade implements Serializable {
         this.txNum = txNum;
     }
 
-    public Integer getTxHash() {
+    public String getTxHash() {
         return txHash;
     }
 
-    public void setTxHash(Integer txHash) {
+    public void setTxHash(String txHash) {
         this.txHash = txHash;
     }
 
