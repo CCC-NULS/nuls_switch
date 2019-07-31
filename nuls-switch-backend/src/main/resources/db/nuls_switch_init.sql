@@ -49,7 +49,9 @@ CREATE TABLE `tx_order` (
 DROP TABLE IF EXISTS `tx_token`;
 CREATE TABLE `tx_token` (
   `token_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '代币唯一标识',
+  `token_type` int(11) NOT NULL COMMENT '1:Nuls,2:跨链资产,3:NRC20资产',
   `chain_id` int(11) NOT NULL COMMENT '链ID',
+  `asset_id` int(11) NOT NULL COMMENT '跨链资产ID',
   `contract_address` varchar(50) DEFAULT NULL COMMENT '合约地址',
   `token_symbol` varchar(30) NOT NULL COMMENT '代币符号,例如:NULS',
   `token_name` varchar(30) NOT NULL COMMENT '代币中文名称,例如:纳世币',
