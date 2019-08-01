@@ -8,6 +8,7 @@ import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TradeService;
+import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.v2.util.NulsSDKTool;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDetail;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * 交易状态同步定时任务
  */
 @Component("updateTradeStatusJobTimer")
 @Lazy(false)
@@ -42,9 +44,9 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
      * 定时任务调度策略
      * 如果数据库中已经存在，则以数据库为准
      */
-    String cron = "0 0/1 * * * ?";
+    String cron = "0 0/10 * * * ?";
 
-    String jobName = "经营参谋定时统计任务";
+    String jobName = "交易状态同步定时任务";
 
 
     @Override
@@ -70,28 +72,32 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
             }
             //循环，到区块链中查询交易状态
             for (Trade trade : page.getRecords()) {
-                Result result = NulsSDKTool.getTx(trade.getTxHash());
-                Map map = (Map) result.getData();
-                Integer status = (Integer) map.get("status");
-                //如果为已经确定，则更新状态为成功
-                if (status == 1) {
-                    trade.setStatus(2);
-                    tradeService.updateById(trade);
+                if (StringUtils.isNotBlank(trade.getTxHash())) {
+                    Result result = NulsSDKTool.getTx(trade.getTxHash());
+                    if (result != null && result.getData() != null) {
+                        Map map = (Map) result.getData();
+                        Integer status = (Integer) map.get("status");
+                        //如果为已经确定，则更新状态为成功
+                        if (status == 1) {
+                            trade.setStatus(2);
+                            tradeService.updateById(trade);
 
-                    // 修改订单交易数量、状态
-                    Order order = orderService.selectById(trade.getOrderId());
-                    if (order != null) {
-                        // 修改交易数量（原token、目标token）
-                        Long txNum = order.getTxNum() + trade.getTxNum();
-                        Long toNum = order.getToNum() + trade.getToNum();
-                        order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
-                        order.setTxNum(txNum);
-                        order.setToNum(toNum);
-                        // 如果交易数等于挂单总量，则修改订单状态为完成交易
-                        if (Objects.equals(txNum, order.getTotalNum())) {
-                            order.setStatus(SwitchConstant.TX_ORDER_STATUS_DONE);
+                            // 修改订单交易数量、状态
+                            Order order = orderService.selectById(trade.getOrderId());
+                            if (order != null) {
+                                // 修改交易数量（原token、目标token）
+                                Long txNum = order.getTxNum() + trade.getTxNum();
+                                Long toNum = order.getToNum() + trade.getToNum();
+                                order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
+                                order.setTxNum(txNum);
+                                order.setToNum(toNum);
+                                // 如果交易数等于挂单总量，则修改订单状态为完成交易
+                                if (Objects.equals(txNum, order.getTotalNum())) {
+                                    order.setStatus(SwitchConstant.TX_ORDER_STATUS_DONE);
+                                }
+                                orderService.updateById(order);
+                            }
                         }
-                        orderService.updateById(order);
                     }
                 }
             }
