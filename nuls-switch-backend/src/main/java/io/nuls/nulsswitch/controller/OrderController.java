@@ -99,10 +99,7 @@ public class OrderController extends BaseController {
             // 订单ID生成
             order.setOrderId(IdUtils.getIncreaseIdByNanoTime());
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
-            //Long totalAmount = (order.getTotalNum() / SwitchConstant.TOKEN_DECIMALS) * (order.getPrice() / SwitchConstant.TOKEN_DECIMALS) * SwitchConstant.TOKEN_DECIMALS;
-            //order.setTotalAmount(totalAmount);
             order.setTxNum(0L);
-            //order.setTotalNum(order.getTotalNum() * SwitchConstant.TOKEN_DECIMALS);
             orderService.insert(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
@@ -161,10 +158,7 @@ public class OrderController extends BaseController {
             // 交易ID生成
             trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_WAIT);
-            // 根据价格和源代币交易量，计算目标代币数量
-            //Long toNum= (trade.getTxNum()* (Math.pow(10,8))) * order.getPrice();
-            Long toNum = trade.getTxNum() * order.getPrice();
-            trade.setToNum(toNum);
+            // 根据价格和源代币交易量，计算目标代币数量，在前端计算
             tradeService.insert(trade);
 
             // 更新订单状态 update order status

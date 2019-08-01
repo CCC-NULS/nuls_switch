@@ -56,7 +56,7 @@ CREATE TABLE `tx_token` (
   `contract_address` varchar(50) DEFAULT NULL COMMENT '合约地址',
   `token_symbol` varchar(30) NOT NULL COMMENT '代币符号,例如:NULS',
   `token_name` varchar(30) NOT NULL COMMENT '代币中文名称,例如:纳世币',
-  `decimals` int(11) NOT NULL COMMENT '精度',
+  `decimals` int(11) NULL COMMENT '精度',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`token_id`)
