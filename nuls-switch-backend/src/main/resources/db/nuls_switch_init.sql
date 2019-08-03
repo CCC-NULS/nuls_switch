@@ -86,6 +86,7 @@ CREATE TABLE `tx_trade` (
   `tx_num` bigint(20) DEFAULT NULL COMMENT '原token已完成交易数量',
   `to_num` bigint(20) DEFAULT NULL COMMENT '目标token已完成交易数量',
   `tx_hash` varchar (255) DEFAULT NULL COMMENT '交易发送到区块链后的Hash值',
+  `tx_hex` varchar (1000) DEFAULT NULL COMMENT '交易Hex',
   `status` tinyint(4) NOT NULL COMMENT '状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

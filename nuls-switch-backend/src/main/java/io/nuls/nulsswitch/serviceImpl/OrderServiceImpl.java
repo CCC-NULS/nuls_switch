@@ -50,6 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         eWrapper.notIn("address", reqDto.getAddress());
+        eWrapper.orderBy("create_time", false);
         return this.selectPage(orderPage, eWrapper);
     }
 

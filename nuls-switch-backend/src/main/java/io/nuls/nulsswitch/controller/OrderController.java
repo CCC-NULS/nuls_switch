@@ -142,7 +142,7 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(trade.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getOrderId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getTxNum(), CommonErrorCode.PARAMETER_NULL);
-            //Preconditions.checkNotNull(trade.getTxHash(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(trade.getTxHex(), CommonErrorCode.PARAMETER_NULL);
 
             // check data
             Order order = orderService.selectById(trade.getOrderId());
@@ -244,6 +244,7 @@ public class OrderController extends BaseController {
     @GetMapping("confirmOrder")
     public Wrapper confirmOrder(@RequestBody ConfirmTradeReqDto confirmTradeReqDto) {
         String hash = null;
+        Boolean result;
         try {
             // check parameters
             Preconditions.checkNotNull(confirmTradeReqDto.getTxId(), CommonErrorCode.PARAMETER_NULL);
@@ -268,18 +269,22 @@ public class OrderController extends BaseController {
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
             if (!addressList.contains(trade.getAddress())) {
-                log.warn("the txData is incorrect,txId:{}", confirmTradeReqDto.getTxId());
+                log.warn("the txData order address is incorrect,txId:{}", confirmTradeReqDto.getTxId());
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
             Order order = orderService.selectById(trade.getOrderId());
-            if (!addressList.contains(trade.getAddress())) {
-                log.warn("the txData is incorrect,txId:{}", confirmTradeReqDto.getTxId());
+            if (!addressList.contains(order.getAddress())) {
+                log.warn("the txData trade address is incorrect,txId:{}", confirmTradeReqDto.getTxId());
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
             //更新状态
             //将交易发送到区块链
-            hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
-            log.info("confirmOrder response:{}", hash);
+            //hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
+            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
+            trade.setTxHash(hash);
+            result = tradeService.updateById(trade);
+
+            log.info("confirmOrder response:{}", result);
         } catch (NulsRuntimeException ex) {
             log.error("", ex);
             return WrapMapper.error(ex.getErrorCode());
@@ -287,7 +292,7 @@ public class OrderController extends BaseController {
             log.error("", e);
             return WrapMapper.error("System Error");
         }
-        return WrapMapper.ok(hash);
+        return WrapMapper.ok(result);
     }
 
 }

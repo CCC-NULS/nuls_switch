@@ -41,7 +41,6 @@ public class Trade implements Serializable {
      */
     @TableField("tx_num")
     private Long txNum;
-
     /**
      * 目标token已完成交易数量，通过价格换算得来
      */
@@ -52,7 +51,11 @@ public class Trade implements Serializable {
      */
     @TableField("tx_hash")
     private String txHash;
-
+    /**
+     * 交易Hex
+     */
+    @TableField("tx_hex")
+    private String txHex;
     /**
      * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
      */
