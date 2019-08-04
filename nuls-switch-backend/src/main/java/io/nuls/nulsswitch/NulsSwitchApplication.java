@@ -16,8 +16,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class NulsSwitchApplication {
     //@Value("${nuls.api}")
-    private static String nulsApiUrl = "https://beta.wallet.nuls.io/api";
-
+    private static String nulsApiUrl2 = "https://beta.wallet.nuls.io/api";
+    private static String nulsApiUrl = "http://apitn1.nulscan.io/";
     public static void main(String[] args) {
         SpringApplication.run(NulsSwitchApplication.class, args);
         I18nUtils.loadLanguage(I18nUtils.class, SwitchConstant.LANGUAGE_PATH, SwitchConstant.LANGUAGE);

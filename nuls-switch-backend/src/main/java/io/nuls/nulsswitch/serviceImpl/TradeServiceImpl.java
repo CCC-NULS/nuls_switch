@@ -1,5 +1,6 @@
 package io.nuls.nulsswitch.serviceImpl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.common.collect.Lists;
@@ -61,6 +62,8 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         String hash = null;
 
         Result result = NulsSDKTool.broadcast(txHex);
+        log.info("broadcast resp:{}", result);
+        log.info("broadcast resp json:{}", JSON.toJSONString(result));
         Map map = (Map) result.getData();
         hash = (String) map.get("hash");
         if (hash == null) {

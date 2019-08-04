@@ -6,9 +6,10 @@ import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.base.basic.AddressTool;
 import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.data.Transaction;
-import io.nuls.base.signture.MultiSignTxSignature;
 import io.nuls.base.signture.P2PHKSignature;
+import io.nuls.base.signture.TransactionSignature;
 import io.nuls.core.crypto.HexUtil;
+import io.nuls.core.exception.NulsException;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
@@ -164,6 +165,18 @@ public class OrderController extends BaseController {
             // 更新订单状态 update order status
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
             result = orderService.updateById(order);
+
+            // TODO remove
+            try {
+                Transaction newTx = Transaction.getInstance(HexUtil.decode(trade.getTxHex()));
+                TransactionSignature transactionSignature = new TransactionSignature();
+                transactionSignature.parse(new NulsByteBuffer(newTx.getTransactionSignature()));
+                String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(transactionSignature.getP2PHKSignatures().get(0).getPublicKey(), 2));
+                System.out.println(address);
+            } catch (NulsException e) {
+                e.printStackTrace();
+            }
+
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -223,6 +236,7 @@ public class OrderController extends BaseController {
             tradePage.setCurrent(tradeReq.getCurrent() == null ? 1 : tradeReq.getCurrent());
             tradePage.setSize(tradeReq.getPageSize() == null ? 10 : tradeReq.getPageSize());
             //eWrapper.in("order_id", orderReq.getOrderId());
+            eWrapper.orderBy("create_time", false);
             tradeService.selectPage(tradePage, eWrapper);
             //tradeList = tradeService.selectList(eWrapper);
             log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradePage)));
@@ -241,7 +255,7 @@ public class OrderController extends BaseController {
      * 5、响应确认提交成功
      */
     @ApiOperation(value = "确认订单", notes = "确认订单")
-    @GetMapping("confirmOrder")
+    @PostMapping("confirmOrder")
     public Wrapper confirmOrder(@RequestBody ConfirmTradeReqDto confirmTradeReqDto) {
         String hash = null;
         Boolean result;
@@ -249,37 +263,52 @@ public class OrderController extends BaseController {
             // check parameters
             Preconditions.checkNotNull(confirmTradeReqDto.getTxId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(confirmTradeReqDto.getDataHex(), CommonErrorCode.PARAMETER_NULL);
-            Transaction transaction = Transaction.getInstance(HexUtil.decode(confirmTradeReqDto.getDataHex()));
-            MultiSignTxSignature transactionSignature = new MultiSignTxSignature();
-            List<P2PHKSignature> p2PHKSignatures;
-            List<String> addressList = new ArrayList<>(2);
-            if (transaction.getTransactionSignature() != null) {
-                transactionSignature.parse(new NulsByteBuffer(transaction.getTransactionSignature()));
-                p2PHKSignatures = transactionSignature.getP2PHKSignatures();
-                for (P2PHKSignature p2PHKSignature : p2PHKSignatures) {
-                    String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
-                    addressList.add(address);
-                }
 
-            }
             // check data
             Trade trade = tradeService.selectById(confirmTradeReqDto.getTxId());
             if (trade == null) {
                 log.warn("the trade does not exist,txId:{}", confirmTradeReqDto.getTxId());
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
-            if (!addressList.contains(trade.getAddress())) {
-                log.warn("the txData order address is incorrect,txId:{}", confirmTradeReqDto.getTxId());
-                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            // 最后确认产生的交易
+            Transaction transaction = Transaction.getInstance(HexUtil.decode(confirmTradeReqDto.getDataHex()));
+            // 原始交易
+            Transaction newTx = Transaction.getInstance(HexUtil.decode(trade.getTxHex()));
+            TransactionSignature transactionSignature = new TransactionSignature();
+            transactionSignature.parse(new NulsByteBuffer(newTx.getTransactionSignature()));
+            // 签名地址列表
+            List<String> addressList = new ArrayList<>(2);
+            if (transaction.getTransactionSignature() != null) {
+                TransactionSignature transactionSignatureTemp = new TransactionSignature();
+                transactionSignatureTemp.parse(new NulsByteBuffer(transaction.getTransactionSignature()));
+                List<P2PHKSignature> p2PHKSignaturesTemp = transactionSignatureTemp.getP2PHKSignatures();
+                for (P2PHKSignature p2PHKSignature : p2PHKSignaturesTemp) {
+                    String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
+                    transactionSignature.getP2PHKSignatures().add(p2PHKSignature);
+                }
             }
-            Order order = orderService.selectById(trade.getOrderId());
-            if (!addressList.contains(order.getAddress())) {
+            // 检查签名地址列表
+            for (P2PHKSignature p2PHKSignature : transactionSignature.getP2PHKSignatures()) {
+                String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
+                addressList.add(address);
+            }
+            // 检查签名地址是否包括下单人地址
+            if (!addressList.contains(trade.getAddress())) {
                 log.warn("the txData trade address is incorrect,txId:{}", confirmTradeReqDto.getTxId());
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
+            // 检查签名地址是否包括挂单人地址
+            Order order = orderService.selectById(trade.getOrderId());
+            if (!addressList.contains(order.getAddress())) {
+                log.warn("the txData order address is incorrect,txId:{}", confirmTradeReqDto.getTxId());
+                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            }
+
+            newTx.setTransactionSignature(transactionSignature.serialize());
             //更新状态
             //将交易发送到区块链
             //hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
+            hash = tradeService.broadcast(trade, HexUtil.encode(newTx.serialize()));
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
             trade.setTxHash(hash);
             result = tradeService.updateById(trade);
@@ -294,5 +323,49 @@ public class OrderController extends BaseController {
         }
         return WrapMapper.ok(result);
     }
+
+    /**
+     * 反序列化交易
+     * @param trade
+     * @return 交易对象
+     */
+//    @ApiOperation(value = "反序列化交易", notes = "反序列化交易")
+//    @GetMapping("deserializeTx")
+//    public Wrapper deserializeTx(@RequestBody Trade trade) {
+//        String hash = null;
+//        Boolean result;
+//        try {
+//            // check parameters
+//            Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
+//            Preconditions.checkNotNull(trade.getTxId(), CommonErrorCode.PARAMETER_NULL);
+//
+//            // check data
+//            trade = tradeService.selectById(trade.getTxId());
+//            if (trade == null) {
+//                log.warn("the trade does not exist,txId:{}", trade.getTxId());
+//                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+//            }
+//            Transaction transaction = Transaction.getInstance(HexUtil.decode(trade.getTxHex()));
+//            MultiSignTxSignature transactionSignature = new MultiSignTxSignature();
+//            List<P2PHKSignature> p2PHKSignatures;
+//            List<String> addressList = new ArrayList<>(2);
+//            if (transaction.getTransactionSignature() != null) {
+//                transactionSignature.parse(new NulsByteBuffer(transaction.getTransactionSignature()));
+//                p2PHKSignatures = transactionSignature.getP2PHKSignatures();
+//                for (P2PHKSignature p2PHKSignature : p2PHKSignatures) {
+//                    String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
+//                    addressList.add(address);
+//                }
+//            }
+//            log.info("deserializeTx response:{}", transaction);
+//        } catch (NulsRuntimeException ex) {
+//            log.error("", ex);
+//            return WrapMapper.error(ex.getErrorCode());
+//        } catch (Exception e) {
+//            log.error("", e);
+//            return WrapMapper.error("System Error");
+//        }
+//        return WrapMapper.ok(result);
+//    }
 
 }
