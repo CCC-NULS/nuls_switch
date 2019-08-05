@@ -283,7 +283,6 @@ public class OrderController extends BaseController {
                 transactionSignatureTemp.parse(new NulsByteBuffer(transaction.getTransactionSignature()));
                 List<P2PHKSignature> p2PHKSignaturesTemp = transactionSignatureTemp.getP2PHKSignatures();
                 for (P2PHKSignature p2PHKSignature : p2PHKSignaturesTemp) {
-                    String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
                     transactionSignature.getP2PHKSignatures().add(p2PHKSignature);
                 }
             }

@@ -44,7 +44,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
      * 定时任务调度策略
      * 如果数据库中已经存在，则以数据库为准
      */
-    String cron = "0 0/10 * * * ?";
+    String cron = "0 0/1 * * * ?";
 
     String jobName = "交易状态同步定时任务";
 
@@ -73,7 +73,9 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
             //循环，到区块链中查询交易状态
             for (Trade trade : page.getRecords()) {
                 if (StringUtils.isNotBlank(trade.getTxHash())) {
+                    log.info("getTx req txHash:{}", trade.getTxHash());
                     Result result = NulsSDKTool.getTx(trade.getTxHash());
+                    log.info("getTx resp: ", result);
                     if (result != null && result.getData() != null) {
                         Map map = (Map) result.getData();
                         Integer status = (Integer) map.get("status");
