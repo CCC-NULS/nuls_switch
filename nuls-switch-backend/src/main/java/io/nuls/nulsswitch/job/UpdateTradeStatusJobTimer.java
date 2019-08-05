@@ -75,7 +75,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                 if (StringUtils.isNotBlank(trade.getTxHash())) {
                     log.info("getTx req txHash:{}", trade.getTxHash());
                     Result result = NulsSDKTool.getTx(trade.getTxHash());
-                    log.info("getTx resp: ", result);
+                    log.info("getTx resp: ", result.toString());
                     if (result != null && result.getData() != null) {
                         Map map = (Map) result.getData();
                         Integer status = (Integer) map.get("status");
@@ -88,8 +88,8 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                             Order order = orderService.selectById(trade.getOrderId());
                             if (order != null) {
                                 // 修改交易数量（原token、目标token）
-                                Long txNum = order.getTxNum() + trade.getTxNum();
-                                Long toNum = order.getToNum() + trade.getToNum();
+                                Long txNum = trade.getTxNum() + order.getTxNum();
+                                Long toNum = trade.getToNum() + (order.getToNum() != null ? order.getToNum() : 0);
                                 order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
                                 order.setTxNum(txNum);
                                 order.setToNum(toNum);

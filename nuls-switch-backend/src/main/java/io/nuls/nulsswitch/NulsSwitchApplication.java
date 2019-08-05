@@ -16,7 +16,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class NulsSwitchApplication {
     //@Value("${nuls.api}")
     //private static String nulsApiUrl = "https://beta.wallet.nuls.io/api";
-    private static String nulsApiUrl = "http://apitn1.nulscan.io/";
+    //private static String nulsApiUrl = "http://apitn1.nulscan.io/";
+    private static String nulsApiUrl = "http://101.132.33.140:8003/";
 
     public static void main(String[] args) {
         SpringApplication.run(NulsSwitchApplication.class, args);
