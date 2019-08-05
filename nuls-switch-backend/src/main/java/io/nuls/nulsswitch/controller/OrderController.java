@@ -165,18 +165,6 @@ public class OrderController extends BaseController {
             // 更新订单状态 update order status
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
             result = orderService.updateById(order);
-
-            // TODO remove
-            try {
-                Transaction newTx = Transaction.getInstance(HexUtil.decode(trade.getTxHex()));
-                TransactionSignature transactionSignature = new TransactionSignature();
-                transactionSignature.parse(new NulsByteBuffer(newTx.getTransactionSignature()));
-                String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(transactionSignature.getP2PHKSignatures().get(0).getPublicKey(), 2));
-                System.out.println(address);
-            } catch (NulsException e) {
-                e.printStackTrace();
-            }
-
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -223,7 +211,6 @@ public class OrderController extends BaseController {
     @GetMapping("getOrderDetail")
     public Wrapper<Page<Trade>> getOrderDetail(QueryTradeReqDto tradeReq) {
         Page<Trade> tradePage = new Page<>();
-        //List<Trade> tradeList;
         try {
             // check parameters
             Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
@@ -235,10 +222,8 @@ public class OrderController extends BaseController {
             EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
             tradePage.setCurrent(tradeReq.getCurrent() == null ? 1 : tradeReq.getCurrent());
             tradePage.setSize(tradeReq.getPageSize() == null ? 10 : tradeReq.getPageSize());
-            //eWrapper.in("order_id", orderReq.getOrderId());
             eWrapper.orderBy("create_time", false);
             tradeService.selectPage(tradePage, eWrapper);
-            //tradeList = tradeService.selectList(eWrapper);
             log.info("getOrderDetail response:{}", JSON.toJSONString(WrapMapper.ok(tradePage)));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());

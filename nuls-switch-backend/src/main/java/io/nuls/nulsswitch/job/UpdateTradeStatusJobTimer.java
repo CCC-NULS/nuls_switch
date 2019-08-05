@@ -44,7 +44,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
      * 定时任务调度策略
      * 如果数据库中已经存在，则以数据库为准
      */
-    String cron = "0 0/1 * * * ?";
+    String cron = "0 */1 * * * ?";
 
     String jobName = "交易状态同步定时任务";
 
