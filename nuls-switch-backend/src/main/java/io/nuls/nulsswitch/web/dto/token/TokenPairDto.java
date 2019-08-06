@@ -40,6 +40,36 @@ public class TokenPairDto implements Serializable {
     private String tokenName;
 
     /**
+     * 代币类型：1:Nuls,2:跨链资产,3:NRC20资产
+     */
+    @ApiModelProperty(value = "代币类型")
+    private Integer tokenType;
+
+    /**
+     * 资产链ID
+     */
+    @ApiModelProperty(value = "资产链ID")
+    private Integer chainId;
+
+    /**
+     * 跨链资产ID
+     */
+    @ApiModelProperty(value = "资产ID")
+    private Integer assetId;
+
+    /**
+     * 智能合约地址
+     */
+    @ApiModelProperty(value = "智能合约地址")
+    private String contractAddress;
+
+    /**
+     * 精度，防止存储数据为小数
+     */
+    @ApiModelProperty(value = "精度")
+    private Integer decimals;
+
+    /**
      * 可兑换代币
      */
     @ApiModelProperty(value = "可兑换代币")

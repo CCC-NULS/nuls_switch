@@ -7,6 +7,11 @@
         <id column="token_id" property="tokenId" />
         <result column="token_name" property="tokenName" />
         <result column="token_symbol" property="tokenSymbol" />
+        <result column="token_type" property="tokenType" />
+        <result column="chain_id" property="chainId" />
+        <result column="asset_id" property="assetId" />
+        <result column="contract_address" property="contractAddress" />
+        <result column="decimals" property="decimals" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>

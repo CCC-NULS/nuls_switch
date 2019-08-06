@@ -291,7 +291,7 @@ public class OrderController extends BaseController {
             newTx.setTransactionSignature(transactionSignature.serialize());
             //更新状态
             //将交易发送到区块链
-            //hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
+            //hash = tradeService.broadcast(trade, confirmTradeReqlistOnSellDto.getDataHex());
             hash = tradeService.broadcast(trade, HexUtil.encode(newTx.serialize()));
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
             trade.setTxHash(hash);

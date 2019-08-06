@@ -36,7 +36,7 @@ public class Token implements Serializable {
     private Integer tokenType;
 
     /**
-     * 链ID
+     * 资产链ID
      */
     @TableField("chain_id")
     private Integer chainId;
@@ -69,7 +69,7 @@ public class Token implements Serializable {
      * 精度，防止存储数据为小数
      */
     @TableField("decimals")
-    private String decimals;
+    private Integer decimals;
 
     /**
      * 创建时间

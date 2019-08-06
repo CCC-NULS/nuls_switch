@@ -14,9 +14,14 @@
     <resultMap id="TokenPairVO" type="io.nuls.nulsswitch.web.vo.token.TokenPairVO" extends="BaseResultMap">
         <result column="token_name" property="tokenName" />
         <result column="token_symbol" property="tokenSymbol" />
+        <result column="token_type" property="tokenType" />
+        <result column="chain_id" property="chainId" />
+        <result column="asset_id" property="assetId" />
+        <result column="contract_address" property="contractAddress" />
+        <result column="decimals" property="decimals" />
     </resultMap>
 
     <select id="queryTokenPairList" resultMap="TokenPairVO">
-        SELECT tp.*,t.`token_symbol`,t.`token_name` FROM tx_token_pair tp,tx_token t WHERE tp.to_token_id=t.token_id
+        SELECT tp.*,t.`token_symbol`,t.`token_name`,t.`token_type`,t.`chain_id`,t.`asset_id`,t.`contract_address`,t.`decimals` FROM tx_token_pair tp,tx_token t WHERE tp.to_token_id=t.token_id
     </select>
 </mapper>
