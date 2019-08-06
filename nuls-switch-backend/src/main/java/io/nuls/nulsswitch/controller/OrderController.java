@@ -9,7 +9,6 @@ import io.nuls.base.data.Transaction;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.TransactionSignature;
 import io.nuls.core.crypto.HexUtil;
-import io.nuls.core.exception.NulsException;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
@@ -303,6 +302,9 @@ public class OrderController extends BaseController {
             return WrapMapper.error(ex.getErrorCode());
         } catch (Exception e) {
             log.error("", e);
+            if (hash == null) {
+                return WrapMapper.error(CommonErrorCode.BROADCAST_ERROR);
+            }
             return WrapMapper.error("System Error");
         }
         return WrapMapper.ok(result);
