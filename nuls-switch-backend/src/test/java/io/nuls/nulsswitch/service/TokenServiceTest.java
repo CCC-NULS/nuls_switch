@@ -33,6 +33,9 @@ public class TokenServiceTest {
         List<Token> tokenList= Lists.newArrayList();
         Token token = new Token();
         token.setTokenId(1);
+        token.setChainId(2);
+        token.setAssetId(1);
+        token.setTokenType(1);
         token.setCreateTime(new Date());
         token.setTokenSymbol("NULS");
         token.setTokenName("纳世币");
@@ -40,6 +43,9 @@ public class TokenServiceTest {
 
         token = new Token();
         token.setTokenId(2);
+        token.setChainId(2);
+        token.setAssetId(1);
+        token.setTokenType(2);
         token.setCreateTime(new Date());
         token.setTokenSymbol("USDT");
         token.setTokenName("泰达币");
@@ -47,6 +53,9 @@ public class TokenServiceTest {
 
         token = new Token();
         token.setTokenId(3);
+        token.setChainId(2);
+        token.setAssetId(1);
+        token.setTokenType(2);
         token.setCreateTime(new Date());
         token.setTokenSymbol("ETH");
         token.setTokenName("以太坊");
@@ -54,6 +63,9 @@ public class TokenServiceTest {
 
         token = new Token();
         token.setTokenId(4);
+        token.setChainId(2);
+        token.setAssetId(1);
+        token.setTokenType(2);
         token.setCreateTime(new Date());
         token.setTokenSymbol("BTC");
         token.setTokenName("比特币");
@@ -61,6 +73,9 @@ public class TokenServiceTest {
 
         token = new Token();
         token.setTokenId(5);
+        token.setChainId(2);
+        token.setAssetId(1);
+        token.setTokenType(2);
         token.setCreateTime(new Date());
         token.setTokenSymbol("EOS");
         token.setTokenName("柚子币");

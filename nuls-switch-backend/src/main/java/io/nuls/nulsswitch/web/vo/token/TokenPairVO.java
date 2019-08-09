@@ -21,6 +21,12 @@ public class TokenPairVO extends TokenPair {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 代币ID
+     */
+    @ApiModelProperty(value = "代币ID")
+    private Integer tokenId;
+
+    /**
      * 代币符号
      */
     @ApiModelProperty(value = "代币符号")
