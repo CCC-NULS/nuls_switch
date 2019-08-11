@@ -90,10 +90,10 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(order.getAddress(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getFromTokenId(), CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getToTokenId(), CommonErrorCode.PARAMETER_NULL);
+
+            // check price,totalNum
             Preconditions.checkArgument(order.getPrice() != null && order.getPrice().doubleValue() > 0, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkArgument(order.getTotalNum() != null && order.getTotalNum() > 0, CommonErrorCode.PARAMETER_NULL);
-
-            // check balance
 
             // save order
             // 订单ID生成
@@ -179,6 +179,7 @@ public class OrderController extends BaseController {
             // check parameters
             Preconditions.checkNotNull(orderReq, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(orderReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+
             // 只查询可交易的订单
             orderReq.setCanTx(true);
             orderPage = orderService.queryOrderByPage(orderReq);
@@ -264,7 +265,6 @@ public class OrderController extends BaseController {
             for (P2PHKSignature p2PHKSignature : transactionSignature.getP2PHKSignatures()) {
                 String address = AddressTool.getStringAddressByBytes(AddressTool.getAddress(p2PHKSignature.getPublicKey(), 2));
                 addressList.add(address);
-                System.out.println("=================" + address);
             }
             // 检查签名地址是否包括下单人地址
             if (!addressList.contains(trade.getAddress())) {
