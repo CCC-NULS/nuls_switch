@@ -69,7 +69,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (reqDto.getEndQueryTime() != null) {
             eWrapper.le("create_time", reqDto.getEndQueryTime());
         }
-        if (reqDto.getCanTx()) {
+        if (reqDto.getCanTx()!=null && reqDto.getCanTx()) {
             eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         }
         eWrapper.orderBy("create_time", false);
