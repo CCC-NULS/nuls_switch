@@ -59,16 +59,14 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
      */
     @Override
     public String broadcast(Trade trade, String txHex) {
-        String hash = null;
-
+        String hash;
         Result result = NulsSDKTool.broadcast(txHex);
         log.info("broadcast resp:{}", result);
-        log.info("broadcast resp json:{}", JSON.toJSONString(result));
         Map map = (Map) result.getData();
-        hash = (String) map.get("hash");
-        if (hash == null) {
+        if (map==null || map.get("hash") == null) {
             throw new NulsRuntimeException(CommonErrorCode.BROADCAST_ERROR);
         }
+        hash = (String) map.get("hash");
         trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
         trade.setTxHash(hash);
         updateById(trade);

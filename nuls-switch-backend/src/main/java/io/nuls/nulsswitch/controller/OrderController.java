@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.base.basic.AddressTool;
 import io.nuls.base.basic.NulsByteBuffer;
+import io.nuls.base.data.CoinData;
 import io.nuls.base.data.Transaction;
 import io.nuls.base.signture.P2PHKSignature;
 import io.nuls.base.signture.TransactionSignature;
@@ -280,8 +281,7 @@ public class OrderController extends BaseController {
 
             //更新状态
             //将交易发送到区块链
-            hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
-            //hash = tradeService.broadcast(trade, HexUtil.encode(transaction.serialize()));
+            //hash = tradeService.broadcast(trade, confirmTradeReqDto.getDataHex());
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
             result = tradeService.updateById(trade);
             log.info("confirmOrder response:{}", result);
