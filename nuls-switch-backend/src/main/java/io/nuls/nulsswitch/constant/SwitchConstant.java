@@ -38,10 +38,11 @@ public class SwitchConstant {
     public final static int TX_ORDER_STATUS_CANCEL = 9;
 
     /**
-     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
+     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、3-交易失败、9-撤销
      */
     public final static int TX_TRADE_STATUS_WAIT = 0;
     public final static int TX_TRADE_STATUS_CONFIRMING = 1;
     public final static int TX_TRADE_STATUS_CONFIRMED = 2;
+    public final static int TX_TRADE_STATUS_FAIL = 3;
     public final static int TX_TRADE_STATUS_CANCEL = 9;
 }

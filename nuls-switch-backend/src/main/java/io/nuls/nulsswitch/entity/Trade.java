@@ -57,10 +57,15 @@ public class Trade implements Serializable {
     @TableField("tx_hex")
     private String txHex;
     /**
-     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、9-撤销
+     * 状态：0-交易未确认、1-交易确认中、2-交易完成确认、3-交易失败、9-撤销
      */
     @TableField("status")
     private Integer status;
+    /**
+     * 交易返回信息
+     */
+    @TableField("msg")
+    private String msg;
     /**
      * 创建时间
      */

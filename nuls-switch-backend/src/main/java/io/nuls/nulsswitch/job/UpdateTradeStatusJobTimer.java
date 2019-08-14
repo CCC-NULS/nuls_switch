@@ -81,7 +81,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                         Integer status = (Integer) map.get("status");
                         //如果为已经确定，则更新状态为成功
                         if (status == 1) {
-                            trade.setStatus(2);
+                            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMED);
                             tradeService.updateById(trade);
 
                             // 修改订单交易数量、状态
@@ -99,6 +99,11 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                                 }
                                 orderService.updateById(order);
                             }
+                        } else {
+                            // 交易确认失败
+                            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
+                            trade.setMsg(result.getMsg());
+                            tradeService.updateById(trade);
                         }
                     }
                 }
