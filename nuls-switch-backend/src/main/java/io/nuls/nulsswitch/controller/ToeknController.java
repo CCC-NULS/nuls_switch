@@ -56,9 +56,6 @@ public class ToeknController extends BaseController {
             TokenPairDto tokenPairDto = new TokenPairDto();
             BeanUtils.copyProperties(token, tokenPairDto);
             List<TokenPairVO> tokenPairVOS = tokenPairMap.get(token.getTokenId());
-//            List<TokenDto> tokenDtos = Optional.ofNullable(tokenPairVOS).orElse(Collections.emptyList()).stream().map(pairVO ->
-//                new TokenDto(pairVO.getToTokenId(), pairVO.getTokenSymbol(), pairVO.getTokenName())
-//            ).collect(Collectors.toList());
 
             List<TokenDto> tokenDtos = Lists.newArrayList();
             Optional.ofNullable(tokenPairVOS).orElse(Collections.emptyList()).stream().forEach(pairVO -> {

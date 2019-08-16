@@ -13,4 +13,16 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
+    <update id="cancelOrderTrade">
+        update tx_trade set status=9,update_time = now()
+        <where>
+            status = 0
+            <if test="orderId!=null and orderId!=''">
+                and order_id=#{orderId,jdbcType=VARCHAR}
+            </if>
+            <if test="tradeId!=null and tradeId!=''">
+                and trade_id=#{tradeId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
 </mapper>

@@ -1,7 +1,8 @@
 package io.nuls.nulsswitch.mapper;
 
-import io.nuls.nulsswitch.entity.Trade;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.nuls.nulsswitch.entity.Trade;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,11 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  */
 public interface TradeMapper extends BaseMapper<Trade> {
 
+    /**
+     * 取消订单交易
+     *
+     * @param orderId 订单ID
+     * @param tradeId 交易ID
+     */
+    void cancelOrderTrade(@Param("orderId") String orderId, @Param("tradeId") String tradeId);
 }

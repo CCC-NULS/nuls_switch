@@ -4,16 +4,21 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Token;
 import io.nuls.nulsswitch.mapper.OrderMapper;
 import io.nuls.nulsswitch.mapper.TokenMapper;
 import io.nuls.nulsswitch.service.OrderService;
+import io.nuls.nulsswitch.service.TradeService;
+import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
+import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -32,6 +37,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Resource
     TokenMapper tokenMapper;
+
+    @Resource
+    TradeService tradeService;
 
     @Override
     public Page<Order> queryCanTxOrderByPage(QueryOrderReqDto reqDto) {
@@ -69,7 +77,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (reqDto.getEndQueryTime() != null) {
             eWrapper.le("create_time", reqDto.getEndQueryTime());
         }
-        if (reqDto.getCanTx()!=null && reqDto.getCanTx()) {
+        if (reqDto.getCanTx() != null && reqDto.getCanTx()) {
             eWrapper.in("status", Arrays.asList(SwitchConstant.TX_ORDER_STATUS_INIT, SwitchConstant.TX_ORDER_STATUS_PART));
         }
         eWrapper.orderBy("create_time", false);
@@ -89,7 +97,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderDtoPage;
     }
 
-    public Map<Integer, String> getTokenMap() {
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean cancelOrderTrade(String orderId) {
+        // check params
+        if (StringUtils.isBlank(orderId)) {
+            throw new NulsRuntimeException(CommonErrorCode.PARAMETER_NULL);
+        }
+
+        // check data
+        Order order = this.selectById(orderId);
+
+        // cancel order trade
+        tradeService.cancelOrderTrade(order.getOrderId(), null);
+
+        // cancel order
+        order.setStatus(SwitchConstant.TX_ORDER_STATUS_CANCEL);
+        order.setUpdateTime(new Date());
+
+        return this.updateById(order);
+    }
+
+    private Map<Integer, String> getTokenMap() {
         // 查询所有token
         Map<Integer, String> tokenMap = Optional.ofNullable(tokenMapper.selectList(null)).orElse(Collections.emptyList()).stream().collect(Collectors.toMap(Token::getTokenId, Token::getTokenSymbol));
         return tokenMap;

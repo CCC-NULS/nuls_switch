@@ -6,6 +6,8 @@ import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 
+import java.util.Map;
+
 /**
  * <p>
  * 用户交易委托表：包括当前委托、历史委托 服务类
@@ -18,10 +20,11 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 查询当前可交易的委托，包含未交易、部分交易的挂单
+     *
      * @param reqDto
      * @return
      */
-    public Page<Order> queryCanTxOrderByPage(QueryOrderReqDto reqDto);
+    Page<Order> queryCanTxOrderByPage(QueryOrderReqDto reqDto);
 
     /**
      * 查询所有委托，包含未交易、部分交易、完成交易、取消交易的挂单
@@ -30,4 +33,13 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     Page<QueryOrderResDto> queryOrderByPage(QueryOrderReqDto reqDto);
+
+    /**
+     * 取消订单交易，将用户未确认交易状态更新为取消
+     *
+     * @param orderId 订单ID
+     * @return
+     */
+    boolean cancelOrderTrade(String orderId);
+
 }
