@@ -57,3 +57,6 @@ jwt:
   #token有效期一天
   expiration: 86400
   tokenHead: "Bearer "
+nuls:
+  api:
+    address: http://apitn1.nulscan.io
