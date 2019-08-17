@@ -201,6 +201,7 @@
     </dependencies>
 
     <build>
+        <finalName>switch</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
