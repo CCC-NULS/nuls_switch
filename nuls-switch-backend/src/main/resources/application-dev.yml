@@ -59,4 +59,4 @@ jwt:
   tokenHead: "Bearer "
 nuls:
   api:
-    address: http://apitn1.nulscan.io
+    address: http://101.132.33.140:8003/

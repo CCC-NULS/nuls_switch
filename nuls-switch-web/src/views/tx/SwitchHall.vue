@@ -10,7 +10,7 @@
                 <!-- 买入挂单 -->
                 <div class="top-left fl">
                     <el-form :model="buyTokenOrderForm" :rules="buyTokenOrderRules" ref="buyTokenOrderForm">
-                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantBuy')}}</h3>
+                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantBuy')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
                     <div class="order_left">
                         <el-row class="order_row">
                             <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
@@ -44,7 +44,7 @@
                 <!-- 买出挂单 -->
                 <div class="top-left fl">
                     <el-form :model="sellTokenOrderForm" :rules="sellTokenOrderRules" ref="sellTokenOrderForm">
-                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantSell')}}</h3>
+                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantSell')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
                     <div class="order_left">
                         <el-row class="order_row">
                             <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
@@ -507,6 +507,7 @@
                 this.getBalanceOrNonce(1, 2, 1, this.accountAddress.address, 1);
                 // toBalanceInfo
                 this.getBalanceOrNonce(2, 2, 1, this.accountAddress.address, 1);
+                this.getAssetsListByAddress(this.accountAddress.address);
             }
 
             setInterval(() => {
@@ -515,7 +516,6 @@
 
             this.pagesBuyList();
             this.pagesDepositList();
-            this.getAssetsListByAddress(this.accountAddress.address);
         },
         mounted() {
             //定时获取余额
@@ -533,18 +533,18 @@
         watch: {
             addressInfo(val, old) {
                 //this.activeName = 'buyTab';
-                if (val.address !== old.address && old.address) {
+                if (this.accountAddress && val.address !== old.address && old.address) {
                     this.getAssetsListByAddress(this.accountAddress.address);
                 }
             },
             fromTokenInfo(val, old) {
-                if (val.tokenId !== old.tokenId && val.tokenId) {
+                if (this.accountAddress && val.tokenId !== old.tokenId && val.tokenId) {
                     // fromBalanceInfo
                     this.getBalanceOrNonce(1, val.chainId, val.assetId, this.accountAddress.address, 1);
                 }
             },
             toTokenInfo(val, old) {
-                if (val.tokenId !== old.tokenId && val.tokenId) {
+                if (this.accountAddress && val.tokenId !== old.tokenId && val.tokenId) {
                     // toBalanceInfo
                     this.getBalanceOrNonce(2, val.chainId, val.assetId, this.accountAddress.address, 1);
                 }
@@ -587,6 +587,9 @@
              * @param address
              **/
             async getAssetsListByAddress(address) {
+                if (!address) {
+                    return false;
+                }
                 this.assetsList = [];
                 //获取本链的基本资产
                 let basicAssets = [];
@@ -688,6 +691,10 @@
              * @param formName
              **/
             async submitCreateOrder(formName,txType) {
+                if (!this.accountAddress) {
+                    this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
+                    return false;
+                }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         //校验余额是否充足
@@ -772,6 +779,10 @@
              * 点击买入按钮，弹出购买框
              */
             buyBtnClick(orderInfo) {
+                if (!this.accountAddress) {
+                    this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
+                    return false;
+                }
                 this.orderInfo = orderInfo;
                 this.orderId = orderInfo.orderId;
                 this.price = orderInfo.price;
@@ -784,6 +795,10 @@
              * 点击卖出按钮，弹出卖出框
              */
             sellBtnClick(orderInfo) {
+                if (!this.accountAddress) {
+                    this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
+                    return false;
+                }
                 this.orderInfo = orderInfo;
                 this.orderId = orderInfo.orderId;
                 this.price = orderInfo.price;
@@ -805,6 +820,10 @@
 
             // 点击确定买卖后，弹出密码输入框
             txTradeSubmit(formName) {
+                if (!this.accountAddress) {
+                    this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
+                    return false;
+                }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         if(formName=='buyTokenForm')

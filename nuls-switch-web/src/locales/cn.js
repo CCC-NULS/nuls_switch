@@ -403,6 +403,7 @@ const cn ={
   },
 
   "switch":{
+    "mustLogin":"您还未登录，请先登录",
     "myWantBuy":"我要买",
     "myWantSell":"我要卖",
     "buy":"买入",
@@ -419,8 +420,8 @@ const cn ={
     "txNumLgBalanceNumError": "交易数量不能大于余额可交易数量",
     "createOrderSuccess": "挂单成功",
     "createOrderError": "挂单失败",
-    "tradingOrderSuccess": "交易成功",
-    "tradingOrderError": "交易失败",
+    "tradingOrderSuccess": "交易提交成功",
+    "tradingOrderError": "交易提交失败",
     "cancelOrderSuccess": "取消挂单成功",
     "cancelOrderError": "取消挂单失败",
     "confirmOrderSuccess": "确认订单成功",
