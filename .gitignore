@@ -1,3 +1,6 @@
 nuls-switch.iml
 nuls-switch-backend/.idea
 nuls-switch-backend/target
+nuls-switch-web/node_modules
+nuls-switch-web/.idea
+nuls-switch-web/dist

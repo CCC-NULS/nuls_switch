@@ -1,0 +1,1 @@
+create database if not exists nuls_switch default charset = utf8;

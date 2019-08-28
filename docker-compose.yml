@@ -1,0 +1,44 @@
+nuls-switch-mysql:
+  container_name: nuls-switch-mysql
+  hostname: nuls-switch-mysql
+  image: registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-mysql:latest
+  restart: always
+  expose:
+    - "3306"
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_ROOT_PASSWORD=
+    - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+
+nuls-switch-backend:
+  container_name: nuls-switch-backend
+  hostname: nuls-switch-backend
+  image: registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-backend:latest
+  restart: always
+  expose:
+    - "8081"
+  environment:
+    - MYSQL_USER=root
+    - MYSQL_PASSWORD=
+  links:
+    - nuls-switch-mysql:nuls-switch-mysql
+
+nuls-switch-web:
+  container_name: nuls-switch-web
+  hostname: nuls-switch-web
+  image: registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest
+  restart: always
+  ports:
+    - "80:80"
+  environment:
+    - MYSQL_ADDRESS=nuls-switch-mysql
+    - MYSQL_ROOT_PASSWORD=root123
+    - MYSQL_USER=admin
+    - MYSQL_PASSWORD=admin
+    - MYSQL_DATABASE=pinpoint
+  links:
+    - nuls-switch-backend:nuls-switch-backend
+
+
+ 

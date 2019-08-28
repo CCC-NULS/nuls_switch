@@ -11,16 +11,16 @@ spring:
     console:
       enabled: true
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/nuls_switch?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://${MYSQL_ADDRESS:127.0.0.1}:3306/nuls_switch?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     initialize: true #指定初始化数据源，是否用data.sql来初始化，默认: true
     driver-class-name: com.mysql.jdbc.Driver
-    username: root
-    password:
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:}
     initialSize: 1
     minIdle: 3
     maxActive: 20
     continue-on-error: true
-    # schema: classpath:db/nuls_switch_init.sql
+    schema: classpath:db/nuls_switch_init.sql
     initialization-mode: always
   cloud:
     refresh:
@@ -59,4 +59,4 @@ jwt:
   tokenHead: "Bearer "
 nuls:
   api:
-    address: http://101.132.33.140:8003/
+    address: http://39.98.226.51:18004/
