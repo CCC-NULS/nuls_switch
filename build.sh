@@ -19,9 +19,6 @@ else
     exit -1
 fi
 
-#docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest
-#docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-backend:latest
-
 if [ $1 == push ];then
     echo "push to docker repository"
     docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest

@@ -59,4 +59,4 @@ jwt:
   tokenHead: "Bearer "
 nuls:
   api:
-    address: http://39.98.226.51:18004/
+    address: ${NULS_API_ADDRESS:http://39.98.226.51:18004/}
