@@ -19,6 +19,7 @@ nuls-switch-backend:
   expose:
     - "8081"
   environment:
+    - MYSQL_ADDRESS=nuls-switch-mysql
     - MYSQL_USER=root
     - MYSQL_PASSWORD=
   links:
@@ -30,13 +31,7 @@ nuls-switch-web:
   image: registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest
   restart: always
   ports:
-    - "80:80"
-  environment:
-    - MYSQL_ADDRESS=nuls-switch-mysql
-    - MYSQL_ROOT_PASSWORD=root123
-    - MYSQL_USER=admin
-    - MYSQL_PASSWORD=admin
-    - MYSQL_DATABASE=pinpoint
+    - "8090:80"
   links:
     - nuls-switch-backend:nuls-switch-backend
 

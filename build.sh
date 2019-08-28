@@ -22,5 +22,9 @@ fi
 #docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest
 #docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-backend:latest
 
-#docker run -p 80:80 --name nginx --network overlay -d 192.168.1.72/chenxue/paascloud-nginx
-#docker service create --name paascloud-nginx --publish 80:80 --network overlay 192.168.1.72/chenxue/paascloud-nginx
+if [ $1 == push ];then
+    echo "push to docker repository"
+    docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-web:latest
+    docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-backend:latest
+    docker push registry.cn-hangzhou.aliyuncs.com/edwardchan/nuls-switch-mysql:latest
+fi
