@@ -310,6 +310,19 @@ const en = {
     "community": "Community",
     "about": "Bug Report"
   },
+
+  "user":{
+    "createAddress": "create address",
+    "importAccount": "import account",
+    "prikey": "private key",
+    "password": "password",
+    "confirmPwd": "confirm password",
+    "nullPrikey": "please enter a private key",
+    "nullPassword": "please enter a password",
+    "againPassword": "please enter your password again",
+    "diffPassword": "different passwords are entered twice",
+    "importAddressError": "import address error",
+  },
   ...enLocale
 
 };

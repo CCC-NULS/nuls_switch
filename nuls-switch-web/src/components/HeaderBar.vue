@@ -10,11 +10,10 @@
           <el-menu-item index="myAsset" :disabled="addressList.length === 0"><i class="el-icon-share"></i>{{$t('nav.myAsset')}}</el-menu-item>
           <el-menu-item index="myOrder" :disabled="addressList.length === 0"><i class="el-icon-video-camera-solid"></i>{{$t('nav.myOrder')}}</el-menu-item>
         </el-menu>
-        <el-link type="primary" @click="toUrl('newAddress')" class="user click fr tc" v-if="!accountAddress">登陆
-        </el-link>
+        <el-link type="primary" @click="toUrl('newAddress')" class="user click fr tc" v-if="!accountAddress">{{$t('nav.login')}}</el-link>
         <div v-else>
           <i class="el-icon-s-custom click " @click="toUrl('backupsAddress')"></i>&nbsp;
-          <span class="click tc" @click="signOut">退出</span>
+          <span class="click tc" @click="signOut">{{$t('nav.logout')}}</span>
         </div>
 
       </div>

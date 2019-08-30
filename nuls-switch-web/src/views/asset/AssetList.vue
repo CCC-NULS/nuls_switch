@@ -27,11 +27,7 @@
           </el-table-column>
           <el-table-column fixed="right" :label="$t('public.operation')" align="center" min-width="120">
             <template slot-scope="scope">
-              <label class="click tab_bn" @click="toUrl('SwitchHall',scope.row.account)">{{$t('nav.switch')}}</label>
-              <!--
-              <span class="tab_line">|</span>
-              <label class="click tab_bn" @click="toUrl('txList',scope.row)">{{$t('home.home2')}}</label>
-              -->
+              <label class="click tab_bn" @click="toUrl('switchHall',scope.row.account)">{{$t('nav.switch')}}</label>
             </template>
           </el-table-column>
         </el-table>
@@ -60,11 +56,7 @@
           </el-table-column>
           <el-table-column fixed="right" :label="$t('public.operation')" align="center" min-width="120">
             <template slot-scope="scope">
-              <label class="click tab_bn" @click="toUrl('SwitchHall',scope.row.symbol)">{{$t('nav.switch')}}</label>
-              <!--
-              <span class="tab_line">|</span>
-              <label class="click tab_bn" @click="toUrl('txList',scope.row)">{{$t('home.home2')}}</label>
-              -->
+              <label class="click tab_bn" @click="toUrl('switchHall',scope.row.symbol)">{{$t('nav.switch')}}</label>
             </template>
           </el-table-column>
         </el-table>
@@ -294,10 +286,8 @@
        * @param parms
        */
       toUrl(name, parms) {
-        //console.log(name)
-        //console.log(parms);
-        let newParms = {accountType: parms};
-        if (name === 'SwitchHall') {
+        let newParms = {tokenType: parms};
+        if (name === 'switchHall') {
           this.$router.push({
             name: name,
             query: newParms

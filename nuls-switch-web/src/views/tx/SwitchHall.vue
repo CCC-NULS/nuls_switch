@@ -2,7 +2,8 @@
     <div class="switch-hall bg-gray">
         <div class="bg-white">
             <div class="title font24 w1200">
-                <SelectTokenBar @change="changeTokenType"></SelectTokenBar>
+                <!-- 交易对组件 -->
+                <SelectTokenBar @change="changeTokenType" :defaultTokenSymbol="tokenType"></SelectTokenBar>
             </div>
         </div>
         <div class="top w1200">
@@ -372,6 +373,8 @@
                 }
             };
             return {
+                //默认代币兑换类型
+                tokenType: this.$route.query.tokenType,
                 fromTokenInfo:{},
                 toTokenInfo: {},
                 fromTokenId: '',
@@ -471,6 +474,7 @@
                 tradeListLoading: true,
                 //余额定时器
                 balanceInterval: null,
+                //买入挂单验证规则
                 buyTokenOrderRules: {
                     price: [
                         {validator: validatePrice, trigger: ['blur']},
@@ -479,6 +483,7 @@
                         {validator: validateTotalNum, trigger: ['blur']}
                     ]
                 },
+                //卖出挂单验证规则
                 sellTokenOrderRules:{
                     price: [
                         {validator: validatePrice, trigger: ['blur']},
@@ -487,7 +492,7 @@
                         {validator: validateTotalNum, trigger: ['blur']}
                     ]
                 },
-                //验证信息
+                //买卖交易验证信息
                 tradeTokendRules: {
                     txNum: [{validator: validateTxNum, trigger: ['blur', 'change']}]
                 }

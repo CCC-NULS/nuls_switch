@@ -3,7 +3,9 @@ const cn ={
   "nav":{
     "switch": "交易大厅",
     "myAsset": "资产列表",
-    "myOrder": "历史委托"
+    "myOrder": "历史委托",
+    "login": "登录",
+    "logout": "退出"
   },
 
   "public":{
@@ -87,6 +89,7 @@ const cn ={
     "queryMyHisOrderException": "查询用户历史委托订单异常:",
     "startTime":"开始时间",
     "endTime":"结束时间",
+    "all":"全部",
   },
 
   "type": {
@@ -420,7 +423,7 @@ const cn ={
     "txNumLgBalanceNumError": "交易数量不能大于余额可交易数量",
     "createOrderSuccess": "挂单成功",
     "createOrderError": "挂单失败",
-    "tradingOrderSuccess": "交易提交成功",
+    "tradingOrderSuccess": "交易提交成功，等待对方确认",
     "tradingOrderError": "交易提交失败",
     "cancelOrderSuccess": "取消挂单成功",
     "cancelOrderError": "取消挂单失败",
@@ -486,6 +489,18 @@ const cn ={
     "cancel": "取消",
     "confirm": "确认",
     "details": "详情",
+  },
+  "user":{
+    "createAddress": "创建地址",
+    "importAccount": "导入账户",
+    "prikey": "明文私钥",
+    "password": "密码",
+    "confirmPwd": "确认密码",
+    "nullPrikey": "请输入私钥",
+    "nullPassword": "请输入密码",
+    "againPassword": "请再次输入密码",
+    "diffPassword": "两次输入密码不一致",
+    "importAddressError": "导入地址错误",
   },
 
   ...zhLocale

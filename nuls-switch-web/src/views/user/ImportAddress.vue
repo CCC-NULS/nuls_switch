@@ -1,22 +1,22 @@
 <template>
     <div class="import-address bg-gray">
         <div class="bg-white">
-            <BackBar backTitle="创建地址"></BackBar>
-            <h3 class="title tc mt_f_20">导入账户</h3>
+            <BackBar :backTitle="$t('user.createAddress')"></BackBar>
+            <h3 class="title tc mt_f_20">{{$t('user.importAccount')}}</h3>
         </div>
         <div class="tab bg-white w1200 mt_30">
             <el-form :model="importForm" :rules="importRules" ref="importForm" status-icon class="import-form w630">
-                <el-form-item label="明文私钥" prop="keys">
+                <el-form-item :label="$t('user.prikey')" prop="keys">
                     <el-input type="textarea" v-model.trim="importForm.keys" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="pass">
+                <el-form-item :label="$t('user.password')" prop="pass">
                     <el-input v-model="importForm.pass" type="password" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="确认密码" prop="checkPass">
+                <el-form-item :label="$t('user.confirmPwd')" prop="checkPass">
                     <el-input v-model="importForm.checkPass" type="password" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item class="form-bnt">
-                    <el-button type="success" @click="submitForm('importForm')">创建账户</el-button>
+                    <el-button type="success" @click="submitForm('importForm')">{{$t('user.importAccount')}}</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -36,14 +36,14 @@
         data() {
             let validateKeys = (rule, value, callback) => {
                 if (value === '') {
-                    callback(new Error('请输入私钥'));
+                    callback(new Error(this.$t('user.nullPrikey')));
                 } else {
                     callback();
                 }
             };
             let validatePass = (rule, value, callback) => {
                 if (value === '') {
-                    callback(new Error('请输入密码'));
+                    callback(new Error(this.$t('user.nullPassword')));
                 } else {
                     if (this.importForm.checkPass !== '') {
                         this.$refs.importForm.validateField('checkPass');
@@ -53,9 +53,9 @@
             };
             let validateCheckPass = (rule, value, callback) => {
                 if (value === '') {
-                    callback(new Error('请再次输入密码'));
+                    callback(new Error(this.$t('user.againPassword')));
                 } else if (value !== this.importForm.pass) {
-                    callback(new Error('两次输入密码不一致!'));
+                    callback(new Error(this.$t('user.diffPassword')));
                 } else {
                     callback();
                 }
@@ -109,7 +109,7 @@
                     });
                 } else {
                     this.$message({
-                        message: "导入地址错误: " + addressInfo.data.error.message,
+                        message: this.$t('user.importAddressError') + ": " + addressInfo.data.error.message,
                         type: 'error',
                         duration: 2000
                     });
