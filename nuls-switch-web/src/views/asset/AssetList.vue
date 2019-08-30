@@ -109,7 +109,7 @@
       setInterval(() => {
         this.addressInfo = addressInfo(1);
       }, 5000);
-      console.log(this.addressInfo);
+
       //判断是否有账户
       if (this.addressInfo) {
         this.getAddressInfoByNode(this.addressInfo.address);
@@ -194,7 +194,6 @@
       getAddressInfoByNode(address) {
         this.$post_nuls('/', 'getAccountLedgerList', [address], 'Home')
                 .then((response) => {
-                  //console.log(response);
                   this.addressAssetsData = [];
                   let newAssetsList = {};
                   if (response.hasOwnProperty("result")) {
@@ -254,10 +253,8 @@
        * @param address
        **/
       getAccountCrossLedgerList(address) {
-        //this.txListDataLoading = true;
         this.$post_nuls('/', 'getAccountCrossLedgerList', [address], 'Home')
                 .then((response) => {
-                  //console.log(response);
                   this.crossLinkDataLoading = false;
                   if (response.hasOwnProperty("result")) {
                     for (let item of response.result) {

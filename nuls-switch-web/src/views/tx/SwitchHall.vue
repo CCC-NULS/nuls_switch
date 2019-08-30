@@ -11,69 +11,69 @@
                 <!-- 买入挂单 -->
                 <div class="top-left fl">
                     <el-form :model="buyTokenOrderForm" :rules="buyTokenOrderRules" ref="buyTokenOrderForm">
-                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantBuy')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
-                    <div class="order_left">
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
-                            <div class="order_input">
-                                <el-form-item prop="price">
-                                    <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
-                            <div class="order_input">
-                                <el-form-item prop="totalNum">
-                                    <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
-                            <div class="order_label"><span>{{toBalanceInfo.balance}}</span></div>
-                            <div class="order_label"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_btn_row">
-                            <el-button type="primary" @click="submitCreateOrder('buyTokenOrderForm',1)">{{$t('switch.buy')}}</el-button>
-                        </el-row>
-                    </div>
+                        <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantBuy')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
+                        <div class="order_left">
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
+                                <div class="order_input">
+                                    <el-form-item prop="price">
+                                        <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
+                                <div class="order_input">
+                                    <el-form-item prop="totalNum">
+                                        <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
+                                <div class="order_label"><span>{{toBalanceInfo.balance}}</span></div>
+                                <div class="order_label"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_btn_row">
+                                <el-button type="primary" @click="submitCreateOrder('buyTokenOrderForm',1)">{{$t('switch.buy')}}</el-button>
+                            </el-row>
+                        </div>
                     </el-form>
                 </div>
                 <!-- 买出挂单 -->
                 <div class="top-left fl">
                     <el-form :model="sellTokenOrderForm" :rules="sellTokenOrderRules" ref="sellTokenOrderForm">
-                    <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantSell')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
-                    <div class="order_left">
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
-                            <div class="order_input">
-                                <el-form-item prop="price">
-                                    <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
-                            <div class="order_input">
-                                <el-form-item prop="totalNum">
-                                    <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_row">
-                            <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
-                            <div class="order_label"><span>{{fromBalanceInfo.balance}}</span></div>
-                            <div class="order_label"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
-                        </el-row>
-                        <el-row class="order_btn_row">
-                            <el-button type="primary" @click="submitCreateOrder('sellTokenOrderForm',2)">{{$t('switch.sell')}}</el-button>
-                        </el-row>
-                    </div>
+                        <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantSell')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
+                        <div class="order_left">
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
+                                <div class="order_input">
+                                    <el-form-item prop="price">
+                                        <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
+                                <div class="order_input">
+                                    <el-form-item prop="totalNum">
+                                        <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                    </el-form-item>
+                                </div>
+                                <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_row">
+                                <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
+                                <div class="order_label"><span>{{fromBalanceInfo.balance}}</span></div>
+                                <div class="order_label"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
+                            </el-row>
+                            <el-row class="order_btn_row">
+                                <el-button type="primary" @click="submitCreateOrder('sellTokenOrderForm',2)">{{$t('switch.sell')}}</el-button>
+                            </el-row>
+                        </div>
                     </el-form>
                 </div>
             </div>
@@ -95,7 +95,9 @@
                                 <template slot-scope="scope">{{ scope.row.remainNum }}</template>
                             </el-table-column>
                             <el-table-column :label="$t('switch.buy')" width="80" align="left">
-                                <template slot-scope="scope"><el-button type="primary" @click="buyBtnClick(scope.row)">{{$t('switch.buy')}}</el-button></template>
+                                <template slot-scope="scope">
+                                    <el-button type="primary" @click="buyBtnClick(scope.row)">{{$t('switch.buy')}}</el-button>
+                                </template>
                             </el-table-column>
                         </el-table>
                         <div class="paging">
@@ -123,7 +125,9 @@
                                 <template slot-scope="scope">{{ scope.row.remainNum }}</template>
                             </el-table-column>
                             <el-table-column :label="$t('switch.sell')" width="80" align="left">
-                                <template slot-scope="scope"><el-button type="primary" @click="sellBtnClick(scope.row)">{{$t('switch.sell')}}</el-button></template>
+                                <template slot-scope="scope">
+                                    <el-button type="primary" @click="sellBtnClick(scope.row)">{{$t('switch.sell')}}</el-button>
+                                </template>
                             </el-table-column>
                         </el-table>
                         <div class="paging">
@@ -153,7 +157,7 @@
                         </el-table-column>
                         <el-table-column :label="$t('orderInfo.txType')" width="120" align="left">
                             <template slot-scope="scope">
-                                <span v-if="scope.row.txType ==1">{{$t('switch.buy')}}</span>
+                                <span v-if="scope.row.txType === 1">{{$t('switch.buy')}}</span>
                                 <span v-else>{{$t('switch.sell')}}</span>
                             </template>
                         </el-table-column>
@@ -171,9 +175,12 @@
                         </el-table-column>
                         <el-table-column :label="$t('orderInfo.status')" width="180" align="left">
                             <template slot-scope="scope">
-                                <el-button type="text" size="mini" @click="cancelOrderClick(scope.row.orderId)">{{$t('operateType.cancel')}}</el-button>
-                                <span v-if="scope.row.status==1"> | </span>
-                                <el-button type="text" size="mini" @click="getOrderTradeClick(scope.row.orderId, scope.row.price)" v-if="scope.row.status!==0">{{$t('operateType.confirm')}}</el-button>
+                                <el-button type="text" size="mini" @click="cancelOrderClick(scope.row.orderId)">{{$t('operateType.cancel')}}
+                                </el-button>
+                                <span v-if="scope.row.status===1"> | </span>
+                                <el-button type="text" size="mini" @click="getOrderTradeClick(scope.row.orderId, scope.row.price)"
+                                           v-if="scope.row.status!==0">{{$t('operateType.confirm')}}
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -279,8 +286,10 @@
                     </el-table-column>
                     <el-table-column :label="$t('orderInfo.status')" width="120" align="left">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.status!=0"> {{$t('tradeStatus.'+ scope.row.status)}} </span>
-                            <el-button type="primary" size="mini" @click="confirmOrderClick(scope.row)" v-if="scope.row.status==0">{{$t('operateType.confirm')}}</el-button>
+                            <span v-if="scope.row.status!==0"> {{$t('tradeStatus.'+ scope.row.status)}} </span>
+                            <el-button type="primary" size="mini" @click="confirmOrderClick(scope.row)" v-if="scope.row.status===0">
+                                {{$t('operateType.confirm')}}
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -375,7 +384,7 @@
             return {
                 //默认代币兑换类型
                 tokenType: this.$route.query.tokenType,
-                fromTokenInfo:{},
+                fromTokenInfo: {},
                 toTokenInfo: {},
                 fromTokenId: '',
                 toTokenId: '',
@@ -423,8 +432,8 @@
                 //订单ID
                 orderId: '',
                 orderPrice: '',
-                orderInfo:{},
-                tradeInfo:{},
+                orderInfo: {},
+                tradeInfo: {},
                 price: '',
                 //订单交易ID
                 txId: '',
@@ -484,7 +493,7 @@
                     ]
                 },
                 //卖出挂单验证规则
-                sellTokenOrderRules:{
+                sellTokenOrderRules: {
                     price: [
                         {validator: validatePrice, trigger: ['blur']},
                     ],
@@ -517,8 +526,10 @@
 
             setInterval(() => {
                 this.addressInfo = addressInfo(1, this.address);
-            }, 30000);
+                this.address = localStorage.getItem('accountInfo') != null ? JSON.parse(localStorage.getItem('accountInfo')).address : '';
+            }, 1000);
 
+            // 查询可买挂单列表
             this.pagesBuyList();
             this.pagesDepositList();
         },
@@ -537,9 +548,17 @@
         },
         watch: {
             addressInfo(val, old) {
-                //this.activeName = 'buyTab';
-                if (this.accountAddress && val.address !== old.address && old.address) {
-                    this.getAssetsListByAddress(this.accountAddress.address);
+                //判断是否有账户
+                if (this.addressInfo) {
+                    if (this.accountAddress && val.address !== old.address && old.address) {
+                        this.getAssetsListByAddress(this.accountAddress.address);
+                    }
+                } else {
+                    // 移除当前委托数据
+                    this.depositList = [];
+                    this.depositListPager = {total: 0, page: 1, rows: 5};
+                    // 查询可买挂单列表
+                    this.pagesBuyList();
                 }
             },
             fromTokenInfo(val, old) {
@@ -695,7 +714,7 @@
              * 买入/卖出挂单提交
              * @param formName
              **/
-            async submitCreateOrder(formName,txType) {
+            async submitCreateOrder(formName, txType) {
                 if (!this.accountAddress) {
                     this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
                     return false;
@@ -705,16 +724,15 @@
                         //校验余额是否充足
                         let totalAmount = multiDecimals(Times(this.buyTokenOrderForm.price, this.buyTokenOrderForm.totalNum), 8);
                         let balance = multiDecimals(this.toBalanceInfo.balance, 8);
-                        if (txType == 2) {
+                        if (txType === 2) {
                             totalAmount = multiDecimals(Times(this.sellTokenOrderForm.price, this.sellTokenOrderForm.totalNum), 8);
                             balance = multiDecimals(this.fromBalanceInfo.balance, 8);
                         }
-                        if (totalAmount > balance)
-                        {
+                        if (totalAmount > balance) {
                             this.$message({message: this.$t('switch.insufficientBalance'), type: 'error', duration: 2000});
                             return false;
                         }
-                        this.txType=txType;
+                        this.txType = txType;
                         this.$refs.createOrderPassword.showPassword(true);
                     } else {
                         return false;
@@ -728,8 +746,8 @@
             async createOrderPassSubmit(password) {
                 const pri = nuls.decrypteOfAES(this.accountAddress.aesPri, password);
                 const newAddressInfo = nuls.importByKey(chainID(), pri, password);
-                let price=this.txType === 1 ? this.buyTokenOrderForm.price : this.sellTokenOrderForm.price;
-                let totalNum=this.txType === 1 ? this.buyTokenOrderForm.totalNum : this.sellTokenOrderForm.totalNum
+                let price = this.txType === 1 ? this.buyTokenOrderForm.price : this.sellTokenOrderForm.price;
+                let totalNum = this.txType === 1 ? this.buyTokenOrderForm.totalNum : this.sellTokenOrderForm.totalNum;
 
                 if (newAddressInfo.address === this.accountAddress.address) {
                     // 创建订单提交
@@ -759,7 +777,7 @@
                     }).catch((err) => {
                         this.$message({message: this.$t('switch.createOrderError') + err.data, type: 'error', duration: 1000});
                     });
-                }else {
+                } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 1000});
                 }
             },
@@ -831,35 +849,29 @@
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if(formName=='buyTokenForm')
-                        {
+                        if (formName === 'buyTokenForm') {
                             //校验交易数量
-                            if (Number(this.buyTokenForm.txNum) > Number(this.buyTokenForm.remainNum))
-                            {
+                            if (Number(this.buyTokenForm.txNum) > Number(this.buyTokenForm.remainNum)) {
                                 this.$message({message: this.$t('switch.txNumLgRemainNumError'), type: 'error', duration: 2000});
                                 return false;
                             }
-                            if (Number(this.buyTokenForm.txNum) > Number(this.buyTokenForm.maxTxNum))
-                            {
+                            if (Number(this.buyTokenForm.txNum) > Number(this.buyTokenForm.maxTxNum)) {
                                 this.$message({message: this.$t('switch.txNumLgBalanceNumError'), type: 'error', duration: 2000});
                                 return false;
                             }
-                            this.txNum=this.buyTokenForm.txNum;
+                            this.txNum = this.buyTokenForm.txNum;
                             this.buyTokenVisible = false;
                         }
-                        if(formName=='sellTokenForm')
-                        {
-                            if (Number(this.sellTokenForm.txNum) > Number(this.sellTokenForm.remainNum))
-                            {
+                        if (formName === 'sellTokenForm') {
+                            if (Number(this.sellTokenForm.txNum) > Number(this.sellTokenForm.remainNum)) {
                                 this.$message({message: this.$t('switch.txNumLgRemainNumError'), type: 'error', duration: 2000});
                                 return false;
                             }
-                            if (Number(this.sellTokenForm.txNum) > Number(this.sellTokenForm.maxTxNum))
-                            {
+                            if (Number(this.sellTokenForm.txNum) > Number(this.sellTokenForm.maxTxNum)) {
                                 this.$message({message: this.$t('switch.txNumLgBalanceNumError'), type: 'error', duration: 2000});
                                 return false;
                             }
-                            this.txNum=this.sellTokenForm.txNum;
+                            this.txNum = this.sellTokenForm.txNum;
                             this.sellTokenVisible = false;
                         }
                         this.$refs.txTradePassword.showPassword(true);
@@ -997,7 +1009,7 @@
                     }).catch((err) => {
                         this.$message({message: this.$t('switch.cancelOrderError') + ": " + err.data, type: 'error', duration: 3000});
                     });
-                }else {
+                } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 1000});
                 }
             },
@@ -1022,8 +1034,8 @@
             /**
              * 订单交易列表 分页
              */
-            async pagesTradeList(){
-                let params = {"current":  this.tradeListPager.page, "pageSize": this.tradeListPager.rows, "orderId": this.orderId};
+            async pagesTradeList() {
+                let params = {"current": this.tradeListPager.page, "pageSize": this.tradeListPager.rows, "orderId": this.orderId};
                 await getOrderDetail(params).then((response) => {
                     if (response.success) {
                         // 展示订单交易详情
@@ -1047,7 +1059,7 @@
 
             /**
              *  确认订单，获取密码框的密码
-             * @param orderId
+             * @param tradeInfo
              **/
             confirmOrderClick(tradeInfo) {
                 this.tradeInfo = tradeInfo;
@@ -1098,13 +1110,13 @@
                                 this.tradeInfo.status = 1;
                                 this.$message({message: this.$t('switch.confirmOrderSuccess'), type: 'success', duration: 2000});
                             } else {
-                                this.$message({message: this.$t('switch.confirmOrderError') + ": " +  response.data, type: 'error', duration: 3000});
+                                this.$message({message: this.$t('switch.confirmOrderError') + ": " + response.data, type: 'error', duration: 3000});
                             }
                         }).catch((err) => {
-                            this.$message({message: this.$t('switch.confirmOrderError') + ": " +  err, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('switch.confirmOrderError') + ": " + err, type: 'error', duration: 3000});
                         });
                     }
-                }else {
+                } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 1000});
                 }
             },
@@ -1265,8 +1277,8 @@
             height: 50px;
 
             .title {
-                padding-bottom: 0px;
-                margin: 0px auto 0;
+                padding-bottom: 0;
+                margin: 0 auto 0;
 
                 .click {
                     margin-left: 20px;
@@ -1303,7 +1315,7 @@
                 }
 
                 .tabs_title {
-                    padding: 5px 0 0 0px;
+                    padding: 5px 0 0 0;
                     text-align: center;
                     height: 30px;
                 }
@@ -1372,17 +1384,20 @@
 
                 .el-table {
                     width: 100%;
-                    margin-top: 0px;
+                    margin-top: 0;
+
                     tr {
                         th {
                             background-color: @Bcolour;
                         }
                     }
+
                     .has-gutter {
                         tr {
                             th {
                                 padding: 0;
                                 background-color: @Bcolour;
+
                                 .cell {
                                     color: @Acolor2;
                                     height: 30px;
@@ -1392,12 +1407,13 @@
                             }
                         }
                     }
+
                     td {
                         padding: 1px 0 !important;
                     }
                 }
-                .el-button
-                {
+
+                .el-button {
                     padding: 5px 10px;
                 }
             }
@@ -1411,7 +1427,7 @@
         }
 
         .bottoms {
-            margin: 0px auto 40px;
+            margin: 0 auto 40px;
             @media screen and (max-width: 1000px) {
                 margin: 1.5rem auto 1.5rem ;
                 width: 95%;
@@ -1427,9 +1443,11 @@
     .order-trade-detail-dialog {
         .el-dialog {
             width: 700px;
+
             .el-dialog__body {
                 background-color: #F5F6F9 !important;
                 padding: 30px 20px 30px 20px !important;
+
                 .el-form {
                     .el-form-item {
                         .el-form-item__label {
@@ -1439,6 +1457,7 @@
                     }
                 }
             }
+
             .el-dialog__footer {
                 text-align: center;
                 background-color: #F5F6F9 !important;
@@ -1450,9 +1469,11 @@
     .trade-dialog {
         .el-dialog {
             width: 400px;
+
             .el-dialog__body {
                 background-color: #F5F6F9 !important;
                 padding: 10px 20px !important;
+
                 .el-form {
                     .el-form-item {
                         .el-form-item__label {
@@ -1462,6 +1483,7 @@
                     }
                 }
             }
+
             .tradeToken {
                 .trade_row {
                     padding-top: 8px;
@@ -1470,6 +1492,7 @@
                         color: @Fcolour;
                         font-size: 14px;
                     }
+
                     .trade_label {
                         width: 105px;
                         float: left;
