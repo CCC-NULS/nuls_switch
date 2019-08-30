@@ -3,11 +3,11 @@
     <div class="w1200">
       <div class="fl">
         <ul>
-          <li class="clicks fl">官网</li>
-          <li class="clicks fl">Github</li>
-          <li class="clicks fl">节点客户端</li>
-          <li class="clicks fl">轻钱包</li>
-          <li class="clicks fl">浏览器</li>
+          <li class="clicks fl capitalize"><a href="https://nuls.io/home" target="_blank">{{$t('bottom.website')}}</a></li>
+          <li class="clicks fl capitalize"><a href="https://github.com/nuls-io" target="_blank">Github</a></li>
+          <li class="clicks fl capitalize"><a href="https://wallet.nuls.io/" target="_blank">{{$t('bottom.webWallet')}}</a></li>
+          <li class="clicks fl capitalize"><a href="https://nuls.community/" target="_blank">{{$t('bottom.community')}}</a></li>
+          <li class="clicks fl capitalize" @click="toBugReport">{{$t('bottom.about')}}</li>
         </ul>
       </div>
       <div class="fr">
@@ -21,7 +21,16 @@
 
 <script>
   export default {
-    name: "bottom-bar"
+    name: "bottom-bar",
+    methods:{
+      /**
+       *  问题反馈 跳转
+       **/
+      toBugReport() {
+        window.open('https://nuls.community/d/134-collect-the-bugs-of-the-testnet-bugs/2', '_blank');
+      },
+
+    }
   }
 </script>
 
