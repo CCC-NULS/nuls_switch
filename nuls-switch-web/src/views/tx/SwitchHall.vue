@@ -33,7 +33,7 @@
                             </el-row>
                             <el-row class="order_row">
                                 <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
-                                <div class="order_label"><span>{{toBalanceInfo.balance}}</span></div>
+                                <div class="order_label"><span>{{this.toBalanceInfo.balance}}</span></div>
                                 <div class="order_label"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
                             </el-row>
                             <el-row class="order_btn_row">
@@ -67,7 +67,7 @@
                             </el-row>
                             <el-row class="order_row">
                                 <div class="order_label"><span>{{$t('orderInfo.usable')}}：</span></div>
-                                <div class="order_label"><span>{{fromBalanceInfo.balance}}</span></div>
+                                <div class="order_label"><span>{{this.fromBalanceInfo.balance}}</span></div>
                                 <div class="order_label"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
                             </el-row>
                             <el-row class="order_btn_row">
@@ -327,15 +327,15 @@
     import buffer from 'nuls-sdk-js/lib/utils/buffer'
     import Password from '@/components/PasswordBar'
     import SelectTokenBar from '@/components/SelectTokenBar'
-    import {addressInfo, chainID, multiDecimals, Times, divDecimals, Division, toFixed, deserializeTx} from '@/api/util'
+    import {addressInfo, chainID, deserializeTx, divDecimals, Division, multiDecimals, Times, toFixed} from '@/api/util'
     import {
-        createOrder,
-        tradingOrder,
         cancelOrder,
         confirmOrder,
-        getOrderDetail,
+        createOrder,
         getBalanceOrNonceByAddress,
+        getOrderDetail,
         inputsOrOutputs,
+        tradingOrder,
         validateAndBroadcast
     } from '@/api/requestData'
     //import moment from 'moment'
@@ -515,15 +515,12 @@
             this.isMobile = /(iPhone|iOS|Android|Windows Phone)/i.test(navigator.userAgent);
             this.addressInfo = addressInfo(1, this.address);
             if (this.accountAddress != null) {
-                // balanceInfo
+                // 查询主链资产余额 balanceInfo
                 this.getBalanceOrNonce(0, 2, 1, this.accountAddress.address);
-                // fromBalanceInfo
-                this.getBalanceOrNonce(1, 2, 1, this.accountAddress.address, 1);
-                // toBalanceInfo
-                this.getBalanceOrNonce(2, 2, 1, this.accountAddress.address, 1);
                 this.getAssetsListByAddress(this.accountAddress.address);
             }
 
+            // 定时账户是否登录
             setInterval(() => {
                 this.addressInfo = addressInfo(1, this.address);
                 this.address = localStorage.getItem('accountInfo') != null ? JSON.parse(localStorage.getItem('accountInfo')).address : '';
@@ -537,14 +534,16 @@
             //定时获取余额
             this.balanceInterval = setInterval(() => {
                 if (this.accountAddress != null) {
-                    // balanceInfo
+                    // 查询主链资产余额
                     this.getBalanceOrNonce(0, 2, 1, this.accountAddress.address);
-                    // fromBalanceInfo
-                    this.getBalanceOrNonce(1, 2, 1, this.accountAddress.address, 1);
-                    // toBalanceInfo
-                    this.getBalanceOrNonce(2, 2, 1, this.accountAddress.address, 1);
+                    if (this.fromTokenInfo != null && this.toTokenInfo != null) {
+                        // 查询交易对from类型资产余额
+                        this.getBalanceOrNonce(1, this.fromTokenInfo.chainId, this.fromTokenInfo.assetId, this.accountAddress.address, 1);
+                        // 查询交易对to类型资产余额
+                        this.getBalanceOrNonce(2, this.toTokenInfo.chainId, this.toTokenInfo.assetId, this.accountAddress.address, 1);
+                    }
                 }
-            }, 60000);
+            }, 10000);
         },
         watch: {
             addressInfo(val, old) {
@@ -562,15 +561,29 @@
                 }
             },
             fromTokenInfo(val, old) {
-                if (this.accountAddress && val.tokenId !== old.tokenId && val.tokenId) {
-                    // fromBalanceInfo
-                    this.getBalanceOrNonce(1, val.chainId, val.assetId, this.accountAddress.address, 1);
+                if (val.tokenId !== old.tokenId) {
+                    // 重新加载挂单列表
+                    this.pagesBuyList();
+                    this.pagesSellList();
+                    if (this.accountAddress && val.tokenId) {
+                        // 查询交易对from类型资产余额
+                        this.getBalanceOrNonce(1, val.chainId, val.assetId, this.accountAddress.address, 1);
+                    } else {
+                        this.fromBalanceInfo = {balance: 0};
+                    }
                 }
             },
             toTokenInfo(val, old) {
-                if (this.accountAddress && val.tokenId !== old.tokenId && val.tokenId) {
-                    // toBalanceInfo
-                    this.getBalanceOrNonce(2, val.chainId, val.assetId, this.accountAddress.address, 1);
+                if (val.tokenId !== old.tokenId) {
+                    // 重新加载挂单列表
+                    this.pagesBuyList();
+                    this.pagesSellList();
+                    if (this.accountAddress && val.tokenId) {
+                        // 查询交易对to类型资产余额
+                        this.getBalanceOrNonce(2, val.chainId, val.assetId, this.accountAddress.address, 1);
+                    } else {
+                        this.toBalanceInfo = {balance: 0};
+                    }
                 }
             },
         },
@@ -593,10 +606,13 @@
                 await getBalanceOrNonceByAddress(assetChainId, assetId, address, divDecimals).then((response) => {
                     if (response.success) {
                         if (1 === type) {
+                            // 查询交易对from类型资产余额
                             this.fromBalanceInfo = response.data;
                         } else if (2 === type) {
+                            // 查询交易对to类型资产余额
                             this.toBalanceInfo = response.data;
                         } else {
+                            // 查询主链资产余额
                             this.balanceInfo = response.data;
                         }
                     } else {
