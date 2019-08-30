@@ -52,7 +52,7 @@
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="cancelOrderClick(scope.row.orderId)" v-if="scope.row.status!==9">{{$t('operateType.cancel')}}</el-button>
             <span v-if="scope.row.status==1"> | </span>
-            <el-button type="text" size="mini" @click="getOrderTradeClick(scope.row.orderId, scope.row.price)" >{{$t('operateType.details')}}</el-button>
+            <el-button type="text" size="mini" @click="getOrderTradeClick(scope.row.orderId, scope.row.price)" v-if="scope.row.status!==0">{{$t('operateType.details')}}</el-button>
           </template>
         </el-table-column>
       </el-table>

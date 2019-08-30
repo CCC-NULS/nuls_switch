@@ -152,6 +152,7 @@ public class OrderController extends BaseController {
             tradeService.insert(trade);
 
             // 更新订单状态 update order status
+            order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
             result = orderService.updateById(order);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
