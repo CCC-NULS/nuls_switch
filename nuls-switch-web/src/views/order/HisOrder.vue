@@ -13,9 +13,9 @@
                 :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
         </div>
-        <div class="fl"><span>{{$t('orderInfo.tokenPair')}}：</span><SelectTokenBar @change="changeTokenType" :allType="1"></SelectTokenBar></div>
-        <div class="fl"><span>{{$t('orderInfo.status')}}：</span><SelectBar v-model="orderStatus" :typeOptions="orderStatusOptions" typeName="orderStatus" @change="changeOrderStatus"></SelectBar></div>
-        <div class="fl" style="width: 50px;height: 20px"><el-button type="primary" @click="pagesDepositList()">{{$t('public.query')}}</el-button></div>
+        <div class="fl ml_20"><span>{{$t('orderInfo.tokenPair')}}：</span><SelectTokenBar @change="changeTokenType" :allType="1"></SelectTokenBar></div>
+        <div class="fl ml_20"><span>{{$t('orderInfo.status')}}：</span><SelectBar v-model="orderStatus" :typeOptions="orderStatusOptions" typeName="orderStatus" @change="changeOrderStatus"></SelectBar></div>
+        <div class="fl ml_20" ><el-button type="primary" @click="pagesDepositList()" size="small">{{$t('public.query')}}</el-button></div>
       </div>
     </div>
     <div class="cb"></div>
@@ -29,7 +29,7 @@
         </el-table-column>
         <el-table-column :label="$t('orderInfo.txType')" width="120" align="left">
           <template slot-scope="scope">
-            <span v-if="scope.row.txType ==1">{{$t('switch.buy')}}</span>
+            <span v-if="scope.row.txType ===1">{{$t('switch.buy')}}</span>
             <span v-else>{{$t('switch.sell')}}</span>
           </template>
         </el-table-column>
@@ -51,7 +51,7 @@
         <el-table-column :label="$t('operateType.operate')" width="155" align="left">
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="cancelOrderClick(scope.row.orderId)" v-if="scope.row.status!==9">{{$t('operateType.cancel')}}</el-button>
-            <span v-if="scope.row.status==1"> | </span>
+            <span v-if="scope.row.status===1"> | </span>
             <el-button type="text" size="mini" @click="getOrderTradeClick(scope.row.orderId, scope.row.price)" v-if="scope.row.status!==0">{{$t('operateType.details')}}</el-button>
           </template>
         </el-table-column>
@@ -92,8 +92,8 @@
           </el-table-column>
           <el-table-column :label="$t('orderInfo.status')" width="120" align="left">
             <template slot-scope="scope">
-              <span v-if="scope.row.status!=0"> {{$t('tradeStatus.'+ scope.row.status)}} </span>
-              <el-button type="primary" size="mini" @click="confirmOrderClick(scope.row)" v-if="scope.row.status==0">{{$t('operateType.confirm')}}</el-button>
+              <span v-if="scope.row.status!==0"> {{$t('tradeStatus.'+ scope.row.status)}} </span>
+              <el-button type="primary" size="mini" @click="confirmOrderClick(scope.row)" v-if="scope.row.status===0">{{$t('operateType.confirm')}}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -255,8 +255,8 @@
       /**
        *  选择交易状态
        **/
-      changeOrderStatus(type) {
-        this.status = type;
+      changeOrderStatus(orderStatus) {
+        this.orderStatus = orderStatus;
       },
 
       /**
@@ -305,7 +305,7 @@
        *  查询订单交易记录列表
        * @param orderId
        **/
-      async getOrderTradeClick(orderId, price) {
+      getOrderTradeClick(orderId, price) {
         this.orderId = orderId;
         this.orderPrice = price;
         // 查询订单交易记录
@@ -409,7 +409,7 @@
   @import "./../../assets/css/style";
 
   .his-order {
-    margin: 0px auto 0;
+    margin: 0 auto 0;
     .bg-white {
       height: 50px;
     }
