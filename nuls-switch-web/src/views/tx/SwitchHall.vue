@@ -344,7 +344,7 @@
         data() {
             let validatePrice = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,8}(\.\d{1,8})?$/;
+                let res = /^\d{1,12}(\.\d{1,8})?$/;
                 if (!value) {
                     callback(new Error(this.$t('switch.nullPrice')));
                 } else if (!re.exec(value) || !res.exec(value)) {
@@ -357,7 +357,7 @@
             };
             let validateTotalNum = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,8}(\.\d{1,8})?$/;
+                let res = /^\d{1,12}(\.\d{1,8})?$/;
                 if (!value) {
                     return callback(new Error(this.$t('switch.nullTxNum')));
                 } else if (!re.exec(value) || !res.exec(value)) {
@@ -370,7 +370,7 @@
             };
             let validateTxNum = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,8}(\.\d{1,8})?$/;
+                let res = /^\d{1,12}(\.\d{1,8})?$/;
                 if (!value) {
                     return callback(new Error(this.$t('switch.nullTxNum')));
                 } else if (!re.exec(value) || !res.exec(value)) {

@@ -415,7 +415,7 @@ const cn ={
     "hisDeposit":"历史委托",
     "nullPrice": "请输入单价",
     "nullTxNum": "请输入交易数量",
-    "mustNum": "必须数字值",
+    "mustNum": "请输入正确的数字格式，整数位最大长度12位，小数位最大长度8位",
     "mustNotZero":"必须大于0",
     "insufficientBalance": "对不起，余额不足",
     "txNumError": "交易数量必须大于0",
