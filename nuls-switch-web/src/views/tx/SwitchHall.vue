@@ -17,7 +17,7 @@
                                 <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="price">
-                                        <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
+                                        <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')" :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
@@ -26,7 +26,7 @@
                                 <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="totalNum">
-                                        <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                        <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')" :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
@@ -42,7 +42,7 @@
                         </div>
                     </el-form>
                 </div>
-                <!-- 买出挂单 -->
+                <!-- 卖出挂单 -->
                 <div class="top-left fl">
                     <el-form :model="sellTokenOrderForm" :rules="sellTokenOrderRules" ref="sellTokenOrderForm">
                         <h3 class="tabs_title tabs_header capitalize">{{$t('switch.myWantSell')}}-{{this.fromTokenInfo.tokenSymbol}}</h3>
@@ -51,7 +51,7 @@
                                 <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="price">
-                                        <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"></el-input>
+                                        <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')" :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
@@ -60,7 +60,7 @@
                                 <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="totalNum">
-                                        <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                        <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')" :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
@@ -210,7 +210,7 @@
                         <div class="trade_label"><span>{{$t('orderInfo.num')}}：</span></div>
                         <div class="trade_input">
                             <el-form-item prop="txNum">
-                                <el-input type="input" v-model="buyTokenForm.txNum" :maxlength="10" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                <el-input type="input" v-model="buyTokenForm.txNum" :maxlength="20" :placeholder="$t('switch.nullTxNum')"></el-input>
                             </el-form-item>
                         </div>
                     </el-row>
@@ -241,7 +241,7 @@
                         <div class="trade_label"><span>{{$t('orderInfo.num')}}：</span></div>
                         <div class="trade_input">
                             <el-form-item prop="txNum">
-                                <el-input type="input" v-model="sellTokenForm.txNum" :maxlength="10" :placeholder="$t('switch.nullTxNum')"></el-input>
+                                <el-input type="input" v-model="sellTokenForm.txNum" :maxlength="20" :placeholder="$t('switch.nullTxNum')"></el-input>
                             </el-form-item>
                         </div>
                     </el-row>
@@ -344,7 +344,7 @@
         data() {
             let validatePrice = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,12}(\.\d{1,8})?$/;
+                let res = /^\d{1,11}(\.\d{1,8})?$/;
                 if (!value) {
                     callback(new Error(this.$t('switch.nullPrice')));
                 } else if (!re.exec(value) || !res.exec(value)) {
@@ -357,7 +357,7 @@
             };
             let validateTotalNum = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,12}(\.\d{1,8})?$/;
+                let res = /^\d{1,11}(\.\d{1,8})?$/;
                 if (!value) {
                     return callback(new Error(this.$t('switch.nullTxNum')));
                 } else if (!re.exec(value) || !res.exec(value)) {
@@ -370,7 +370,7 @@
             };
             let validateTxNum = (rule, value, callback) => {
                 let re = /^\d+(?=\.{0,1}\d+$|$)/;
-                let res = /^\d{1,12}(\.\d{1,8})?$/;
+                let res = /^\d{1,11}(\.\d{1,8})?$/;
                 if (!value) {
                     return callback(new Error(this.$t('switch.nullTxNum')));
                 } else if (!re.exec(value) || !res.exec(value)) {
