@@ -17,7 +17,8 @@
                                 <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="price">
-                                        <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')" :maxlength="20"></el-input>
+                                        <el-input type="input" v-model="buyTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"
+                                                  :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
@@ -26,7 +27,8 @@
                                 <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="totalNum">
-                                        <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')" :maxlength="20"></el-input>
+                                        <el-input type="input" v-model="buyTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"
+                                                  :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
@@ -51,7 +53,8 @@
                                 <div class="order_label"><span>{{$t('orderInfo.price')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="price">
-                                        <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')" :maxlength="20"></el-input>
+                                        <el-input type="input" v-model="sellTokenOrderForm.price" :placeholder="$t('switch.nullPrice')"
+                                                  :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.toTokenInfo.tokenSymbol}}</span></div>
@@ -60,7 +63,8 @@
                                 <div class="order_label"><span>{{$t('orderInfo.num')}}：</span></div>
                                 <div class="order_input">
                                     <el-form-item prop="totalNum">
-                                        <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')" :maxlength="20"></el-input>
+                                        <el-input type="input" v-model="sellTokenOrderForm.totalNum" :placeholder="$t('switch.nullTxNum')"
+                                                  :maxlength="20"></el-input>
                                     </el-form-item>
                                 </div>
                                 <div class="order_span"><span>{{this.fromTokenInfo.tokenSymbol}}</span></div>
@@ -744,7 +748,7 @@
                             totalAmount = multiDecimals(Times(this.sellTokenOrderForm.price, this.sellTokenOrderForm.totalNum), 8);
                             balance = multiDecimals(this.fromBalanceInfo.balance, 8);
                         }
-                        if (totalAmount > balance) {
+                        if (Number(totalAmount) > Number(balance)) {
                             this.$message({message: this.$t('switch.insufficientBalance'), type: 'error', duration: 2000});
                             return false;
                         }
@@ -904,54 +908,33 @@
                 const pri = nuls.decrypteOfAES(this.accountAddress.aesPri, password);
                 const newAddressInfo = nuls.importByKey(chainID(), pri, password);
                 if (newAddressInfo.address === this.accountAddress.address) {
+                    // 交易类型 1-买入、2-卖出
+                    let txType = this.orderInfo.txType;
+                    // 吃单地址
                     let fromAddress = this.address;
+                    // 挂单地址
                     let toAddress = this.orderInfo.address;
-                    //B转出资产
-                    let assetsChainId = this.fromTokenInfo.chainId != null ? this.fromTokenInfo.chainId : 2;
-                    let assetsId = this.fromTokenInfo.assetId != null ? this.fromTokenInfo.assetId : 1;
-                    let transferInfoB = {
+                    // FROM资产
+                    let fromAssetsChainId = this.fromTokenInfo.chainId != null ? this.fromTokenInfo.chainId : 2;
+                    let fromAssetsId = this.fromTokenInfo.assetId != null ? this.fromTokenInfo.assetId : 1;
+                    // TO资产
+                    let toAssetsChainId = this.toTokenInfo.chainId != null ? this.toTokenInfo.chainId : 2;
+                    let toAssetsId = this.toTokenInfo.assetId != null ? this.toTokenInfo.assetId : 1;
+                    // 吃单人转出资产，如果挂单人希望买入，则吃单人将希望买入的代币转出到挂单人，反之转出交易对to资产来获得from资产
+                    let assetsChainIdA = txType === 1 ? fromAssetsChainId : toAssetsChainId;
+                    let assetsIdA = txType === 1 ? fromAssetsId : toAssetsId;
+                    let transferInfoA = {
                         fromAddress: fromAddress,
                         toAddress: toAddress,
-                        assetsChainId: assetsChainId,
-                        assetsId: assetsId,
+                        assetsChainId: assetsChainIdA,
+                        assetsId: assetsIdA,
                         fee: 0
                     };
                     let tAssemble = [];
                     let inOrOutputs = {};
-                    let balanceInfoB = {};
-                    //查询余额
-                    await getBalanceOrNonceByAddress(assetsChainId, assetsId, fromAddress).then((response) => {
-                        if (response.success) {
-                            balanceInfoB = response.data;
-                        } else {
-                            this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 3000});
-                        }
-                    }).catch((error) => {
-                        this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 3000});
-                    });
-                    transferInfoB['amount'] = Number(Times(this.txNum, 100000000).toString());
-                    inOrOutputs = await inputsOrOutputs(transferInfoB, balanceInfoB, 1);
-                    if (!inOrOutputs.success) {
-                        this.$message(inOrOutputs.data);
-                        return false;
-                    }
-                    // 将A->B挂单人转出到吃单人的input、output写到这里
-                    fromAddress = this.orderInfo.address;
-                    toAddress = this.address;
-                    //A转出资产
-                    assetsChainId = this.toTokenInfo.chainId != null ? this.toTokenInfo.chainId : 2;
-                    assetsId = this.toTokenInfo.assetId != null ? this.toTokenInfo.assetId : 1;
-                    let transferInfoA = {
-                        fromAddress: fromAddress,
-                        toAddress: toAddress,
-                        assetsChainId: assetsChainId,
-                        assetsId: assetsId,
-                        fee: 0
-                    };
-                    let inOrOutputsA = {};
                     let balanceInfoA = {};
                     //查询余额
-                    await getBalanceOrNonceByAddress(assetsChainId, assetsId, fromAddress).then((response) => {
+                    await getBalanceOrNonceByAddress(assetsChainIdA, assetsIdA, fromAddress).then((response) => {
                         if (response.success) {
                             balanceInfoA = response.data;
                         } else {
@@ -960,10 +943,48 @@
                     }).catch((error) => {
                         this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 3000});
                     });
-                    transferInfoA['amount'] = Number(Times(Times(this.orderInfo.price, this.txNum), 100000000).toString());
-                    inOrOutputsA = await inputsOrOutputs(transferInfoA, balanceInfoA);
-                    let inputs = [...inOrOutputs.data.inputs, ...inOrOutputsA.data.inputs];
-                    let outputs = [...inOrOutputs.data.outputs, ...inOrOutputsA.data.outputs];
+                    // 吃单人转出交易总量，如果是买入，则为交易量，如果是卖出，则为交易量 * 单价
+                    let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
+                    transferInfoA['amount'] = Number(Times(txAmountA, 100000000).toString());
+                    inOrOutputs = await inputsOrOutputs(transferInfoA, balanceInfoA);
+                    if (!inOrOutputs.success) {
+                        this.$message(inOrOutputs.data);
+                        return false;
+                    }
+                    // 将B->A吃单人转出到挂单人的input、output写到这里
+                    fromAddress = this.orderInfo.address;
+                    toAddress = this.address;
+                    // 挂单人转出资产
+                    let assetsChainIdB = txType === 1 ? toAssetsChainId : fromAssetsChainId;
+                    let assetsIdB = txType === 1 ? toAssetsId : fromAssetsId;
+                    let transferInfoB = {
+                        fromAddress: fromAddress,
+                        toAddress: toAddress,
+                        assetsChainId: assetsChainIdB,
+                        assetsId: assetsIdB,
+                        fee: 0
+                    };
+                    let inOrOutputsB = {};
+                    let balanceInfoB = {};
+                    //查询余额
+                    await getBalanceOrNonceByAddress(assetsChainIdB, assetsIdB, fromAddress).then((response) => {
+                        if (response.success) {
+                            balanceInfoB = response.data;
+                        } else {
+                            this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 3000});
+                        }
+                    }).catch((error) => {
+                        this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 3000});
+                    });
+                    // 挂单人转出交易总量，如果是买入，则为交易量 * 单价，如果是卖出，则为交易量
+                    let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
+                    transferInfoB['amount'] = Number(Times(txAmountB, 100000000).toString());
+                    inOrOutputsB = await inputsOrOutputs(transferInfoB, balanceInfoB, 1);
+
+                    // 将吃单和挂单的输入输出汇总到一次交易中
+                    let inputs = [...inOrOutputs.data.inputs, ...inOrOutputsB.data.inputs];
+                    let outputs = [...inOrOutputs.data.outputs, ...inOrOutputsB.data.outputs];
+
                     //交易组装
                     tAssemble = await nuls.transactionAssemble(inputs, outputs, '', 2);
                     //获取手续费

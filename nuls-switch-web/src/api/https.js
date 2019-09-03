@@ -44,7 +44,6 @@ export function post(url, methodName, params = {}) {
         let token = localStorage.getItem('accountInfo') != null ? JSON.parse(localStorage.getItem('accountInfo')).token : '';
         let headers = {"headers": {"Authorization": token}};
         params = {...params, ...headers};
-        console.log(params);
         url += methodName;
         axios.post(url, params)
             .then(response => {

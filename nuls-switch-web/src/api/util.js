@@ -1,6 +1,6 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
-import {API_CHAIN_ID} from './../config'
+import {API_CHAIN_ID,API_ASSETS_ID} from './../config'
 import buffer from 'nuls-sdk-js/lib/utils/buffer';
 import txs from 'nuls-sdk-js/src/model/txs';
 
@@ -86,11 +86,19 @@ export function multiDecimals(nu, decimals = 8) {
 }
 
 /**
- * 获取链ID
+ * 获取主网链ID
  * @returns {number}
  */
 export function chainID() {
     return API_CHAIN_ID
+}
+
+/**
+ * 获取主网链主资产ID
+ * @returns {number}
+ */
+export function assetsID() {
+    return API_ASSETS_ID
 }
 
 /**

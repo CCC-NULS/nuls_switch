@@ -1,7 +1,7 @@
 import {post_nuls} from './https'
 import {post} from './https'
 import {get} from './https'
-import {Plus, chainID, divDecimals} from './util'
+import {Plus, chainID, assetsID, divDecimals} from './util'
 
 /**
  * 计算手续费
@@ -131,6 +131,7 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
     // {
     //     newNonce="ffffffffffffffff";
     // }
+    // 组装交易来源数据
     let inputs = [{
         address: transferInfo.fromAddress,
         assetsChainId: transferInfo.assetsChainId,
@@ -139,35 +140,24 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
         locked: newLocked,
         nonce: newNonce
     }];
-    // 如果资产不是NULS手续费需要一个单独From
+    // 计算手续费，如果转账资产是跨链资产不是NULS，手续费需要一个单独From，因为手续费只收NULS
     if (fee && transferInfo.assetsChainId !== chainID()) {
+        //账户转出资产余额
+        let nulsbalance = await getBalanceOrNonceByAddress(chainID(), assetsID(), transferInfo.fromAddress);
+        if (nulsbalance.data.balance < 100000) {
+            console.log("余额小于手续费");
+            return {success: false, data: "Your balance is not enough."}
+        }
         inputs.push({
             address: transferInfo.fromAddress,
             assetsChainId: chainID(),
-            assetsId: transferInfo.assetsId,
+            assetsId: assetsID(),
             amount: 100000,
             locked: newLocked,
-            nonce: newNonce
+            nonce: nulsbalance.data.nonce
         })
     }
-    // 跨链资产转账时，才需要根据不同资产收取NULS手续费
-    // if (transferInfo.assetsChainId !== chainID()) {
-    //     inputs[0].amount = transferInfo.amount;
-    //     //账户转出资产余额
-    //     let nulsbalance = await getBalanceOrNonceByAddress(chainID(), 1, transferInfo.fromAddress);
-    //     if (nulsbalance.data.balance < 100000) {
-    //         console.log("余额小于手续费");
-    //         return
-    //     }
-    //     inputs.push({
-    //         address: transferInfo.fromAddress,
-    //         assetsChainId: chainID(),
-    //         assetsId: transferInfo.assetsId,
-    //         amount: 100000,
-    //         locked: newLocked,
-    //         nonce: nulsbalance.data.nonce
-    //     })
-    // }
+    // 组装交易输出数据
     let outputs = [{
         address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
         assetsChainId: transferInfo.assetsChainId,
@@ -175,8 +165,6 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
         amount: newoutputAmount,
         lockTime: newLockTime
     }];
-    //console.log(inputs);
-    //console.log(outputs);
     return {success: true, data: {inputs: inputs, outputs: outputs}};
 }
 

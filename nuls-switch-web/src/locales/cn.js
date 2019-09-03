@@ -427,7 +427,7 @@ const cn ={
     "tradingOrderError": "交易提交失败",
     "cancelOrderSuccess": "取消挂单成功",
     "cancelOrderError": "取消挂单失败",
-    "confirmOrderSuccess": "确认订单成功",
+    "confirmOrderSuccess": "确认订单成功，等待数据同步到区块链",
     "confirmOrderError": "确认订单失败",
     "getOrderTradeSuccess": "查询订单交易明细成功",
     "getOrderTradeError": "查询订单交易明细失败"

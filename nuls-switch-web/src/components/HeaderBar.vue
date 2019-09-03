@@ -50,7 +50,6 @@
        * @param keyPath
        */
       handleSelect(key, keyPath) {
-        console.log(key, keyPath);
         if (keyPath.length > 1) {
           if (keyPath[0] === "address") {
             for (let item  of this.addressList) {
