@@ -220,7 +220,7 @@
                       this.depositListLoading = false;
                   } else {
                       this.$message({
-                          message: this.$t('public.queryMyHisOrderFail') + response.data,
+                          message: this.$t('public.queryMyHisOrderFail') + ": " + response.data,
                           type: 'error',
                           duration: 3000
                       });

@@ -621,10 +621,10 @@
                             this.balanceInfo = response.data;
                         }
                     } else {
-                        this.$message({message: this.$t('public.getBalanceFail') + response.data, type: 'error', duration: 1000});
+                        this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 1000});
                     }
                 }).catch((error) => {
-                    this.$message({message: this.$t('public.getBalanceException') + error.data, type: 'error', duration: 1000});
+                    this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 1000});
                 });
             },
             /**
