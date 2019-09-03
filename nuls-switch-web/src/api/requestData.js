@@ -511,3 +511,21 @@ export async function confirmOrder(params) {
         });
 }
 
+/**
+ * 更新交易数据上链返回结果
+ * @param trade
+ * @returns {Promise<any>}
+ **/
+export async function updateTradeResult(params) {
+    return await post('/v1/order/', 'updateTradeResult', params)
+        .then((response) => {
+            if (response.hasOwnProperty("result")) {
+                return {success: true, data: response.result};
+            } else {
+                return {success: false, data: response.message};
+            }
+        })
+        .catch((error) => {
+            return {success: false, data: error};
+        });
+}

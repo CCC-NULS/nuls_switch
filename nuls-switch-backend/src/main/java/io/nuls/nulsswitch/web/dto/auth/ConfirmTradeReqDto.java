@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 类描述：交易发起方对交易进行确认请求，该请求会将交易发到区块链上
+ * 类描述：交易发起方对交易进行确认请求，该请求不会将交易发到区块链上，由前端将数据上链
  *
  * @author Edward
  * @version v1.0

@@ -18,6 +18,7 @@ import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.IdUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.auth.ConfirmTradeReqDto;
+import io.nuls.nulsswitch.web.dto.auth.TradeResultReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
@@ -225,9 +226,8 @@ public class OrderController extends BaseController {
      * 交易发起方确认交易
      * 1、将16进制串反序列化为交易
      * 2、根据tradeId与交易对象对比请求合法性(交易对象的地址是否与交易记录中的相匹配)
-     * 3、更新数据表记录状态为等区块链确认
-     * 4、将请求发送到区块链
-     * 5、响应确认提交成功
+     * 3、更新数据表记录状态为等待区块链确认中
+     * 4、响应确认提交成功
      */
     @ApiOperation(value = "确认订单", notes = "确认订单")
     @PostMapping("confirmOrder")
@@ -281,6 +281,41 @@ public class OrderController extends BaseController {
                 return WrapMapper.error(CommonErrorCode.BROADCAST_ERROR);
             }
             return WrapMapper.error("System Error");
+        }
+        return WrapMapper.ok(result);
+    }
+
+    /**
+     * 更新交易数据上链返回结果
+     * 将交易状态改为交易失败
+     */
+    @ApiOperation(value = "更新交易数据上链返回结果", notes = "验证交易数据错误时才调用该接口")
+    @PostMapping("updateTradeResult")
+    public Wrapper updateTradeResult(@RequestBody TradeResultReqDto tradeResultReqDto) {
+        Boolean result;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(tradeResultReqDto.getTxId(), CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeResultReqDto.getDataHex(), CommonErrorCode.PARAMETER_NULL);
+
+            // check data
+            Trade trade = tradeService.selectById(tradeResultReqDto.getTxId());
+            if (trade == null) {
+                log.warn("the trade does not exist,txId:{}", tradeResultReqDto.getTxId());
+                throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
+            }
+
+            System.out.println(tradeResultReqDto.getDataHex());
+            // txHex中增加了第二次追加的签名
+            trade.setTxHex(tradeResultReqDto.getDataHex());
+            // 交易状态为交易失败
+            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
+            // 返回错误信息
+            trade.setMsg(tradeResultReqDto.getMsg());
+            result = tradeService.updateById(trade);
+            log.info("updateTradeResult response:{}", result);
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
         }
         return WrapMapper.ok(result);
     }

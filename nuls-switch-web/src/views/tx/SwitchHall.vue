@@ -335,6 +335,7 @@
     import {
         cancelOrder,
         confirmOrder,
+        updateTradeResult,
         createOrder,
         getBalanceOrNonceByAddress,
         getOrderDetail,
@@ -1129,13 +1130,29 @@
                             txHash = response.hash;
                         } else {
                             this.$message({message: this.$t('error.' + response.data.code), type: 'error', duration: 3000});
+                            let params = {
+                                "txId": this.tradeInfo.txId,
+                                "dataHex": txhex,
+                                "msg": response.data.message
+                            };
+                            // 验证或者广播交易失败时，更新交易状态为交易失败
+                            updateTradeResult(params).then((response) => {
+                                if (response.success) {
+                                    this.orderId = '';
+                                    this.tradeInfo.status = 3;
+                                } else {
+                                    this.$message({message: this.$t('switch.confirmOrderError') + ": " + response.data, type: 'error', duration: 3000});
+                                }
+                            }).catch((err) => {
+                                this.$message({message: this.$t('switch.confirmOrderError') + ": " + err, type: 'error', duration: 3000});
+                            });
                         }
                     }).catch((err) => {
                         this.$message({message: this.$t('public.err1') + err.data, type: 'error', duration: 1000});
                     });
 
                     if (txHash != null) {
-                        // 确认订单提交
+                        // 确认订单成功
                         let params = {
                             "txId": this.tradeInfo.txId,
                             "txHash": txHash,
