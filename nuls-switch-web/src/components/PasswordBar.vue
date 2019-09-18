@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="请输入密码" :visible.sync="passwordVisible" top="30vh" width="30rem"
+  <el-dialog :title="$t('user.nullPassword')" :visible.sync="passwordVisible" top="30vh" width="30rem"
              class="password-dialog"
              :close-on-click-modal="false"
              :close-on-press-escape="false"
@@ -26,7 +26,7 @@
     data() {
       let validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error("请输入密码"))
+          callback(new Error(this.$t('user.nullPassword')));
         } else {
           callback()
         }

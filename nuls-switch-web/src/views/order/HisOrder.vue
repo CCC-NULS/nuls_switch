@@ -27,16 +27,16 @@
         <el-table-column :label="$t('orderInfo.createTime')" width="180" align="left">
           <template slot-scope="scope">{{ scope.row.createTime }}</template>
         </el-table-column>
-        <el-table-column :label="$t('orderInfo.txType')" width="120" align="left">
+        <el-table-column :label="$t('orderInfo.txType')" width="130" align="left">
           <template slot-scope="scope">
             <span v-if="scope.row.txType ===1">{{$t('switch.buy')}}</span>
             <span v-else>{{$t('switch.sell')}}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('orderInfo.tokenPair')" width="170" align="left">
+        <el-table-column :label="$t('orderInfo.tokenPair')" width="165" align="left">
           <template slot-scope="scope">{{ scope.row.tokenPair }}</template>
         </el-table-column>
-        <el-table-column :label="$t('orderInfo.price')" width="120" align="left">
+        <el-table-column :label="$t('orderInfo.price')" width="115" align="left">
           <template slot-scope="scope">{{ scope.row.price }}</template>
         </el-table-column>
         <el-table-column :label="$t('orderInfo.num')" width="170" align="left">
@@ -68,7 +68,7 @@
     </div>
 
     <!-- 订单交易详情列表 -->
-    <el-dialog title="订单交易详情" :visible.sync="orderTradeVisible" top="30vh"
+    <el-dialog :title="$t('switch.orderTradeList')" :visible.sync="orderTradeVisible" top="30vh"
                class="order-trade-detail-dialog"
                :close-on-click-modal="false"
                :close-on-press-escape="false"
@@ -448,11 +448,14 @@
           }
         }
       }
-      .pass-form {
-
-      }
 
     }
   }
 
+  .el-select .el-input .el-input__inner {
+    border-radius: 2px;
+    line-height: 32px;
+    height: 32px;
+    width: 150px;
+  }
 </style>

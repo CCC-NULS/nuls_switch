@@ -278,7 +278,8 @@ const cn ={
     "confirmOrderSuccess": "确认订单成功，等待数据同步到区块链",
     "confirmOrderError": "确认订单失败",
     "getOrderTradeSuccess": "查询订单交易明细成功",
-    "getOrderTradeError": "查询订单交易明细失败"
+    "getOrderTradeError": "查询订单交易明细失败",
+    "orderTradeList": "订单交易详情"
   },
 
   "orderInfo":{

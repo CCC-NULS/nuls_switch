@@ -15,8 +15,8 @@
           <i class="el-icon-s-custom click " @click="toUrl('backupsAddress')"></i>&nbsp;
           <span class="click tc" @click="signOut">{{$t('nav.logout')}}</span>
         </div>
-
       </div>
+      <div class="language font14 fr" @click="selectLanguage(lang,true)">{{lang === 'en' ? '简体中文':'English' }}</div>
     </div>
     <div class="cb"></div>
   </div>
@@ -27,6 +27,8 @@
   export default {
     data() {
       return {
+        //语言
+        lang: 'en',
         activeIndex: 'switchHall',//导航选中
         accountInfo: {},//账户信息
         accountAddress: '',
@@ -35,11 +37,22 @@
     },
     created() {
       this.getAddressList();
+      let lang = navigator.language || navigator.userLanguage;//常规浏览器语言和IE浏览器
+      if (sessionStorage.hasOwnProperty('lang')) {
+        this.lang = sessionStorage.getItem('lang')
+      } else {
+        if (lang.substr(0, 2) === 'zh') {
+          this.lang = 'cn'
+        } else {
+          this.lang = 'en'
+        }
+      }
     },
     mounted() {
       setInterval(() => {
         this.getAddressList();
-      }, 5000)
+      }, 5000);
+      this.selectLanguage(this.lang, false);
     },
 
     methods: {
@@ -113,9 +126,13 @@
        * 语言切换
        * @param e
        */
-      selectLanguage(e) {
-        this.lang = e;
+      selectLanguage(e, Boolean) {
+        //this.lang = e;
+        if (Boolean) {
+          this.lang = this.lang === 'en' ? 'cn' : 'en';
+        }
         this.$i18n.locale = this.lang;
+        sessionStorage.setItem('lang', this.lang);
       },
 
       /**
@@ -155,10 +172,10 @@
       height: 62px;
     }
     .nav {
-      width: 1050px;
+      width: 950px;
       .el-menu.el-menu--horizontal {
         border-bottom: 0;
-        width: 950px;
+        width: 860px;
         .el-menu-item {
           height: 79px;
           line-height: 80px;
@@ -176,6 +193,15 @@
         width: 100px;
         line-height: 80px;
       }
+
+    }
+
+    .language {
+      width: 60px;
+      color: @Acolor;
+      line-height: 80px;
+      cursor: pointer;
+      text-align: right;
     }
   }
 </style>

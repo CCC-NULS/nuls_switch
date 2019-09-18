@@ -56,8 +56,8 @@ const en = {
 
   "switch":{
     "mustLogin":"You are not logged in yet. Please log in first",
-    "myWantBuy":"I want buy",
-    "myWantSell":"I want sell",
+    "myWantBuy":"Buy",
+    "myWantSell":"Sell",
     "buy":"Buy",
     "sell":"Sell",
     "currentDeposit":"CurrentDeposit",
@@ -79,12 +79,13 @@ const en = {
     "confirmOrderSuccess": "Confirm that the order is successful and wait for data to be synchronized to the block chain",
     "confirmOrderError": "Failure to confirm order",
     "getOrderTradeSuccess": "Successful to query order transaction details",
-    "getOrderTradeError": "Failure to query order transaction details"
+    "getOrderTradeError": "Failure to query order transaction details",
+    "orderTradeList": "Order trade list"
   },
 
   "orderInfo":{
     "price":"Price",
-    "num":"Number",
+    "num":"Num",
     "txNum":"TransactionNumber",
     "remainNum":"RemainNumber",
     "maxTxNum":"BalanceTradable",
@@ -94,7 +95,7 @@ const en = {
     "depositTime":"DepositTime",
     "tokenPair":"TokenPair",
     "totalAmount":"TotalAmount",
-    "txAmount":"TransactionAmount",
+    "txAmount":"TxAmount",
     "status":"Status"
   },
 
@@ -122,7 +123,7 @@ const en = {
     "0": "Unconfirmed",
     "1": "OnConfirme",
     "2": "Confirmed",
-    "3": "TransactionFailure",
+    "3": "TxFailure",
     "9": "Cancelled"
   },
 

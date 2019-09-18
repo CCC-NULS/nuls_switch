@@ -266,7 +266,7 @@
         </el-dialog>
 
         <!-- 订单交易详情列表 -->
-        <el-dialog title="订单交易详情" :visible.sync="orderTradeVisible" top="30vh"
+        <el-dialog :title="$t('switch.orderTradeList')" :visible.sync="orderTradeVisible" top="30vh"
                    class="order-trade-detail-dialog"
                    :close-on-click-modal="false"
                    :close-on-press-escape="false"
@@ -1411,6 +1411,7 @@
                         float: left;
                         display: inline;
                         padding: 10px 0 0 10px;
+                        font-size: 14px;
                     }
                 }
 

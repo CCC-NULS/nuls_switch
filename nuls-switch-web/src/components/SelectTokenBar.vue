@@ -126,3 +126,8 @@
         }
     }
 </script>
+<style lang="less">
+    .el-input__inner {
+        font-size: 14px;
+    }
+</style>
