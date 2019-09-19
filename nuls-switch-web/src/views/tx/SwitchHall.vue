@@ -621,10 +621,10 @@
                             this.balanceInfo = response.data;
                         }
                     } else {
-                        this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 1000});
+                        this.$message({message: this.$t('public.getBalanceFail') + ", " + response.data, type: 'error', duration: 1000});
                     }
                 }).catch((error) => {
-                    this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 1000});
+                    this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 1000});
                 });
             },
             /**
@@ -793,10 +793,10 @@
                             this.pagesDepositList();
                             this.$message({message: this.$t('switch.createOrderSuccess'), type: 'success', duration: 1000});
                         } else {
-                            this.$message({message: this.$t('switch.createOrderError') + response.data, type: 'error', duration: 1000});
+                            this.$message({message: this.$t('switch.createOrderError') + ", " + response.data, type: 'error', duration: 1000});
                         }
                     }).catch((err) => {
-                        this.$message({message: this.$t('switch.createOrderError') + err.data, type: 'error', duration: 1000});
+                        this.$message({message: this.$t('switch.createOrderError') + ", " + err.data, type: 'error', duration: 1000});
                     });
                 } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 1000});
@@ -939,10 +939,10 @@
                         if (response.success) {
                             balanceInfoA = response.data;
                         } else {
-                            this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('public.getBalanceFail') + ", " + response.data, type: 'error', duration: 3000});
                         }
                     }).catch((error) => {
-                        this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 3000});
+                        this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
                     // 吃单人转出交易总量，如果是买入，则为交易量，如果是卖出，则为交易量 * 单价
                     let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
@@ -972,10 +972,10 @@
                         if (response.success) {
                             balanceInfoB = response.data;
                         } else {
-                            this.$message({message: this.$t('public.getBalanceFail') + ": " + response.data, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('public.getBalanceFail') + ", " + response.data, type: 'error', duration: 3000});
                         }
                     }).catch((error) => {
-                        this.$message({message: this.$t('public.getBalanceException') + ": " + error.data, type: 'error', duration: 3000});
+                        this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
                     // 挂单人转出交易总量，如果是买入，则为交易量 * 单价，如果是卖出，则为交易量
                     let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
@@ -1007,10 +1007,10 @@
                             this.sellTokenForm.txNum = '';
                             this.$message({message: this.$t('switch.tradingOrderSuccess'), type: 'success', duration: 2000});
                         } else {
-                            this.$message({message: this.$t('switch.tradingOrderError') + response.data, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('switch.tradingOrderError') + ", " + response.data, type: 'error', duration: 3000});
                         }
                     }).catch((err) => {
-                        this.$message({message: this.$t('switch.tradingOrderError') + err.data, type: 'error', duration: 3000});
+                        this.$message({message: this.$t('switch.tradingOrderError') + ", " + err.data, type: 'error', duration: 3000});
                     });
                 } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 3000});
@@ -1042,10 +1042,10 @@
                             this.orderId = '';
                             this.$message({message: this.$t('switch.cancelOrderSuccess'), type: 'success', duration: 2000});
                         } else {
-                            this.$message({message: this.$t('switch.cancelOrderError') + ": " + response.data, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('switch.cancelOrderError') + ", " + response.data, type: 'error', duration: 3000});
                         }
                     }).catch((err) => {
-                        this.$message({message: this.$t('switch.cancelOrderError') + ": " + err.data, type: 'error', duration: 3000});
+                        this.$message({message: this.$t('switch.cancelOrderError') + ", " + err.data, type: 'error', duration: 3000});
                     });
                 } else {
                     this.$message({message: this.$t('public.errorPwd'), type: 'error', duration: 1000});
@@ -1088,10 +1088,10 @@
                         this.tradeListLoading = false;
                         this.orderTradeVisible = true;
                     } else {
-                        this.$message({message: this.$t('switch.getOrderTradeError') + response.data, type: 'error', duration: 1000});
+                        this.$message({message: this.$t('switch.getOrderTradeError') + ", " + response.data, type: 'error', duration: 1000});
                     }
                 }).catch((err) => {
-                    this.$message({message: this.$t('switch.getOrderTradeError') + err.data, type: 'error', duration: 1000});
+                    this.$message({message: this.$t('switch.getOrderTradeError') + ", " + err.data, type: 'error', duration: 1000});
                 });
             },
 
@@ -1141,14 +1141,14 @@
                                     this.orderId = '';
                                     this.tradeInfo.status = 3;
                                 } else {
-                                    this.$message({message: this.$t('switch.confirmOrderError') + ": " + response.data, type: 'error', duration: 3000});
+                                    this.$message({message: this.$t('switch.confirmOrderError') + ", " + response.data, type: 'error', duration: 3000});
                                 }
                             }).catch((err) => {
-                                this.$message({message: this.$t('switch.confirmOrderError') + ": " + err, type: 'error', duration: 3000});
+                                this.$message({message: this.$t('switch.confirmOrderError') + ", " + err, type: 'error', duration: 3000});
                             });
                         }
                     }).catch((err) => {
-                        this.$message({message: this.$t('public.err1') + err.data, type: 'error', duration: 1000});
+                        this.$message({message: this.$t('public.err1') + ", " + err.data, type: 'error', duration: 1000});
                     });
 
                     if (txHash != null) {
@@ -1164,10 +1164,10 @@
                                 this.tradeInfo.status = 1;
                                 this.$message({message: this.$t('switch.confirmOrderSuccess'), type: 'success', duration: 2000});
                             } else {
-                                this.$message({message: this.$t('switch.confirmOrderError') + ": " + response.data, type: 'error', duration: 3000});
+                                this.$message({message: this.$t('switch.confirmOrderError') + ", " + response.data, type: 'error', duration: 3000});
                             }
                         }).catch((err) => {
-                            this.$message({message: this.$t('switch.confirmOrderError') + ": " + err, type: 'error', duration: 3000});
+                            this.$message({message: this.$t('switch.confirmOrderError') + ", " + err, type: 'error', duration: 3000});
                         });
                     }
                 } else {

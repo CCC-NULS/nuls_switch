@@ -109,7 +109,7 @@
                     });
                 } else {
                     this.$message({
-                        message: this.$t('user.importAddressError') + ": " + addressInfo.data.error.message,
+                        message: this.$t('user.importAddressError') + ", " + addressInfo.data.error.message,
                         type: 'error',
                         duration: 2000
                     });
