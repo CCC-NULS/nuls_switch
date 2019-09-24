@@ -4,6 +4,7 @@ const cn ={
     "switch": "交易大厅",
     "myAsset": "资产列表",
     "myOrder": "历史委托",
+    "tradeList": "交易记录",
     "login": "登录",
     "logout": "退出"
   },
@@ -41,6 +42,8 @@ const cn ={
     "getBalanceException": "获取账户余额异常:",
     "queryMyHisOrderFail": "查询用户历史委托订单失败:",
     "queryMyHisOrderException": "查询用户历史委托订单异常:",
+    "queryTradeByPageFail": "查询用户历史交易失败:",
+    "queryTradeByPageException": "查询用户历史交易异常:",
     "startTime":"开始时间",
     "endTime":"结束时间",
     "all":"全部",
@@ -277,6 +280,8 @@ const cn ={
     "cancelOrderError": "取消挂单失败",
     "confirmOrderSuccess": "确认订单成功，等待数据同步到区块链",
     "confirmOrderError": "确认订单失败",
+    "cancelTradeSuccess": "取消交易成功",
+    "cancelTradeError": "取消交易失败",
     "getOrderTradeSuccess": "查询订单交易明细成功",
     "getOrderTradeError": "查询订单交易明细失败",
     "orderTradeList": "订单交易详情"
@@ -295,7 +300,21 @@ const cn ={
     "tokenPair":"交易对",
     "totalAmount":"总额",
     "txAmount":"交易金额",
-    "status":"状态"
+    "status":"状态",
+  },
+
+  "tradeInfo":{
+    "price":"价格",
+    "num":"数量",
+    "txNum":"交易数量",
+    "txType":"交易类型",
+    "createTime":"时间",
+    "tokenPair":"交易对",
+    "totalAmount":"总额",
+    "txAmount":"交易金额",
+    "status":"状态",
+    "outputNum":"转出数量",
+    "inputNum":"转入数量",
   },
 
   "asset": {
@@ -319,6 +338,7 @@ const cn ={
   },
 
   "tradeStatus":{
+    "10": "全部",
     "0": "未确认",
     "1": "确认中",
     "2": "已确认",

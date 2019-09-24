@@ -6,9 +6,10 @@
       </div>
       <div class="nav fl">
         <el-menu :default-active="activeIndex" class="fl" mode="horizontal" @select="handleSelect">
-          <el-menu-item index="switchHall" :disabled="addressList.length === 0"><i class="el-icon-video-camera-solid"></i>{{$t('nav.switch')}}</el-menu-item>
-          <el-menu-item index="myAsset" :disabled="addressList.length === 0"><i class="el-icon-share"></i>{{$t('nav.myAsset')}}</el-menu-item>
-          <el-menu-item index="myOrder" :disabled="addressList.length === 0"><i class="el-icon-video-camera-solid"></i>{{$t('nav.myOrder')}}</el-menu-item>
+          <el-menu-item index="switchHall" :disabled="addressList.length === 0">{{$t('nav.switch')}}</el-menu-item>
+          <el-menu-item index="myAsset" :disabled="addressList.length === 0">{{$t('nav.myAsset')}}</el-menu-item>
+          <el-menu-item index="myOrder" :disabled="addressList.length === 0">{{$t('nav.myOrder')}}</el-menu-item>
+          <el-menu-item index="tradeList" :disabled="addressList.length === 0">{{$t('nav.tradeList')}}</el-menu-item>
         </el-menu>
         <el-link type="primary" @click="toUrl('newAddress')" class="user click fr tc" v-if="!accountAddress">{{$t('nav.login')}}</el-link>
         <div v-else>
@@ -101,6 +102,8 @@
           return 'myAsset'
         } else if (val.indexOf('/myOrder') === 0) {
           return 'myOrder'
+        } else if (val.indexOf('/txList') === 0) {
+          return 'txList'
         } else {
           return 'home'
         }

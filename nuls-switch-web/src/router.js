@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home'
+//import Home from './views/Home'
 import NewAddress from './views/user/NewAddress'
 import ImportAddress from './views/user/ImportAddress'
 import BackupsAddress from './views/user/BackupsAddress'
 import SwitchHall from './views/tx/SwitchHall'
 import AssetList from './views/asset/AssetList'
 import HisOrder from './views/order/HisOrder'
+import TradeList from './views/order/TradeList'
 
 Vue.use(Router);
 
@@ -51,6 +52,11 @@ export default new Router({
       path: '/myOrder',
       name: 'myOrder',
       component: HisOrder
+    },
+    {
+      path: '/tradeList',
+      name: 'tradeList',
+      component: TradeList
     }
   ]
 })

@@ -421,6 +421,25 @@ export async function getOrderDetail(params) {
 }
 
 /**
+ * 查询历史交易列表
+ * @param tradeInfo
+ * @returns {Promise<any>}
+ **/
+export async function queryTradeByPage(params) {
+    return await get('/v1/order/', 'queryTradeByPage', params)
+        .then((response) => {
+            if (response.hasOwnProperty("result")) {
+                return {success: true, data: response.result};
+            } else {
+                return {success: false, data: response.message};
+            }
+        })
+        .catch((error) => {
+            return {success: false, data: error};
+        });
+}
+
+/**
  * 获取访问Token
  * @param params
  * @returns {Promise<any>}
@@ -499,6 +518,25 @@ export async function tradingOrder(params) {
  **/
 export async function confirmOrder(params) {
     return await post('/v1/order/', 'confirmOrder', params)
+        .then((response) => {
+            if (response.hasOwnProperty("result")) {
+                return {success: true, data: response.result};
+            } else {
+                return {success: false, data: response.message};
+            }
+        })
+        .catch((error) => {
+            return {success: false, data: error};
+        });
+}
+
+/**
+ * 取消交易
+ * @param txId
+ * @returns {Promise<any>}
+ **/
+export async function cancelTrade(params) {
+    return await post('/v1/order/', 'cancelTrade', params)
         .then((response) => {
             if (response.hasOwnProperty("result")) {
                 return {success: true, data: response.result};

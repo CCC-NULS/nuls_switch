@@ -5,6 +5,7 @@ const en = {
     "switch": "SwitchHall",
     "myAsset": "Assets",
     "myOrder": "HistoryOrder",
+    "tradeList": "Transaction",
     "login": "Login",
     "logout": "Logout"
   },
@@ -76,6 +77,8 @@ const en = {
     "tradingOrderError": "Transaction submit failed",
     "cancelOrderSuccess": "Cancel Creation Order Successfully",
     "cancelOrderError": "Failed to cancel creation order",
+    "cancelTradeSuccess": "Cancel trade Successfully",
+    "cancelTradeError": "Failed to cancel trade",
     "confirmOrderSuccess": "Confirm that the order is successful and wait for data to be synchronized to the block chain",
     "confirmOrderError": "Failure to confirm order",
     "getOrderTradeSuccess": "Successful to query order transaction details",
@@ -96,7 +99,18 @@ const en = {
     "tokenPair":"TokenPair",
     "totalAmount":"TotalAmount",
     "txAmount":"TxAmount",
-    "status":"Status"
+    "status":"Status",
+  },
+
+  "tradeInfo":{
+    "price":"Price",
+    "num":"Num",
+    "txType":"TransactionType",
+    "createTime":"CreateTime",
+    "tokenPair":"TokenPair",
+    "status":"Status",
+    "outputNum":"OutputNumer",
+    "inputNum":"InputNumer",
   },
 
   "asset": {
@@ -120,6 +134,7 @@ const en = {
   },
 
   "tradeStatus":{
+    "10": "All",
     "0": "Unconfirmed",
     "1": "OnConfirme",
     "2": "Confirmed",
