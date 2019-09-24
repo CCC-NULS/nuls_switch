@@ -8,12 +8,15 @@ import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.mapper.TradeMapper;
+import io.nuls.nulsswitch.service.TokenService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
+import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 import io.nuls.v2.util.NulsSDKTool;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,16 +36,38 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     @Resource
     TradeMapper tradeMapper;
 
+    @Resource
+    TokenService tokenService;
+
     @Override
     public Page<Trade> queryTradeByOrderIdPage(QueryTradeReqDto reqDto) {
         Page<Trade> tradePage = new Page<>();
-        Trade example = new Trade();
-        example.setOrderId(reqDto.getOrderId());
+        Trade trade = new Trade();
+        trade.setOrderId(reqDto.getOrderId());
         tradePage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
         tradePage.setSize(reqDto.getPageSize() == null ? 10 : reqDto.getPageSize());
-        EntityWrapper<Trade> eWrapper = new EntityWrapper<>(example);
+        EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
         eWrapper.orderBy("create_time", false);
         tradePage = this.selectPage(tradePage, eWrapper);
+        return tradePage;
+    }
+
+    @Override
+    public Page<TradeVO> queryTradeByPage(QueryTradeReqDto reqDto) {
+        Page<TradeVO> tradePage = new Page<>();
+        Trade trade = new Trade();
+        BeanUtils.copyProperties(reqDto, trade);
+        tradePage.setCurrent(reqDto.getCurrent() == null ? 1 : reqDto.getCurrent());
+        tradePage.setSize(reqDto.getPageSize() == null ? 10 : reqDto.getPageSize());
+        tradePage.setRecords(tradeMapper.queryTradeByPage(tradePage, reqDto));
+        Map<Integer, String> tokenMap = tokenService.getTokenMap();
+        if (tradePage != null && tradePage.getRecords() != null) {
+            tradePage.getRecords().forEach(obj -> {
+                obj.setFromTokenName(tokenMap.get(obj.getFromTokenId()));
+                obj.setToTokenName(tokenMap.get(obj.getToTokenId()));
+                obj.setTokenPair(tokenMap.get(obj.getFromTokenId()) + "_" + tokenMap.get(obj.getToTokenId()));
+            });
+        }
         return tradePage;
     }
 

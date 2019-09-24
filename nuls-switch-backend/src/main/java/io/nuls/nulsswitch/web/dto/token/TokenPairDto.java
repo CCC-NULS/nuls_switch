@@ -1,6 +1,5 @@
 package io.nuls.nulsswitch.web.dto.token;
 
-import io.nuls.nulsswitch.entity.Token;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

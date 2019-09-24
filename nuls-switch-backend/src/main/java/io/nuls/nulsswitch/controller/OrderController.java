@@ -23,6 +23,7 @@ import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
+import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 import io.nuls.nulsswitch.web.wrapper.WrapMapper;
 import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import io.swagger.annotations.ApiOperation;
@@ -161,6 +162,22 @@ public class OrderController extends BaseController {
         return WrapMapper.ok(result);
     }
 
+    @ApiOperation(value = "撤销交易", notes = "撤销交易")
+    @PostMapping("cancelTrade")
+    public Wrapper<Boolean> cancelTrade(@RequestBody Trade trade) {
+        try {
+            // check parameters
+            Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(trade.getTxId(), CommonErrorCode.PARAMETER_NULL);
+
+            // cancel trade
+            tradeService.cancelOrderTrade(trade.getOrderId(), trade.getTxId());
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok(true);
+    }
+
     @ApiOperation(value = "查询用户当前委托订单", notes = "查询用户当前委托订单")
     @GetMapping("queryMyCurrentOrder")
     public Wrapper<Page<QueryOrderResDto>> queryMyCurrentOrder(QueryOrderReqDto orderReq) {
@@ -196,6 +213,22 @@ public class OrderController extends BaseController {
             return WrapMapper.error(ex.getErrorCode());
         }
         return WrapMapper.ok(orderPage);
+    }
+
+    @ApiOperation(value = "查询用户历史交易", notes = "查询用户历史交易")
+    @GetMapping("queryTradeByPage")
+    public Wrapper<Page<TradeVO>> queryTradeByPage(QueryTradeReqDto tradeReq) {
+        // 查询用户历史交易
+        Page<TradeVO> tradePage;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
+            tradePage = tradeService.queryTradeByPage(tradeReq);
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok(tradePage);
     }
 
     @ApiOperation(value = "查询订单明细", notes = "查询订单明细")

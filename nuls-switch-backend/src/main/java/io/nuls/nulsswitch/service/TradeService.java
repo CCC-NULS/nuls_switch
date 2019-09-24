@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
+import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 
 /**
  * <p>
@@ -21,6 +22,14 @@ public interface TradeService extends IService<Trade> {
      * @return
      */
     Page<Trade> queryTradeByOrderIdPage(QueryTradeReqDto reqDto);
+
+    /**
+     * 分页查询交易列表
+     *
+     * @param reqDto
+     * @return
+     */
+    Page<TradeVO> queryTradeByPage(QueryTradeReqDto reqDto);
 
     /**
      * 将数据广播到区块链，并更新交易状态

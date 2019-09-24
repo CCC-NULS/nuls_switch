@@ -7,10 +7,9 @@ import com.google.common.collect.Lists;
 import io.nuls.nulsswitch.constant.CommonErrorCode;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
-import io.nuls.nulsswitch.entity.Token;
 import io.nuls.nulsswitch.mapper.OrderMapper;
-import io.nuls.nulsswitch.mapper.TokenMapper;
 import io.nuls.nulsswitch.service.OrderService;
+import io.nuls.nulsswitch.service.TokenService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
@@ -21,8 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Resource
-    TokenMapper tokenMapper;
+    TokenService tokenService;
 
     @Resource
     TradeService tradeService;
@@ -83,7 +84,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         eWrapper.orderBy("create_time", false);
         orderPage = this.selectPage(orderPage, eWrapper);
         BeanUtils.copyProperties(orderPage, orderDtoPage);
-        Map<Integer, String> tokenMap = getTokenMap();
+        Map<Integer, String> tokenMap = tokenService.getTokenMap();
         if (orderPage != null && orderPage.getRecords() != null) {
             List<QueryOrderResDto> list = Lists.newArrayList();
             orderPage.getRecords().forEach(obj -> {
@@ -118,9 +119,5 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return this.updateById(order);
     }
 
-    private Map<Integer, String> getTokenMap() {
-        // 查询所有token
-        Map<Integer, String> tokenMap = Optional.ofNullable(tokenMapper.selectList(null)).orElse(Collections.emptyList()).stream().collect(Collectors.toMap(Token::getTokenId, Token::getTokenSymbol));
-        return tokenMap;
-    }
+
 }
