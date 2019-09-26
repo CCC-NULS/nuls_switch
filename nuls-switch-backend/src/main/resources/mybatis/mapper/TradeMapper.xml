@@ -54,6 +54,7 @@
                 AND tr.tx_id=#{txId,jdbcType=VARCHAR}
             </if>
         </where>
+        order by create_time desc
     </select>
 
     <update id="cancelOrderTrade">
