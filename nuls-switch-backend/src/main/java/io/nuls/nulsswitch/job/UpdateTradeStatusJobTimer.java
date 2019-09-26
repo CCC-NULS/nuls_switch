@@ -73,9 +73,8 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
             //循环，到区块链中查询交易状态
             for (Trade trade : page.getRecords()) {
                 if (StringUtils.isNotBlank(trade.getTxHash())) {
-                    log.info("getTx req txHash:{}", trade.getTxHash());
                     Result result = NulsSDKTool.getTx(trade.getTxHash());
-                    log.info("getTx resp: ", result.toString());
+                    log.info("NulsSDKTool getTx, txHash: {}, resp: {}", trade.getTxHash(), result.toString());
                     if (result != null && result.getData() != null) {
                         Map map = (Map) result.getData();
                         Integer status = (Integer) map.get("status");
@@ -108,7 +107,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                     } else {
                         // 交易确认失败，该交易不存在
                         trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
-                        trade.setMsg("The transaction does not exist");
+                        trade.setMsg(result.getMsg());
                         tradeService.updateById(trade);
                     }
                 }
