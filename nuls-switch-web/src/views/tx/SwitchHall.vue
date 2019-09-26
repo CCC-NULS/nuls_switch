@@ -746,7 +746,8 @@
                         let totalAmount = multiDecimals(Times(this.buyTokenOrderForm.price, this.buyTokenOrderForm.totalNum), 8);
                         let balance = multiDecimals(this.toBalanceInfo.balance, 8);
                         if (txType === 2) {
-                            totalAmount = multiDecimals(Times(this.sellTokenOrderForm.price, this.sellTokenOrderForm.totalNum), 8);
+                            // 卖出不需要乘以价格，只比较数量
+                            totalAmount = multiDecimals(this.sellTokenOrderForm.totalNum, 8);
                             balance = multiDecimals(this.fromBalanceInfo.balance, 8);
                         }
                         if (Number(totalAmount) > Number(balance)) {
@@ -1141,7 +1142,11 @@
                                     this.orderId = '';
                                     this.tradeInfo.status = 3;
                                 } else {
-                                    this.$message({message: this.$t('switch.confirmOrderError') + ", " + response.data, type: 'error', duration: 3000});
+                                    this.$message({
+                                        message: this.$t('switch.confirmOrderError') + ", " + response.data,
+                                        type: 'error',
+                                        duration: 3000
+                                    });
                                 }
                             }).catch((err) => {
                                 this.$message({message: this.$t('switch.confirmOrderError') + ", " + err, type: 'error', duration: 3000});
