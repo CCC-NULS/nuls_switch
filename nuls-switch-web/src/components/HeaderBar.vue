@@ -175,7 +175,7 @@
       height: 62px;
     }
     .nav {
-      width: 950px;
+      width: 970px;
       .el-menu.el-menu--horizontal {
         border-bottom: 0;
         width: 860px;
