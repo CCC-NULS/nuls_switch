@@ -15,7 +15,7 @@ spring:
     initialize: true #指定初始化数据源，是否用data.sql来初始化，默认: true
     driver-class-name: com.mysql.jdbc.Driver
     username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:}
+    password: ${MYSQL_PASSWORD:123456}
     initialSize: 1
     minIdle: 3
     maxActive: 20
@@ -59,4 +59,4 @@ jwt:
   tokenHead: "Bearer "
 nuls:
   api:
-    address: ${NULS_API_ADDRESS:http://39.98.226.51:18004/}
+    address: ${NULS_API_ADDRESS:http://beta.api.nuls.io}
