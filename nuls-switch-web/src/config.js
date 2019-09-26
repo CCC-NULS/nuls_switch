@@ -8,6 +8,6 @@ export const API_ASSETS_ID = 1;
 export const API_BURNING_ADDRESS = 'tNULSeBaMgLW3Wrt8Eh8Av5MinETdiXhfGg61u';
 //正式、测试网络的api
 export let NULS_API_URL = IS_DEV ? 'http://apitn1.nulscan.io' : 'http://apitn1.nulscan.io';
-export let API_URL = IS_DEV ? 'http://127.0.0.1:8010/' : 'http://api.switch.nuls.com/';
+export let API_URL = IS_DEV ? 'http://127.0.0.1:8010/' : './';
 //请求最迟时间
 export const API_TIME = IS_DEV ? 15000 : 20000;
