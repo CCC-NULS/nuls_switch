@@ -59,4 +59,4 @@ jwt:
   tokenHead: "Bearer "
 nuls:
   api:
-    address: beta.api.nuls.io
+    address: http://beta.api.nuls.io/
