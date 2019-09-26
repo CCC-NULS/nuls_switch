@@ -105,6 +105,11 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                             trade.setMsg(result.getMsg());
                             tradeService.updateById(trade);
                         }
+                    } else {
+                        // 交易确认失败，该交易不存在
+                        trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
+                        trade.setMsg("The transaction does not exist");
+                        tradeService.updateById(trade);
                     }
                 }
             }
