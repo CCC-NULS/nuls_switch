@@ -522,7 +522,7 @@
             if (this.accountAddress != null) {
                 // 查询主链资产余额 balanceInfo
                 this.getBalanceOrNonce(0, 2, 1, this.accountAddress.address);
-                this.getAssetsListByAddress(this.accountAddress.address);
+                //this.getAssetsListByAddress(this.accountAddress.address);
             }
 
             // 定时账户是否登录
@@ -548,14 +548,14 @@
                         this.getBalanceOrNonce(2, this.toTokenInfo.chainId, this.toTokenInfo.assetId, this.accountAddress.address, 1);
                     }
                 }
-            }, 10000);
+            }, 30000);
         },
         watch: {
             addressInfo(val, old) {
                 //判断是否有账户
                 if (this.addressInfo) {
                     if (this.accountAddress && val.address !== old.address && old.address) {
-                        this.getAssetsListByAddress(this.accountAddress.address);
+                        //this.getAssetsListByAddress(this.accountAddress.address);
                     }
                 } else {
                     // 移除当前委托数据
@@ -621,7 +621,8 @@
                             this.balanceInfo = response.data;
                         }
                     } else {
-                        this.$message({message: this.$t('public.getBalanceFail') + ", " + response.data, type: 'error', duration: 1000});
+                        console.log("getBalanceOrNonceByAddress:" + this.$t('public.getBalanceFail') + ", " + response.data);
+                        //this.$message({message: this.$t('public.getBalanceFail') + ", " + response.data, type: 'error', duration: 1000});
                     }
                 }).catch((error) => {
                     this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 1000});

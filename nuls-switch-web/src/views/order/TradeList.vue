@@ -81,7 +81,7 @@
 
 <script>
   import nuls from 'nuls-sdk-js'
-  import {chainID, getLocalTime, Times, divDecimals} from '@/api/util'
+  import {chainID, getLocalTime, divDecimals} from '@/api/util'
   import moment from 'moment'
   import Password from '@/components/PasswordBar'
   import SelectTokenBar from '@/components/SelectTokenBar'
@@ -283,6 +283,18 @@
             background: #000000;
           }
         }
+      }
+    }
+
+    .bottoms {
+      margin: 0 auto 40px;
+      @media screen and (max-width: 1000px) {
+        margin: 1.5rem auto 1.5rem ;
+        width: 95%;
+      }
+
+      .el-trade-table {
+        margin-bottom: 10px;
       }
 
     }

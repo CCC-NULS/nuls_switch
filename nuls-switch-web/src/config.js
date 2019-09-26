@@ -10,4 +10,4 @@ export const API_BURNING_ADDRESS = 'tNULSeBaMgLW3Wrt8Eh8Av5MinETdiXhfGg61u';
 export let NULS_API_URL = IS_DEV ? 'http://apitn1.nulscan.io' : 'http://apitn1.nulscan.io';
 export let API_URL = IS_DEV ? 'http://127.0.0.1:8010/' : 'http://api.switch.nuls.com/';
 //请求最迟时间
-export const API_TIME = IS_DEV ? '5000' : '8000';
+export const API_TIME = IS_DEV ? 15000 : 20000;
