@@ -1,8 +1,8 @@
 <template>
     <div class="import-address bg-gray">
         <div class="bg-white">
-            <BackBar :backTitle="$t('user.createAddress')"></BackBar>
-            <h3 class="title tc mt_f_20">{{$t('user.importAccount')}}</h3>
+            <BackBar :backTitle="$t('user.createAccount')"></BackBar>
+            <h3 class="title tc mt_f_20 pt_10">{{$t('user.importAccount')}}</h3>
         </div>
         <div class="tab bg-white w1200 mt_30">
             <el-form :model="importForm" :rules="importRules" ref="importForm" status-icon class="import-form w630">
@@ -42,8 +42,11 @@
                 }
             };
             let validatePass = (rule, value, callback) => {
+                let patrn = /^(?![\d]+$)(?![a-zA-Z]+$)[\da-zA-Z]{8,20}$/;
                 if (value === '') {
                     callback(new Error(this.$t('user.nullPassword')));
+                } else if (!patrn.exec(value)) {
+                    callback(new Error(this.$t('user.errorFormatPassword')));
                 } else {
                     if (this.importForm.checkPass !== '') {
                         this.$refs.importForm.validateField('checkPass');

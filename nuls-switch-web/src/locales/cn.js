@@ -369,7 +369,10 @@ const cn ={
   },
 
   "user":{
-    "createAddress": "创建地址",
+    "welcomeNULS": "欢迎来到NULS-Switch,我们一起让区块链世界变得更简单",
+    "createAccountTip1": "请设置密码用以导入账户、转账等重要行为验证",
+    "createAccountTip2": "请认真保存账户密码，NULS-Switch不存储密码，也无法帮您找回，请务必牢记",
+    "createAccount": "创建账户",
     "importAccount": "导入账户",
     "prikey": "明文私钥",
     "password": "密码",
@@ -379,6 +382,12 @@ const cn ={
     "againPassword": "请再次输入密码",
     "diffPassword": "两次输入密码不一致",
     "importAddressError": "导入地址错误",
+    "errorFormatPassword": "请输入由字母和数字组合的8-20位密码",
+    "YourAddress": "您的地址",
+    "Backup": "备份",
+    "PrikeyBackup": "私钥备份",
+    "CompleteBackup": "完成备份",
+    "SafeWarning": "安全警告:私钥未经加密，备份存在风险，请保存到安全的地方，建议使用Keystore进行备份",
   },
 
   ...zhLocale

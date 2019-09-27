@@ -165,7 +165,10 @@ const en = {
   },
 
   "user":{
-    "createAddress": "create address",
+    "welcomeNULS": "Welcome to NULS-Switch, let's make the block chain world simpler",
+    "createAccountTip1": "Please set a password to import accounts, transfer and other important behavior verification",
+    "createAccountTip2": "Please carefully save the account password. NULS-Switch does not store the password, nor can it help you find it. Please bear in mind",
+    "createAccount": "create account",
     "importAccount": "import account",
     "prikey": "private key",
     "password": "password",
@@ -175,6 +178,12 @@ const en = {
     "againPassword": "please enter your password again",
     "diffPassword": "different passwords are entered twice",
     "importAddressError": "import address error",
+    "errorFormatPassword": "Please enter an 8-20-bit password composed of letters and numbers",
+    "YourAddress": "Your address",
+    "Backup": "Backup",
+    "PrikeyBackup": "PrikeyBackup",
+    "CompleteBackup": "CompleteBackup",
+    "SafeWarning": "Security Warning: Private keys are not encrypted and backups are at risk",
   },
   ...enLocale
 

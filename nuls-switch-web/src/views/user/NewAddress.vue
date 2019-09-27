@@ -1,25 +1,25 @@
 <template>
     <div class="new-address bg-gray">
         <div class="bg-white">
-            <h3 class="title">欢迎来到NULS,我们一起让区块链世界变得更简单</h3>
+            <h3 class="title pt_10">{{$t('user.welcomeNULS')}}</h3>
         </div>
         <div class="tab bg-white w1200 mt_30">
             <div class="tips bg-gray w630">
-                <p class="font14"><i></i>请设置密码用以导入账户、转账、参与共识等重要行为验证</p>
-                <p class="font14"><i></i>请认真保存钱包密码，NULS钱包不存储密码，也无法帮您找回，请务必牢记</p>
+                <p class="font14"><i></i>{{$t('user.createAccountTip1')}}</p>
+                <p class="font14"><i></i>{{$t('user.createAccountTip2')}}</p>
             </div>
 
             <el-form :model="newAddressForm" status-icon :rules="newAddressRules" ref="newAddressForm"
                      class="pass-form w630">
-                <el-form-item label="密码" prop="pass">
+                <el-form-item :label="$t('user.password')" prop="pass">
                     <el-input type="password" v-model="newAddressForm.pass" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="确认密码" prop="checkPass">
+                <el-form-item :label="$t('user.confirmPwd')" prop="checkPass">
                     <el-input type="password" v-model="newAddressForm.checkPass" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item class="form-bnt">
-                    <el-button type="success" @click="submitForm('newAddressForm')">创建账户</el-button>
-                    <el-button type="text" @click="toUrl('importAddress')">导入账户</el-button>
+                    <el-button type="success" @click="submitForm('newAddressForm')">{{$t('user.createAccount')}}</el-button>
+                    <el-button type="text" @click="toUrl('importAddress')">{{$t('user.importAccount')}}</el-button>
                 </el-form-item>
             </el-form>
 
@@ -37,8 +37,11 @@
     export default {
         data() {
             let validatePass = (rule, value, callback) => {
+                let patrn = /^(?![\d]+$)(?![a-zA-Z]+$)[\da-zA-Z]{8,20}$/;
                 if (value === '') {
-                    callback(new Error('请输入密码'));
+                    callback(new Error(this.$t('user.nullPassword')));
+                } else if (!patrn.exec(value)) {
+                    callback(new Error(this.$t('user.errorFormatPassword')));
                 } else {
                     if (this.newAddressForm.checkPass !== '') {
                         this.$refs.newAddressForm.validateField('checkPass');
@@ -48,9 +51,9 @@
             };
             let validateCheckPass = (rule, value, callback) => {
                 if (value === '') {
-                    callback(new Error('请再次输入密码'));
+                    callback(new Error(this.$t('user.againPassword')));
                 } else if (value !== this.newAddressForm.pass) {
-                    callback(new Error('两次输入密码不一致!'));
+                    callback(new Error(this.$t('user.diffPassword')));
                 } else {
                     callback();
                 }

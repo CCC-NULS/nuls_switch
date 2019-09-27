@@ -1,32 +1,32 @@
 <template>
   <div class="backups-address bg-gray">
     <div class="bg-white">
-      <h3 class="title">备份</h3>
+      <h3 class="title pt_5">{{$t('user.Backup')}}</h3>
     </div>
     <div class="tab bg-white w1200 mt_30">
-      <div class="address w630">
+      <div class="address w630 pt_10">
         <p>
-          您的地址:
+          {{$t('user.YourAddress')}}:
           &nbsp;<span class="yellow">{{accountAddress.address}}</span>
           &nbsp;<i class="el-icon-document-copy click" @click="copy(accountAddress.address)"></i></p>
       </div>
       <div class="tips bg-gray w630">
-        <p class="font14"><i></i>请设置密码用以导入账户、转账、参与共识等重要行为验证</p>
-        <p class="font14"><i></i>请认真保存钱包密码，NULS钱包不存储密码，也无法帮您找回，请务必牢记</p>
+        <p class="font14"><i></i>{{$t('user.createAccountTip1')}}</p>
+        <p class="font14"><i></i>{{$t('user.createAccountTip2')}}</p>
       </div>
 
       <div class="w630 tc btn-next">
         <div>
-          <el-button type="success" @click="backupsKey">私钥备份</el-button>
+          <el-button type="success" @click="backupsKey">{{$t('user.PrikeyBackup')}}</el-button>
         </div>
         <div class="mt_20">
-          <el-button @click="toUrl('home')">完成备份</el-button>
+          <el-button @click="toUrl('home')">{{$t('user.CompleteBackup')}}</el-button>
         </div>
       </div>
     </div>
     <Password ref="password" @passwordSubmit="passSubmit">
     </Password>
-    <el-dialog title="安全警告:私钥未经加密，备份存在风险，请保存到安全的地方，建议使用Keystore进行备份" width="40%"
+    <el-dialog :title="$t('user.SafeWarning')" width="40%"
                :visible.sync="keyDialog"
                :close-on-click-modal="false"
                :close-on-press-escape="false"
