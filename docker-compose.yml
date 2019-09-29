@@ -22,7 +22,7 @@ nuls-switch-backend:
     - MYSQL_ADDRESS=nuls-switch-mysql
     - MYSQL_USER=root
     - MYSQL_PASSWORD=
-    - NULS_API_ADDRESS=http://39.98.226.51:18004/
+    - NULS_API_ADDRESS=http://beta.api.nuls.io/
   links:
     - nuls-switch-mysql:nuls-switch-mysql
 
