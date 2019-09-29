@@ -849,7 +849,7 @@
                 this.orderId = orderInfo.orderId;
                 this.price = orderInfo.price;
                 this.sellTokenForm.remainNum = orderInfo.remainNum;
-                this.sellTokenForm.maxTxNum = toFixed(Number(Division(this.fromBalanceInfo.balance, orderInfo.price)));
+                this.sellTokenForm.maxTxNum = this.fromBalanceInfo.balance;
                 this.sellTokenVisible = true;
             },
 
