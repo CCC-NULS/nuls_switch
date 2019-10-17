@@ -16,6 +16,7 @@ import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.util.IdUtils;
+import io.nuls.nulsswitch.util.NulsUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.web.dto.auth.ConfirmTradeReqDto;
 import io.nuls.nulsswitch.web.dto.auth.TradeResultReqDto;
@@ -32,8 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static io.nuls.nulsswitch.constant.SwitchConstant.*;
 
 @RestController
 @RequestMapping("/v1/order")
@@ -338,7 +341,6 @@ public class OrderController extends BaseController {
                 throw new NulsRuntimeException(CommonErrorCode.PARAMETER_ERROR);
             }
 
-            System.out.println(tradeResultReqDto.getDataHex());
             // txHex中增加了第二次追加的签名
             trade.setTxHex(tradeResultReqDto.getDataHex());
             // 交易状态为交易失败
@@ -351,6 +353,41 @@ public class OrderController extends BaseController {
             return WrapMapper.error(ex.getErrorCode());
         }
         return WrapMapper.ok(result);
+    }
+
+    /**
+     * 查询订单本地最新交易，只查询有效的交易，不包含交易失败、撤销的交易
+     *
+     * @param tradeReq
+     * @return
+     */
+    @ApiOperation(value = "查询订单本地最新nonce", notes = "查询订单本地最新nonce")
+    @GetMapping("getLastOrderNonce")
+    public Wrapper<String> getLastOrderNonce(QueryTradeReqDto tradeReq) {
+        String txHash;
+        try {
+            // check parameters
+            Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
+            Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
+
+            // query order trade detail
+            Trade trade = new Trade();
+            trade.setOrderId(tradeReq.getOrderId());
+            EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
+            eWrapper.orderBy("create_time", false);
+            eWrapper.in("status", Arrays.asList(TX_TRADE_STATUS_WAIT, TX_TRADE_STATUS_CONFIRMING, TX_TRADE_STATUS_CONFIRMED));
+            List<Trade> list = tradeService.selectList(eWrapper);
+            if (list != null && list.size() > 0) {
+                Trade lastTrade = list.get(0);
+                txHash = NulsUtils.getNonceEncodeByTxHash(lastTrade.getTxHash());
+            } else {
+                txHash = "";
+            }
+            log.info("getLastOrderNonce txHash:{}", txHash);
+        } catch (NulsRuntimeException ex) {
+            return WrapMapper.error(ex.getErrorCode());
+        }
+        return WrapMapper.ok(txHash);
     }
 
 }
