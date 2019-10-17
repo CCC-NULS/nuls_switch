@@ -168,6 +168,69 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
     return {success: true, data: {inputs: inputs, outputs: outputs}};
 }
 
+
+/**
+ * 转账交易获取 inputs and outputs
+ * @param transferInfo
+ * @param balanceInfo
+ * @returns {*}
+ **/
+export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, newNonce) {
+    // 如果资产是NULS手续费直接增加到amount
+    if (fee && transferInfo.assetsChainId === chainID()) {
+        transferInfo.fee = 100000;
+    }
+    let newAmount = Number(Plus(transferInfo.amount, transferInfo.fee));
+    let newLocked = 0;
+    let newoutputAmount = transferInfo.amount;
+    let newLockTime = 0;
+    if (balanceInfo.balance < newAmount) {
+        return {success: false, data: "Your balance is not enough."}
+    }
+    // 如果没有本地交易则使用当前账户最新nonce
+    if(!newNonce)
+    {
+        //newNonce="ffffffffffffffff";
+        newNonce = balanceInfo.nonce;
+    }
+
+    // 组装交易来源数据
+    let inputs = [{
+        address: transferInfo.fromAddress,
+        assetsChainId: transferInfo.assetsChainId,
+        assetsId: transferInfo.assetsId,
+        amount: newAmount,
+        locked: newLocked,
+        nonce: newNonce
+    }];
+    // 计算手续费，如果转账资产是跨链资产不是NULS，手续费需要一个单独From，因为手续费只收NULS
+    if (fee && transferInfo.assetsChainId !== chainID()) {
+        //账户转出资产余额
+        let nulsbalance = await getBalanceOrNonceByAddress(chainID(), assetsID(), transferInfo.fromAddress);
+        if (nulsbalance.data.balance < 100000) {
+            console.log("余额小于手续费");
+            return {success: false, data: "Your balance is not enough."}
+        }
+        inputs.push({
+            address: transferInfo.fromAddress,
+            assetsChainId: chainID(),
+            assetsId: assetsID(),
+            amount: 100000,
+            locked: newLocked,
+            nonce: newNonce //nulsbalance.data.nonce
+        })
+    }
+    // 组装交易输出数据
+    let outputs = [{
+        address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
+        assetsChainId: transferInfo.assetsChainId,
+        assetsId: transferInfo.assetsId,
+        amount: newoutputAmount,
+        lockTime: newLockTime
+    }];
+    return {success: true, data: {inputs: inputs, outputs: outputs}};
+}
+
 /**
  * 获取地址信息根据地址
  * @param address
@@ -556,6 +619,28 @@ export async function cancelTrade(params) {
  **/
 export async function updateTradeResult(params) {
     return await post('/v1/order/', 'updateTradeResult', params)
+        .then((response) => {
+            if (response.hasOwnProperty("result")) {
+                return {success: true, data: response.result};
+            } else {
+                return {success: false, data: response.message};
+            }
+        })
+        .catch((error) => {
+            return {success: false, data: error};
+        });
+}
+
+/**
+ * 查询订单本地最新nonce
+ * @param orderId
+ * @returns {Promise<any>}
+ **/
+export async function getLastOrderNonce(orderId) {
+    let params = {
+        "orderId": orderId
+    };
+    return await get('/v1/order/', 'getLastOrderNonce', params)
         .then((response) => {
             if (response.hasOwnProperty("result")) {
                 return {success: true, data: response.result};

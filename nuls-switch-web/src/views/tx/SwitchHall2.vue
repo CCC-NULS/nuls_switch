@@ -914,15 +914,15 @@
                 const newAddressInfo = nuls.importByKey(chainID(), pri, password);
                 let newNonce;
                 if (newAddressInfo.address === this.accountAddress.address) {
-                    // 查询上次交易最新nonce
+                    //查询上次交易最新nonce
                     await getLastOrderNonce(this.orderId).then((response) => {
                         if (response.success) {
                             newNonce = response.data;
                         } else {
-                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                            this.$message({message: "获取nonce失败, " + response.data, type: 'error', duration: 3000});
                         }
                     }).catch((error) => {
-                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                        this.$message({message: "获取nonce异常, " + error.data, type: 'error', duration: 3000});
                     });
 
                     // 交易类型 1-买入、2-卖出
@@ -950,7 +950,7 @@
                     let tAssemble = [];
                     let inOrOutputs = {};
                     let balanceInfoA = {};
-                    // 查询余额
+                    //查询余额
                     await getBalanceOrNonceByAddress(assetsChainIdA, assetsIdA, fromAddress).then((response) => {
                         if (response.success) {
                             balanceInfoA = response.data;
@@ -984,7 +984,7 @@
                     };
                     let inOrOutputsB = {};
                     let balanceInfoB = {};
-                    // 查询余额
+                    //查询余额
                     await getBalanceOrNonceByAddress(assetsChainIdB, assetsIdB, fromAddress).then((response) => {
                         if (response.success) {
                             balanceInfoB = response.data;
@@ -1005,11 +1005,11 @@
                     let outputs = [...inOrOutputs.data.outputs, ...inOrOutputsB.data.outputs];
                     console.log(inputs);
 
-                    // 交易组装
+                    //交易组装
                     tAssemble = await nuls.transactionAssemble(inputs, outputs, '', 2);
-                    // 获取手续费
+                    //获取手续费
                     //let newFee = countFee(tAssemble, 1);
-                    // 交易签名
+                    //交易签名
                     let txhex = await nuls.transactionSerialize(nuls.decrypteOfAES(this.addressInfo.aesPri, password), this.addressInfo.pub, tAssemble);
                     // 买卖TOKEN提交
                     let params = {
