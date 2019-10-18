@@ -202,6 +202,7 @@
         </div>
 
         <!-- 买入/卖出 -->
+        <!-- 买入交易 -->
         <el-dialog :title="buyTradeTitle" :visible.sync="buyTokenVisible" top="30vh"
                    class="trade-dialog"
                    :close-on-click-modal="false"
@@ -233,6 +234,7 @@
                 <el-button type="primary" @click="txTradeSubmit('buyTokenForm')">{{$t('operateType.confirm')}}</el-button>
             </div>
         </el-dialog>
+        <!-- 卖出交易 -->
         <el-dialog :title="sellTradeTitle" :visible.sync="sellTokenVisible" top="30vh"
                    class="trade-dialog"
                    :close-on-click-modal="false"
@@ -912,12 +914,25 @@
             async txTradePassSubmit(password) {
                 const pri = nuls.decrypteOfAES(this.accountAddress.aesPri, password);
                 const newAddressInfo = nuls.importByKey(chainID(), pri, password);
-                let newNonce;
+                // 当前吃单用户最新nonce
+                let newNonceA;
+                // 挂单用户最新nonce
+                let newNonceB;
                 if (newAddressInfo.address === this.accountAddress.address) {
                     // 查询上次交易最新nonce
-                    await getLastOrderNonce(this.orderId).then((response) => {
+                    await getLastOrderNonce(this.orderId, this.address).then((response) => {
                         if (response.success) {
-                            newNonce = response.data;
+                            newNonceA = response.data;
+                        } else {
+                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                        }
+                    }).catch((error) => {
+                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                    });
+                    // 查询上次交易最新nonce
+                    await getLastOrderNonce(this.orderId, this.orderInfo.address).then((response) => {
+                        if (response.success) {
+                            newNonceB = response.data;
                         } else {
                             this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
                         }
@@ -964,7 +979,7 @@
                     let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
                     transferInfoA['amount'] = Number(Times(txAmountA, 100000000).toString());
                     //inOrOutputs = await inputsOrOutputs(transferInfoA, balanceInfoA);
-                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, newNonce);
+                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, newNonceA);
                     if (!inOrOutputs.success) {
                         this.$message(inOrOutputs.data);
                         return false;
@@ -998,7 +1013,7 @@
                     let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
                     transferInfoB['amount'] = Number(Times(txAmountB, 100000000).toString());
                     //inOrOutputsB = await inputsOrOutputs(transferInfoB, balanceInfoB, 1);
-                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, newNonce);
+                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, newNonceB);
 
                     // 将吃单和挂单的输入输出汇总到一次交易中
                     let inputs = [...inOrOutputs.data.inputs, ...inOrOutputsB.data.inputs];
@@ -1310,8 +1325,8 @@
                 this.toTokenInfo = toTokenInfo;
                 this.fromTokenId = fromTokenInfo.tokenId;
                 this.toTokenId = toTokenInfo.tokenId;
-                this.buyTradeTitle = '买入' + fromTokenInfo.tokenSymbol;
-                this.sellTradeTitle = '卖出' + fromTokenInfo.tokenSymbol;
+                this.buyTradeTitle = this.$t('switch.buy') + ' ' + fromTokenInfo.tokenSymbol;
+                this.sellTradeTitle = this.$t('switch.sell') + ' ' + fromTokenInfo.tokenSymbol;
             },
 
             /**
@@ -1572,7 +1587,7 @@
                     }
 
                     .trade_label {
-                        width: 105px;
+                        width: 135px;
                         float: left;
                         display: inline;
                         padding: 10px 0 0 5px;

@@ -376,6 +376,7 @@ public class OrderController extends BaseController {
             EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
             eWrapper.orderBy("create_time", false);
             eWrapper.in("status", Arrays.asList(TX_TRADE_STATUS_WAIT, TX_TRADE_STATUS_CONFIRMING, TX_TRADE_STATUS_CONFIRMED));
+            eWrapper.eq("address", tradeReq.getAddress());
             List<Trade> list = tradeService.selectList(eWrapper);
             if (list != null && list.size() > 0) {
                 Trade lastTrade = list.get(0);

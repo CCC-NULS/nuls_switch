@@ -175,7 +175,7 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
  * @param balanceInfo
  * @returns {*}
  **/
-export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, newNonce) {
+export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, nonce) {
     // 如果资产是NULS手续费直接增加到amount
     if (fee && transferInfo.assetsChainId === chainID()) {
         transferInfo.fee = 100000;
@@ -187,9 +187,9 @@ export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, ne
     if (balanceInfo.balance < newAmount) {
         return {success: false, data: "Your balance is not enough."}
     }
+    let newNonce = nonce;
     // 如果没有本地交易则使用当前账户最新nonce
-    if(!newNonce)
-    {
+    if (!newNonce) {
         //newNonce="ffffffffffffffff";
         newNonce = balanceInfo.nonce;
     }
@@ -211,13 +211,18 @@ export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, ne
             console.log("余额小于手续费");
             return {success: false, data: "Your balance is not enough."}
         }
+        let nulsNonce = nonce;
+        // 如果没有本地交易则使用当前账户最新nonce
+        if (!nulsNonce) {
+            nulsNonce = nulsbalance.nonce;
+        }
         inputs.push({
             address: transferInfo.fromAddress,
             assetsChainId: chainID(),
             assetsId: assetsID(),
             amount: 100000,
             locked: newLocked,
-            nonce: newNonce //nulsbalance.data.nonce
+            nonce: nulsNonce
         })
     }
     // 组装交易输出数据
@@ -636,9 +641,10 @@ export async function updateTradeResult(params) {
  * @param orderId
  * @returns {Promise<any>}
  **/
-export async function getLastOrderNonce(orderId) {
+export async function getLastOrderNonce(orderId, address) {
     let params = {
-        "orderId": orderId
+        "orderId": orderId,
+        "address": address
     };
     return await get('/v1/order/', 'getLastOrderNonce', params)
         .then((response) => {
