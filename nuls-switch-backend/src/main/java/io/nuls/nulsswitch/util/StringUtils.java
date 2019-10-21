@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * @author tag
+ * @author qinyifeng
  */
 public class StringUtils {
 

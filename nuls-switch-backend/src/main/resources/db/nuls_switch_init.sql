@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `tx_token_pair` (
 -- ----------------------------
 -- DROP TABLE IF EXISTS `tx_trade`;
 CREATE TABLE IF NOT EXISTS `tx_trade` (
-  `tx_id` varchar(255) NOT NULL COMMENT '交易流水号',
+  `tx_id` varchar(35) NOT NULL COMMENT '交易流水号',
   `order_id` varchar(35) NOT NULL COMMENT '委托挂单ID',
   `address` varchar(255) DEFAULT NULL COMMENT '交易用户地址',
   `tx_num` bigint(20) DEFAULT 0 COMMENT '原token已完成交易数量',
@@ -107,6 +107,22 @@ CREATE TABLE IF NOT EXISTS `user_auth` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_token` (`token`) USING HASH COMMENT 'Token索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户认证表：存储用户登录token与钱包地址关系';
+
+-- ----------------------------
+-- Table structure for tx_unconfirmed_nonce
+-- ----------------------------
+-- DROP TABLE IF EXISTS `tx_unconfirmed_nonce`;
+CREATE TABLE IF NOT EXISTS `tx_unconfirmed_nonce` (
+  `nonce_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'nonce唯一标识',
+  `address` varchar(50) DEFAULT NULL COMMENT '交易地址',
+  `tx_hash` varchar (255) DEFAULT NULL COMMENT '交易Hash值',
+  `nonce` varchar(16) DEFAULT NULL COMMENT '交易未确认nonce',
+  `chain_id` int(11) NOT NULL COMMENT '链ID',
+  `asset_id` int(11) NOT NULL COMMENT '链资产ID',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`nonce_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='本地未确认交易nonce';
 
 
 -- ----------------------------

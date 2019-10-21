@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nuls.nulsswitch.mapper.TxUnconfirmedNonceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="io.nuls.nulsswitch.entity.TxUnconfirmedNonce">
+        <id column="nonce_id" property="nonceId" />
+        <result column="address" property="address" />
+        <result column="tx_hash" property="txHash" />
+        <result column="nonce" property="nonce" />
+        <result column="chain_id" property="chainId" />
+        <result column="asset_id" property="assetId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!--<select id="queryTokenPairList" resultMap="BaseResultMap">-->
+        <!--SELECT tp.*,t.`token_id` FROM tx_unconfirmed_nonce tun,tx_order o,tx_trade tx,tx_token t WHERE tp.to_token_id=t.token_id-->
+    <!--</select>-->
+
+</mapper>
