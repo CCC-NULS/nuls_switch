@@ -214,7 +214,7 @@ export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, no
         let nulsNonce = nonce;
         // 如果没有本地交易则使用当前账户最新nonce
         if (!nulsNonce) {
-            nulsNonce = nulsbalance.nonce;
+            nulsNonce = nulsbalance.data.nonce;
         }
         inputs.push({
             address: transferInfo.fromAddress,
@@ -641,13 +641,16 @@ export async function updateTradeResult(params) {
  * @param orderId
  * @returns {Promise<any>}
  **/
-export async function getLastOrderNonce(orderId, address) {
+export async function getLastOrderNonce(orderId, address, assetsChainId, assetsId) {
     let params = {
         "orderId": orderId,
-        "address": address
+        "address": address,
+        "assetsChainId": assetsChainId,
+        "assetsId": assetsId
     };
     return await get('/v1/order/', 'getLastOrderNonce', params)
         .then((response) => {
+            console.log(response);
             if (response.hasOwnProperty("result")) {
                 return {success: true, data: response.result};
             } else {

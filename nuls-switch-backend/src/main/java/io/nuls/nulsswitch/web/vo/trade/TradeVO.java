@@ -58,4 +58,28 @@ public class TradeVO extends Trade {
      */
     @ApiModelProperty(value = "代币交易对")
     private String tokenPair;
+
+    @ApiModelProperty(value = "用户挂单地址")
+    private String orderAddress;
+
+    @ApiModelProperty(value = "资产的链ID")
+    protected Integer assetsChainId;
+
+    @ApiModelProperty(value = "资产ID")
+    protected Integer assetsId;
+
+    @ApiModelProperty(value = "资产的链ID")
+    private Integer orderAssetsChainId;
+
+    @ApiModelProperty(value = "资产ID")
+    private Integer orderAssetsId;
+
+    @ApiModelProperty(value = "资产的链ID")
+    private Integer nulsChainId;
+
+    @ApiModelProperty(value = "资产ID")
+    private Integer nulsAssetsId;
+
+//    @ApiModelProperty(value = "交易nonce")
+//    private String nonce;
 }

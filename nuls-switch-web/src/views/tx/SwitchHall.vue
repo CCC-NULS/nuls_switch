@@ -333,19 +333,18 @@
     import buffer from 'nuls-sdk-js/lib/utils/buffer'
     import Password from '@/components/PasswordBar'
     import SelectTokenBar from '@/components/SelectTokenBar'
-    import {addressInfo, chainID, deserializeTx, divDecimals, Division, multiDecimals, Times, toFixed} from '@/api/util'
+    import {addressInfo, assetsID, chainID, deserializeTx, divDecimals, Division, multiDecimals, Times, toFixed} from '@/api/util'
     import {
         cancelOrder,
         confirmOrder,
-        updateTradeResult,
         createOrder,
         getBalanceOrNonceByAddress,
-        getOrderDetail,
-        inputsOrOutputs,
-        tradingOrder,
-        validateAndBroadcast,
         getLastOrderNonce,
-        inputsOrOutputsAddNonce
+        getOrderDetail,
+        inputsOrOutputsAddNonce,
+        tradingOrder,
+        updateTradeResult,
+        validateAndBroadcast
     } from '@/api/requestData'
     //import moment from 'moment'
 
@@ -919,27 +918,6 @@
                 // 挂单用户最新nonce
                 let newNonceB;
                 if (newAddressInfo.address === this.accountAddress.address) {
-                    // 查询上次交易最新nonce
-                    await getLastOrderNonce(this.orderId, this.address).then((response) => {
-                        if (response.success) {
-                            newNonceA = response.data;
-                        } else {
-                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
-                        }
-                    }).catch((error) => {
-                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
-                    });
-                    // 查询上次交易最新nonce
-                    await getLastOrderNonce(this.orderId, this.orderInfo.address).then((response) => {
-                        if (response.success) {
-                            newNonceB = response.data;
-                        } else {
-                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
-                        }
-                    }).catch((error) => {
-                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
-                    });
-
                     // 交易类型 1-买入、2-卖出
                     let txType = this.orderInfo.txType;
                     // 吃单地址
@@ -965,7 +943,7 @@
                     let tAssemble = [];
                     let inOrOutputs = {};
                     let balanceInfoA = {};
-                    // 查询余额
+                    // 查询余额A
                     await getBalanceOrNonceByAddress(assetsChainIdA, assetsIdA, fromAddress).then((response) => {
                         if (response.success) {
                             balanceInfoA = response.data;
@@ -975,6 +953,19 @@
                     }).catch((error) => {
                         this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
+
+                    // 查询上次交易最新nonce
+                    await getLastOrderNonce(this.orderId, this.address, assetsChainIdA, assetsIdA).then((response) => {
+                        if (response.success) {
+                            newNonceA = response.data;
+                            console.log("newNonceA===" + newNonceA);
+                        } else {
+                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                        }
+                    }).catch((error) => {
+                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                    });
+
                     // 吃单人转出交易总量，如果是买入，则为交易量，如果是卖出，则为交易量 * 单价
                     let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
                     transferInfoA['amount'] = Number(Times(txAmountA, 100000000).toString());
@@ -999,7 +990,7 @@
                     };
                     let inOrOutputsB = {};
                     let balanceInfoB = {};
-                    // 查询余额
+                    // 查询余额B
                     await getBalanceOrNonceByAddress(assetsChainIdB, assetsIdB, fromAddress).then((response) => {
                         if (response.success) {
                             balanceInfoB = response.data;
@@ -1009,6 +1000,18 @@
                     }).catch((error) => {
                         this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
+
+                    // 查询上次交易最新nonce
+                    await getLastOrderNonce(this.orderId, this.orderInfo.address, assetsChainIdB, assetsIdB).then((response) => {
+                        if (response.success) {
+                            newNonceB = response.data;
+                        } else {
+                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                        }
+                    }).catch((error) => {
+                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                    });
+                    console.log("newNonceB-------"+newNonceB);
                     // 挂单人转出交易总量，如果是买入，则为交易量 * 单价，如果是卖出，则为交易量
                     let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
                     transferInfoB['amount'] = Number(Times(txAmountB, 100000000).toString());
@@ -1033,7 +1036,14 @@
                         "address": newAddressInfo.address,
                         "orderId": this.orderId,
                         "txNum": multiDecimals(this.txNum, 8),
-                        "toNum": multiDecimals(Number(Times(this.price, this.txNum)), 8)
+                        "toNum": multiDecimals(Number(Times(this.price, this.txNum)), 8),
+                        "orderAddress": this.orderInfo.address,
+                        "assetsChainId": assetsChainIdA,
+                        "assetsId": assetsIdA,
+                        "orderAssetsChainId": assetsChainIdB,
+                        "orderAssetsId": assetsIdB,
+                        "nulsChainId": chainID(),
+                        "nulsAssetsId": assetsID(),
                     };
                     await tradingOrder(params).then((response) => {
                         if (response.success) {

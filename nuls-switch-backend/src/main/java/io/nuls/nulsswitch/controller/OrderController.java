@@ -3,6 +3,7 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.google.common.collect.Maps;
 import io.nuls.base.basic.AddressTool;
 import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.data.Transaction;
@@ -33,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static io.nuls.nulsswitch.constant.SwitchConstant.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/order")
@@ -47,6 +46,8 @@ public class OrderController extends BaseController {
     private OrderService orderService;
     @Autowired
     private TradeService tradeService;
+
+    public final static Map<String, String> nonceMap = Maps.newHashMap();
 
     @ApiOperation(value = "获取卖出挂单", notes = "分页获取卖出挂单")
     @GetMapping("listOnSell")
@@ -128,7 +129,7 @@ public class OrderController extends BaseController {
 
     @ApiOperation(value = "用户吃单", notes = "用户吃单")
     @PostMapping("tradingOrder")
-    public Wrapper<Boolean> tradingOrder(@RequestBody Trade trade) {
+    public Wrapper<Boolean> tradingOrder(@RequestBody TradeVO trade) {
         Boolean result;
         try {
             Long txNum = trade.getTxNum();
@@ -159,6 +160,15 @@ public class OrderController extends BaseController {
             // 更新订单状态 update order status
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
             result = orderService.updateById(order);
+
+            String nonceKey = trade.getAddress() + "_" + trade.getAssetsChainId() + "_" + trade.getAssetsId();
+            String orderNonceKey = trade.getOrderAddress() + "_" + trade.getOrderAssetsChainId() + "_" + trade.getOrderAssetsId();
+            String orderNulsNonceKey = trade.getOrderAddress() + "_" + trade.getNulsChainId() + "_" + trade.getNulsAssetsId();
+            String nonce = NulsUtils.getNonceEncodeByTxHash(trade.getTxHash());
+            nonceMap.put(nonceKey, nonce);
+            nonceMap.put(orderNonceKey, nonce);
+            nonceMap.put(orderNulsNonceKey, nonce);
+            System.out.println("put txHash===" + nonce);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -371,19 +381,23 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
             // query order trade detail
-            Trade trade = new Trade();
-            trade.setOrderId(tradeReq.getOrderId());
-            EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
-            eWrapper.orderBy("create_time", false);
-            eWrapper.in("status", Arrays.asList(TX_TRADE_STATUS_WAIT, TX_TRADE_STATUS_CONFIRMING, TX_TRADE_STATUS_CONFIRMED));
-            eWrapper.eq("address", tradeReq.getAddress());
-            List<Trade> list = tradeService.selectList(eWrapper);
-            if (list != null && list.size() > 0) {
-                Trade lastTrade = list.get(0);
-                txHash = NulsUtils.getNonceEncodeByTxHash(lastTrade.getTxHash());
-            } else {
-                txHash = "";
-            }
+//            Trade trade = new Trade();
+//            trade.setOrderId(tradeReq.getOrderId());
+//            EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
+//            eWrapper.orderBy("create_time", false);
+//            eWrapper.in("status", Arrays.asList(TX_TRADE_STATUS_WAIT, TX_TRADE_STATUS_CONFIRMING, TX_TRADE_STATUS_CONFIRMED));
+//            eWrapper.eq("address", tradeReq.getAddress());
+//            List<Trade> list = tradeService.selectList(eWrapper);
+//            if (list != null && list.size() > 0) {
+//                Trade lastTrade = list.get(0);
+//                txHash = NulsUtils.getNonceEncodeByTxHash(lastTrade.getTxHash());
+//            } else {
+//                txHash = "";
+//            }
+            System.out.println(JSON.toJSONString(nonceMap));
+            String nonceKey = tradeReq.getAddress() + "_" + tradeReq.getAssetsChainId() + "_" + tradeReq.getAssetsId();
+            txHash = nonceMap.get(nonceKey) == null ? "" : nonceMap.get(nonceKey);
+            System.out.println("get txHash===" + txHash + " ," + tradeReq.getAddress());
             log.info("getLastOrderNonce txHash:{}", txHash);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
