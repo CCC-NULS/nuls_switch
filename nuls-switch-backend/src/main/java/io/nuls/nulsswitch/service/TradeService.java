@@ -7,6 +7,8 @@ import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 挂单交易明细，一个挂单可以对应多个明细记录 服务类
@@ -48,6 +50,15 @@ public interface TradeService extends IService<Trade> {
      * @param tradeId 交易ID
      */
     void cancelOrderTrade(String orderId, String tradeId);
+
+    /**
+     * 查询该地址+代币所有未确认交易
+     *
+     * @param address 地址
+     * @param tokenId 代币ID
+     * @return
+     */
+    List<TradeVO> queryTradeByToken(String address, Integer tokenId);
 
     /**
      * 查询该地址+代币当前最新的未确认交易hash

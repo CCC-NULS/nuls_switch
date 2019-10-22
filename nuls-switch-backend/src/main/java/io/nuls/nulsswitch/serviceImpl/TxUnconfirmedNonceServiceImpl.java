@@ -2,7 +2,11 @@ package io.nuls.nulsswitch.serviceImpl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.nuls.nulsswitch.constant.SwitchConstant;
+import io.nuls.nulsswitch.entity.Order;
+import io.nuls.nulsswitch.entity.Token;
 import io.nuls.nulsswitch.entity.TxUnconfirmedNonce;
+import io.nuls.nulsswitch.mapper.TokenMapper;
 import io.nuls.nulsswitch.mapper.TxUnconfirmedNnoceMapper;
 import io.nuls.nulsswitch.service.TxUnconfirmedNonceService;
 import io.nuls.nulsswitch.util.NulsUtils;
@@ -27,6 +31,8 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNnoc
 
     @Resource
     TxUnconfirmedNnoceMapper txUnconfirmedNnoceMapper;
+    @Resource
+    TokenMapper tokenMapper;
 
     @Override
     public void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String txHash) {
@@ -51,6 +57,18 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNnoc
     }
 
     @Override
+    public void saveTxUnconfirmedNonce(String address, Order order, String txHash) {
+        // 根据交易类型计算转出代币
+        Token fromToken = tokenMapper.selectById(order.getFromTokenId());
+        Token toToken = tokenMapper.selectById(order.getToTokenId());
+        Integer assetsChainId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getChainId() : toToken.getChainId();
+        Integer assetsId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getAssetId() : toToken.getAssetId();
+
+        // 保存吃单用户转出资产nonce
+        this.saveTxUnconfirmedNonce(address, assetsChainId, assetsId, txHash);
+    }
+
+    @Override
     public String getTxNonce(String address, int assetsChainId, int assetsId) {
         TxUnconfirmedNonce unconfirmedNonce = this.getTxUnconfirmedNonce(address, assetsChainId, assetsId);
         if (unconfirmedNonce != null) {
@@ -71,5 +89,14 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNnoc
             return nonceList.get(0);
         }
         return null;
+    }
+
+    @Override
+    public void deleteNonceByTxhash(String address, String txHash) {
+        TxUnconfirmedNonce txUnconfirmedNonce = new TxUnconfirmedNonce();
+        txUnconfirmedNonce.setAddress(address);
+        txUnconfirmedNonce.setTxHash(txHash);
+        EntityWrapper<TxUnconfirmedNonce> eWrapper = new EntityWrapper<>(txUnconfirmedNonce);
+        txUnconfirmedNnoceMapper.delete(eWrapper);
     }
 }
