@@ -3,6 +3,7 @@ package io.nuls.nulsswitch.job;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.nuls.core.basic.Result;
+import io.nuls.core.model.DateUtils;
 import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Trade;
@@ -105,10 +106,14 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                             tradeService.updateById(trade);
                         }
                     } else {
-                        // 交易确认失败，该交易不存在
-                        trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
-                        trade.setMsg(result.getMsg());
-                        tradeService.updateById(trade);
+                        // 广播时间超过一天，且不存在的交易，修改状态为交易失败
+                        boolean notSameDay = DateUtils.getDate(new Date()) != DateUtils.getDate(trade.getUpdateTime());
+                        // 交易确认失败，该交易不存在，有可能存在前端刚广播出去，主网还未收到该交易，此时定时任务去查询该交易查询不到记录
+                        if (StringUtils.isNotBlank(result.getMsg()) || notSameDay) {
+                            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
+                            trade.setMsg(result.getMsg());
+                            tradeService.updateById(trade);
+                        }
                     }
                 }
             }

@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.nuls.nulsswitch.entity.TxUnconfirmedNonce;
 import io.nuls.nulsswitch.mapper.TxUnconfirmedNnoceMapper;
 import io.nuls.nulsswitch.service.TxUnconfirmedNonceService;
+import io.nuls.nulsswitch.util.NulsUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,11 +29,14 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNnoc
     TxUnconfirmedNnoceMapper txUnconfirmedNnoceMapper;
 
     @Override
-    public void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String nonce) {
+    public void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String txHash) {
+        // 根据最新交易hash计算nonce
+        String nonce = NulsUtils.getNonceEncodeByTxHash(txHash);
         // 如果已存在nonce记录，则更新
         TxUnconfirmedNonce unconfirmedNonce = this.getTxUnconfirmedNonce(address, assetsChainId, assetsId);
         if (unconfirmedNonce != null) {
             unconfirmedNonce.setNonce(nonce);
+            unconfirmedNonce.setUpdateTime(new Date());
             txUnconfirmedNnoceMapper.updateById(unconfirmedNonce);
         } else {
             // 不存在nonce记录，则新增
@@ -39,6 +44,7 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNnoc
             txUnconfirmedNonce.setAddress(address);
             txUnconfirmedNonce.setChainId(assetsChainId);
             txUnconfirmedNonce.setAssetId(assetsId);
+            txUnconfirmedNonce.setTxHash(txHash);
             txUnconfirmedNonce.setNonce(nonce);
             txUnconfirmedNnoceMapper.insert(txUnconfirmedNonce);
         }

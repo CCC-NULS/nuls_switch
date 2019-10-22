@@ -10,6 +10,7 @@ import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.mapper.TradeMapper;
 import io.nuls.nulsswitch.service.TokenService;
 import io.nuls.nulsswitch.service.TradeService;
+import io.nuls.nulsswitch.util.NulsUtils;
 import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.exception.NulsRuntimeException;
@@ -94,5 +95,14 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
             throw new NulsRuntimeException(CommonErrorCode.PARAMETER_NULL);
         }
         tradeMapper.cancelOrderTrade(orderId, tradeId);
+    }
+
+    @Override
+    public String queryTxHashByToken(String address, Integer tokenId) {
+        TradeVO trade = tradeMapper.queryLastTradeByToken(address, tokenId);
+        if (trade != null) {
+            return trade.getTxHash();
+        }
+        return null;
     }
 }

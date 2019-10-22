@@ -4,24 +4,24 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="io.nuls.nulsswitch.entity.Trade">
-        <id column="tx_id" property="txId" />
-        <result column="order_id" property="orderId" />
-        <result column="address" property="address" />
-        <result column="tx_num" property="txNum" />
-        <result column="to_num" property="toNum" />
-        <result column="tx_hash" property="txHash" />
-        <result column="tx_hex" property="txHex" />
-        <result column="status" property="status" />
-        <result column="msg" property="msg" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="tx_id" property="txId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="address" property="address"/>
+        <result column="tx_num" property="txNum"/>
+        <result column="to_num" property="toNum"/>
+        <result column="tx_hash" property="txHash"/>
+        <result column="tx_hex" property="txHex"/>
+        <result column="status" property="status"/>
+        <result column="msg" property="msg"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <resultMap id="TradeVO" type="io.nuls.nulsswitch.web.vo.trade.TradeVO" extends="BaseResultMap">
-        <result column="tx_type" property="txType" />
-        <result column="price" property="price" />
-        <result column="from_token_id" property="fromTokenId" />
-        <result column="to_token_id" property="toTokenId" />
+        <result column="tx_type" property="txType"/>
+        <result column="price" property="price"/>
+        <result column="from_token_id" property="fromTokenId"/>
+        <result column="to_token_id" property="toTokenId"/>
     </resultMap>
 
     <select id="queryTradeByPage" resultMap="TradeVO">
@@ -33,10 +33,10 @@
                 and tr.order_id=#{orderId,jdbcType=VARCHAR}
             </if>
             <if test="fromTokenId!=null and fromTokenId!=''">
-                and o.from_token_id=#{fromTokenId,jdbcType=VARCHAR}
+                and o.from_token_id=#{fromTokenId,jdbcType=INTEGER}
             </if>
             <if test="toTokenId!=null and toTokenId!=''">
-                and o.to_token_id=#{toTokenId,jdbcType=VARCHAR}
+                and o.to_token_id=#{toTokenId,jdbcType=INTEGER}
             </if>
             <if test="startQueryTime!=null">
                 AND tr.create_time >= #{startQueryTime}
@@ -69,4 +69,18 @@
             </if>
         </where>
     </update>
+
+    <select id="queryLastTradeByToken" resultType="io.nuls.nulsswitch.web.vo.trade.TradeVO">
+        SELECT tx.*  FROM  tx_trade tx
+        INNER JOIN tx_order od ON od.order_id=tx.order_id
+        WHERE
+        (
+        (od.tx_type=1 AND od.from_token_id=#{tokenId,jdbcType=INTEGER})
+        OR
+        (od.tx_type=2 AND od.to_token_id=#{tokenId,jdbcType=INTEGER})
+        )
+        AND tx.address= #{address,jdbcType=VARCHAR}
+        ORDER BY create_time desc
+        LIMIT 0,1
+    </select>
 </mapper>

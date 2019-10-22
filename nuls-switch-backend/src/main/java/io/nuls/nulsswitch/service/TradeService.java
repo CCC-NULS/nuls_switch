@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.vo.trade.TradeVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -47,4 +48,13 @@ public interface TradeService extends IService<Trade> {
      * @param tradeId 交易ID
      */
     void cancelOrderTrade(String orderId, String tradeId);
+
+    /**
+     * 查询该地址+代币当前最新的未确认交易nonce
+     *
+     * @param address 地址
+     * @param tokenId 代币ID
+     * @return
+     */
+    String queryTxHashByToken(@Param("address") String address, @Param("tokenId") Integer tokenId);
 }
