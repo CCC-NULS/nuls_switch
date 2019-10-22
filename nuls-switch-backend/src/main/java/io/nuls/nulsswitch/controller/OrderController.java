@@ -192,9 +192,6 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(trade, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(trade.getTxId(), CommonErrorCode.PARAMETER_NULL);
 
-            // cancel trade
-            tradeService.cancelOrderTrade(trade.getOrderId(), trade.getTxId());
-
             Trade td = tradeService.selectById(trade.getTxId());
             // 查询该地址+token待确认交易，作为本地最新未确认nonce，便于该token再进行交易时，能接上之前未确认的交易
             Order order = orderService.selectById(td.getOrderId());
@@ -203,24 +200,34 @@ public class OrderController extends BaseController {
                 throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
 
+            // 需要重新计算nonce的代币
+            Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
+            String txHash = tradeService.queryLastTxHashByToken(td.getAddress(), tokenId);
+
+            // cancel trade
+            tradeService.cancelOrderTrade(trade.getOrderId(), trade.getTxId());
+            log.info("cancelTrade cancelOrderTrade txHash:{}", txHash);
+
             // 删除之前的nonce
             TxUnconfirmedNonce txUnconfirmedNonce = new TxUnconfirmedNonce();
             txUnconfirmedNonce.setTxHash(td.getTxHash());
             EntityWrapper<TxUnconfirmedNonce> eWrapper = new EntityWrapper<>(txUnconfirmedNonce);
             txUnconfirmedNonceService.delete(eWrapper);
+            log.info("cancelTrade delete txUnconfirmedNonce txHash:{}", txHash);
 
-            // 需要重新计算nonce的代币
-            Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
-            String txHash = tradeService.queryTxHashByToken(td.getAddress(), tokenId);
+            // 如果该交易是该地址+代币最新未确认交易，则查询是否还有其他未确认交易，并重新计算nonce
+            // 如果是中途连续交易被取消，后面的连续交易都将失败，所以没必要根据失败的交易计算nonce
+            if (Objects.equals(txHash, td.getTxHash())) {
+                // 根据交易类型计算转出代币
+                Token fromToken = tokenService.selectById(order.getFromTokenId());
+                Token toToken = tokenService.selectById(order.getToTokenId());
+                Integer assetsChainId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getChainId() : toToken.getChainId();
+                Integer assetsId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getAssetId() : toToken.getAssetId();
 
-            // 根据交易类型计算转出代币
-            Token fromToken = tokenService.selectById(order.getFromTokenId());
-            Token toToken = tokenService.selectById(order.getToTokenId());
-            Integer assetsChainId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getChainId() : toToken.getChainId();
-            Integer assetsId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getAssetId() : toToken.getAssetId();
-
-            // 保存吃单用户转出资产nonce
-            txUnconfirmedNonceService.saveTxUnconfirmedNonce(trade.getAddress(), assetsChainId, assetsId, txHash);
+                // 保存吃单用户转出资产nonce
+                txUnconfirmedNonceService.saveTxUnconfirmedNonce(trade.getAddress(), assetsChainId, assetsId, txHash);
+                log.info("cancelTrade saveTxUnconfirmedNonce txHash:{}", txHash);
+            }
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -402,7 +409,7 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 查询订单本地最新交易，只查询有效的交易，不包含交易失败、撤销的交易
+     * 查询本地最新未确认交易nonce，如果nonce表不存在，则查询最新未确认交易，重新计算nonce
      *
      * @param tradeReq
      * @return
@@ -410,40 +417,48 @@ public class OrderController extends BaseController {
     @ApiOperation(value = "查询订单本地最新nonce", notes = "查询订单本地最新nonce")
     @GetMapping("getLastOrderNonce")
     public Wrapper<String> getLastOrderNonce(QueryTradeReqDto tradeReq) {
-        String txHash;
+        String txNonce;
         try {
             // check parameters
             Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(tradeReq.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
-            // query order trade detail
-//            Trade trade = new Trade();
-//            trade.setOrderId(tradeReq.getOrderId());
-//            EntityWrapper<Trade> eWrapper = new EntityWrapper<>(trade);
-//            eWrapper.orderBy("create_time", false);
-//            eWrapper.in("status", Arrays.asList(TX_TRADE_STATUS_WAIT, TX_TRADE_STATUS_CONFIRMING, TX_TRADE_STATUS_CONFIRMED));
-//            eWrapper.eq("address", tradeReq.getAddress());
-//            List<Trade> list = tradeService.selectList(eWrapper);
-//            if (list != null && list.size() > 0) {
-//                Trade lastTrade = list.get(0);
-//                txHash = NulsUtils.getNonceEncodeByTxHash(lastTrade.getTxHash());
-//            } else {
-//                txHash = "";
-//            }
-//            System.out.println(JSON.toJSONString(nonceMap));
-//            String nonceKey = tradeReq.getAddress() + "_" + tradeReq.getAssetsChainId() + "_" + tradeReq.getAssetsId();
-//            txHash = nonceMap.get(nonceKey) == null ? "" : nonceMap.get(nonceKey);
-            txHash = txUnconfirmedNonceService.getTxNonce(tradeReq.getAddress(), tradeReq.getAssetsChainId(), tradeReq.getAssetsId());
+            // 查询本地最新未确认交易nonce
+            txNonce = txUnconfirmedNonceService.getTxNonce(tradeReq.getAddress(), tradeReq.getAssetsChainId(), tradeReq.getAssetsId());
             // 如果本地未保存未确认交易nonce（因为在交易完成、失败、取消时会删除未确认交易nonce），则查询未确认交易
-            if (StringUtils.isBlank(txHash)) {
+            if (StringUtils.isBlank(txNonce)) {
+                // 查询订单
+                Order order = orderService.selectById(tradeReq.getOrderId());
+                if (order == null) {
+                    log.error("the order does not exist,orderId:{}", tradeReq.getOrderId());
+                    throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
+                }
 
+                // 需要重新计算nonce的代币
+                Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
+                // 查询该地址+token最新未确认交易，作为本地最新未确认nonce，便于该token再进行交易时，能接上之前未确认的交易
+                String lastTxHash = tradeService.queryLastTxHashByToken(tradeReq.getAddress(), tokenId);
+                if (StringUtils.isNotBlank(lastTxHash)) {
+                    // 根据交易类型计算转出代币
+                    Token fromToken = tokenService.selectById(order.getFromTokenId());
+                    Token toToken = tokenService.selectById(order.getToTokenId());
+                    Integer assetsChainId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getChainId() : toToken.getChainId();
+                    Integer assetsId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? fromToken.getAssetId() : toToken.getAssetId();
+
+                    // 保存吃单用户转出资产nonce
+                    txUnconfirmedNonceService.saveTxUnconfirmedNonce(tradeReq.getAddress(), assetsChainId, assetsId, lastTxHash);
+                    log.info("getLastOrderNonce saveTxUnconfirmedNonce address:{},txNonce:{}", tradeReq.getAddress(), txNonce);
+
+                    // 根据txHash计算nonce
+                    txNonce = NulsUtils.getNonceEncodeByTxHash(lastTxHash);
+                }
             }
-            System.out.println("get txHash===" + txHash + " ," + tradeReq.getAddress());
-            log.info("getLastOrderNonce txHash:{}", txHash);
+            System.out.println("get txHash===" + txNonce + " ," + tradeReq.getAddress());
+            log.info("getLastOrderNonce txNonce:{}", txNonce);
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
-        return WrapMapper.ok(txHash);
+        return WrapMapper.ok(txNonce);
     }
 
 }

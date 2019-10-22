@@ -50,11 +50,11 @@ public interface TradeService extends IService<Trade> {
     void cancelOrderTrade(String orderId, String tradeId);
 
     /**
-     * 查询该地址+代币当前最新的未确认交易nonce
+     * 查询该地址+代币当前最新的未确认交易hash
      *
      * @param address 地址
      * @param tokenId 代币ID
      * @return
      */
-    String queryTxHashByToken(@Param("address") String address, @Param("tokenId") Integer tokenId);
+    String queryLastTxHashByToken(@Param("address") String address, @Param("tokenId") Integer tokenId);
 }

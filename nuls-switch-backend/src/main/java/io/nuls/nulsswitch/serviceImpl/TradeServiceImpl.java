@@ -98,7 +98,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public String queryTxHashByToken(String address, Integer tokenId) {
+    public String queryLastTxHashByToken(String address, Integer tokenId) {
         TradeVO trade = tradeMapper.queryLastTradeByToken(address, tokenId);
         if (trade != null) {
             return trade.getTxHash();

@@ -75,11 +75,12 @@
         INNER JOIN tx_order od ON od.order_id=tx.order_id
         WHERE
         (
-        (od.tx_type=1 AND od.from_token_id=#{tokenId,jdbcType=INTEGER})
+        (od.tx_type = 1 AND od.from_token_id = #{tokenId,jdbcType=INTEGER})
         OR
-        (od.tx_type=2 AND od.to_token_id=#{tokenId,jdbcType=INTEGER})
+        (od.tx_type = 2 AND od.to_token_id = #{tokenId,jdbcType=INTEGER})
         )
-        AND tx.address= #{address,jdbcType=VARCHAR}
+        AND tx.address = #{address,jdbcType=VARCHAR}
+        AND tx.status = 1
         ORDER BY create_time desc
         LIMIT 0,1
     </select>
