@@ -99,9 +99,9 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public String queryLastTxHashByToken(String address, Integer tokenId) {
-        List<TradeVO> tradeList = tradeMapper.queryTradeByToken(address, tokenId);
-        if (tradeList != null && tradeList.size()>0) {
+    public String queryLastTxHashByToken(String address, String orderId, Integer tokenId) {
+        List<TradeVO> tradeList = tradeMapper.queryTradeByToken(address, orderId, tokenId);
+        if (tradeList != null && tradeList.size() > 0) {
             return tradeList.get(0).getTxHash();
         }
         return null;
@@ -109,7 +109,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
 
     @Override
-    public List<TradeVO> queryTradeByToken(String address, Integer tokenId) {
-       return tradeMapper.queryTradeByToken(address, tokenId);
+    public List<TradeVO> queryTradeByToken(String address, String orderId, Integer tokenId) {
+        return tradeMapper.queryTradeByToken(address, orderId, tokenId);
     }
 }

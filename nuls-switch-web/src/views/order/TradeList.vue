@@ -156,6 +156,8 @@
                           item.price = divDecimals(item.price, 8);
                           item.txNum = divDecimals(item.txNum, 8);
                           item.toNum = divDecimals(item.toNum, 8);
+                          //item.createTime = moment(item.createTime).utcOffset(960).format('YYYY-MM-DD HH:mm:ss')
+                          //item.createTime = moment(getLocalTime(item.createTime.getTime())).format('YYYY-MM-DD HH:mm:ss');
                       }
                       this.tradeList = response.data.records;
                       this.tradeListPager.total = response.data.total;

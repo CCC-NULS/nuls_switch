@@ -12,6 +12,12 @@ import io.nuls.nulsswitch.entity.TxUnconfirmedNonce;
  * @author qinyifeng
  * @since 2019-10-21
  */
-public interface TxUnconfirmedNnoceMapper extends BaseMapper<TxUnconfirmedNonce> {
+public interface TxUnconfirmedNonceMapper extends BaseMapper<TxUnconfirmedNonce> {
 
+    /**
+     * 删除该订单所有未确认交易nonce
+     *
+     * @param orderId 订单号
+     */
+    void deleteNonceByOrderId(String orderId);
 }

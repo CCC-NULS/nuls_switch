@@ -38,5 +38,5 @@ public interface TradeMapper extends BaseMapper<Trade> {
      * @param tokenId 代币ID
      * @return
      */
-    List<TradeVO> queryTradeByToken(@Param("address") String address, @Param("tokenId") Integer tokenId);
+    List<TradeVO> queryTradeByToken(@Param("address") String address, @Param("orderId") String orderId, @Param("tokenId") Integer tokenId);
 }

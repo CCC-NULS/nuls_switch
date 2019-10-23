@@ -22,7 +22,6 @@ public class InitNulsSDKRunner implements CommandLineRunner {
     @Value("${nuls.api.address}")
     private String nulsApiAddress;
 
-
     /**
      * 执行初始化NulsSdk工作
      **/

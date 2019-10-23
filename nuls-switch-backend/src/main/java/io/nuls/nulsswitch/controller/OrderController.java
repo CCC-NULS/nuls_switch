@@ -3,7 +3,6 @@ package io.nuls.nulsswitch.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.google.common.collect.Maps;
 import io.nuls.base.basic.AddressTool;
 import io.nuls.base.basic.NulsByteBuffer;
 import io.nuls.base.data.Transaction;
@@ -15,13 +14,11 @@ import io.nuls.nulsswitch.constant.SwitchConstant;
 import io.nuls.nulsswitch.entity.Order;
 import io.nuls.nulsswitch.entity.Token;
 import io.nuls.nulsswitch.entity.Trade;
-import io.nuls.nulsswitch.entity.TxUnconfirmedNonce;
 import io.nuls.nulsswitch.service.OrderService;
 import io.nuls.nulsswitch.service.TokenService;
 import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.service.TxUnconfirmedNonceService;
 import io.nuls.nulsswitch.util.IdUtils;
-import io.nuls.nulsswitch.util.NulsUtils;
 import io.nuls.nulsswitch.util.Preconditions;
 import io.nuls.nulsswitch.util.StringUtils;
 import io.nuls.nulsswitch.web.dto.auth.ConfirmTradeReqDto;
@@ -36,11 +33,12 @@ import io.nuls.nulsswitch.web.wrapper.Wrapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -112,6 +110,7 @@ public class OrderController extends BaseController {
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
             order.setTxNum(0L);
             orderService.insert(order);
+            log.info("createOrder save orderId:{}", order.getOrderId());
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -127,8 +126,13 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(order, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(order.getOrderId(), CommonErrorCode.PARAMETER_NULL);
 
+            // 删除该订单所有未确认交易相关的nonce
+            txUnconfirmedNonceService.deleteNonceByOrderId(order.getOrderId());
+            log.info("cancelOrder deleteNonceByOrderId orderId:{}", order.getOrderId());
+
             // cancel order
             result = orderService.cancelOrderTrade(order.getOrderId());
+            log.info("cancelOrder cancelOrderTrade orderId:{}", order.getOrderId());
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -164,10 +168,13 @@ public class OrderController extends BaseController {
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_WAIT);
             // 根据价格和源代币交易量，计算目标代币数量，在前端计算
             tradeService.insert(trade);
+            log.info("tradingOrder insertTrade orderId:{},txHash:{}", trade.getOrderId(), trade.getTxHash());
 
             // 更新订单状态 update order status
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_PART);
+            order.setUpdateTime(new Date());
             result = orderService.updateById(order);
+            log.info("tradingOrder updateTrade orderId:{}", trade.getOrderId());
 
             // 保存最新nonce
             // 保存吃单用户转出资产nonce
@@ -178,6 +185,7 @@ public class OrderController extends BaseController {
             if (!Objects.equals(trade.getOrderAssetsChainId(), trade.getNulsChainId()) || !Objects.equals(trade.getOrderAssetsId(), trade.getNulsAssetsId())) {
                 txUnconfirmedNonceService.saveTxUnconfirmedNonce(trade.getOrderAddress(), trade.getNulsChainId(), trade.getNulsAssetsId(), trade.getTxHash());
             }
+            log.info("tradingOrder saveTxUnconfirmedNonce txHash:{}", trade.getTxHash());
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -204,29 +212,26 @@ public class OrderController extends BaseController {
                 log.error("the order does not exist,orderId:{}", trade.getOrderId());
                 throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
-
+            String address = td.getAddress();
+            String txHash = td.getTxHash();
             // 需要重新计算nonce的代币
             Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
             // 最新的未确认交易hash
-            String txHash = tradeService.queryLastTxHashByToken(td.getAddress(), tokenId);
+            String txhash = tradeService.queryLastTxHashByToken(address, null, tokenId);
 
             // cancel trade
             tradeService.cancelOrderTrade(trade.getOrderId(), trade.getTxId());
             log.info("cancelTrade cancelOrderTrade txHash:{}", txHash);
 
-            // 删除该交易之前相关的nonce，包括挂单、吃单相关地址的交易
-            txUnconfirmedNonceService.deleteNonceByTxhash(null, trade.getTxHash());
-            log.info("cancelTrade delete txUnconfirmedNonce address:{},txHash:{}", trade.getAddress(), trade.getTxHash());
+            // 删除该地址及挂单地址资产nonce
+            txUnconfirmedNonceService.deleteNonceByTrade(trade, order);
+            log.info("cancelTrade deleteNonceByTrade tradeAddress:{},orderAddress:{}, chainId:{},assetId:{}", address, order.getAddress());
 
             // 如果该交易是该地址+代币最新未确认交易，则查询是否还有其他未确认交易，并重新计算nonce
             // 如果是中途连续交易被取消，后面的连续交易都将失败，所以没必要根据失败的交易计算nonce
-            if (Objects.equals(txHash, td.getTxHash())) {
-                // 查询该地址+代币所有未确认交易，作为本地最新未确认nonce，便于该token再进行交易时，能接上之前未确认的交易
-                String lastTxHash = tradeService.queryLastTxHashByToken(td.getAddress(), tokenId);
-                if (StringUtils.isNotBlank(lastTxHash)) {
-                    txUnconfirmedNonceService.saveTxUnconfirmedNonce(trade.getAddress(), order, lastTxHash);
-                    log.info("cancelTrade saveTxUnconfirmedNonce txHash:{}", lastTxHash);
-                }
+            if (Objects.equals(txhash, td.getTxHash())) {
+                txUnconfirmedNonceService.saveTxUnconfirmedNonce(address, order);
+                log.info("cancelTrade saveTxUnconfirmedNonce tradeAddress:{},orderAddress:{}", address, order.getAddress());
             }
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
@@ -281,6 +286,7 @@ public class OrderController extends BaseController {
             Preconditions.checkNotNull(tradeReq, CommonErrorCode.PARAMETER_NULL);
             Preconditions.checkNotNull(tradeReq.getAddress(), CommonErrorCode.PARAMETER_NULL);
             tradePage = tradeService.queryTradeByPage(tradeReq);
+            System.out.println(JSON.toJSONString(tradePage));
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
         }
@@ -359,18 +365,22 @@ public class OrderController extends BaseController {
 
             // 更新交易状态为交易确认中，等待定时任务同步区块链交易状态
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMING);
+            trade.setUpdateTime(new Date());
             result = tradeService.updateById(trade);
             log.info("confirmOrder response:{}", result);
 
-            // 需要重新计算nonce的代币
-            Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
-            String txHash = tradeService.queryLastTxHashByToken(trade.getAddress(), tokenId);
-            // 如果没有未确认交易，则删除本地未确认交易nonce
-            if (StringUtils.isBlank(txHash)) {
-                // 删除之前的nonce
-                txUnconfirmedNonceService.deleteNonceByTxhash(trade.getAddress(), trade.getTxHash());
-                log.info("cancelTrade delete txUnconfirmedNonce address:{},txHash:{}", trade.getAddress(), trade.getTxHash());
-            }
+            // 删除之前的nonce
+            txUnconfirmedNonceService.deleteNonceByTradeOrder(trade, order);
+            log.info("confirmOrder deleteNonceByTradeOrder tradeAddress:{},orderAddress:{}", trade.getAddress(), order.getAddress());
+            // 转出代币
+//            Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
+//            String txHash = tradeService.queryLastTxHashByToken(trade.getAddress(), null, tokenId);
+//            // 如果没有未确认交易，则删除本地未确认交易nonce
+//            if (StringUtils.isBlank(txHash)) {
+//                // 删除之前的nonce
+//                txUnconfirmedNonceService.deleteNonceByTxhash(trade.getAddress(), trade.getTxHash());
+//                log.info("confirmOrder deleteNonceByTxhash address:{},txHash:{}", trade.getAddress(), trade.getTxHash());
+//            }
         } catch (NulsRuntimeException ex) {
             log.error("", ex);
             return WrapMapper.error(ex.getErrorCode());
@@ -409,10 +419,13 @@ public class OrderController extends BaseController {
                 log.error("the order does not exist,orderId:{}", trade.getOrderId());
                 throw new NulsRuntimeException(CommonErrorCode.DATA_NOT_FOUND);
             }
+            String address = trade.getAddress();
+            String txHash = trade.getTxHash();
+
             // 需要重新计算nonce的代币
             Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
             // 最新的未确认交易hash
-            String txHash = tradeService.queryLastTxHashByToken(trade.getAddress(), tokenId);
+            String txhash = tradeService.queryLastTxHashByToken(trade.getAddress(), null, tokenId);
 
             // txHex中增加了第二次追加的签名
             trade.setTxHex(tradeResultReqDto.getDataHex());
@@ -420,22 +433,19 @@ public class OrderController extends BaseController {
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
             // 返回错误信息
             trade.setMsg(tradeResultReqDto.getMsg());
+            trade.setUpdateTime(new Date());
             result = tradeService.updateById(trade);
             log.info("updateTradeResult response:{}", result);
 
-            // 删除该交易之前相关的nonce，包括挂单、吃单相关地址的交易
-            txUnconfirmedNonceService.deleteNonceByTxhash(null, trade.getTxHash());
-            log.info("updateTradeResult delete txUnconfirmedNonce txHash:{}", trade.getTxHash());
+            // 删除该地址及挂单地址资产nonce
+            txUnconfirmedNonceService.deleteNonceByTrade(trade, order);
+            log.info("updateTradeResult deleteNonceByTrade tradeAddress:{},orderAddress:{}, chainId:{},assetId:{}", address, order.getAddress());
 
             // 如果该交易是该地址+代币最新未确认交易，则查询是否还有其他未确认交易，并重新计算nonce
             // 如果是中途连续交易失败，后面的连续交易都将失败，所以没必要根据失败的交易计算nonce
-            if (Objects.equals(txHash, trade.getTxHash())) {
-                // 查询该地址+代币所有未确认交易
-                String lastTxHash = tradeService.queryLastTxHashByToken(trade.getAddress(), tokenId);
-                if (StringUtils.isNotBlank(lastTxHash)) {
-                    txUnconfirmedNonceService.saveTxUnconfirmedNonce(trade.getAddress(), order, lastTxHash);
-                    log.info("updateTradeResult saveTxUnconfirmedNonce txHash:{}", lastTxHash);
-                }
+            if (Objects.equals(txhash, txHash)) {
+                txUnconfirmedNonceService.saveTxUnconfirmedNonce(address, order);
+                log.info("updateTradeResult saveTxUnconfirmedNonce tradeAddress:{},orderAddress:{}", address, order.getAddress());
             }
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());

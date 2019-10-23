@@ -71,7 +71,7 @@
     </update>
 
     <select id="queryTradeByToken" resultMap="TradeVO">
-        SELECT tx.*  FROM  tx_trade tx
+        SELECT tx.* FROM tx_trade tx
         INNER JOIN tx_order od ON od.order_id=tx.order_id
         WHERE
         (
@@ -79,8 +79,13 @@
         OR
         (od.tx_type = 2 AND od.to_token_id = #{tokenId,jdbcType=INTEGER})
         )
-        AND tx.address = #{address,jdbcType=VARCHAR}
-        AND tx.status = 1
+        <if test="address!=null and address!=''">
+            AND tx.address = #{address,jdbcType=VARCHAR}
+        </if>
+        <if test="orderId!=null and orderId!=''">
+            AND tx.address in (select DISTINCT address from tx_trade where order_id=#{orderId,jdbcType=VARCHAR})
+        </if>
+        AND tx.status = 0
         ORDER BY create_time desc
     </select>
 </mapper>

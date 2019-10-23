@@ -1,5 +1,7 @@
 package io.nuls.nulsswitch.constant;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * 类描述：常量类
  *
@@ -15,7 +17,7 @@ public class SwitchConstant {
     public static String DEFAULT_ENCODING = "UTF-8";
 
     public static final String LANGUAGE = "en";
-    public static final String LANGUAGE_PATH =  "languages";
+    public static final String LANGUAGE_PATH = "languages";
 
     /** 订单相关 */
     /**
@@ -45,4 +47,7 @@ public class SwitchConstant {
     public final static int TX_TRADE_STATUS_CONFIRMED = 2;
     public final static int TX_TRADE_STATUS_FAIL = 3;
     public final static int TX_TRADE_STATUS_CANCEL = 9;
+
+    @Value("${jwt.secret}")
+    private String secret;
 }

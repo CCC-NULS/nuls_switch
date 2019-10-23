@@ -74,6 +74,9 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
             //循环，到区块链中查询交易状态
             for (Trade trade : page.getRecords()) {
                 if (StringUtils.isNotBlank(trade.getTxHash())) {
+                    // 广播时间超过一天，且不存在的交易，修改状态为交易失败
+                    boolean notSameDay = DateUtils.getDate(new Date()) != DateUtils.getDate(trade.getUpdateTime());
+                    // 从主网查询交易hash
                     Result result = NulsSDKTool.getTx(trade.getTxHash());
                     log.info("NulsSDKTool getTx, txHash: {}, resp: {}", trade.getTxHash(), result.toString());
                     if (result != null && result.getData() != null) {
@@ -82,6 +85,7 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                         //如果为已经确定，则更新状态为成功
                         if (status == 1) {
                             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_CONFIRMED);
+                            trade.setUpdateTime(new Date());
                             tradeService.updateById(trade);
 
                             // 修改订单交易数量、状态
@@ -97,17 +101,18 @@ public class UpdateTradeStatusJobTimer implements ITimerJobber, InitializingBean
                                 if (Objects.equals(txNum, order.getTotalNum())) {
                                     order.setStatus(SwitchConstant.TX_ORDER_STATUS_DONE);
                                 }
+                                order.setUpdateTime(new Date());
                                 orderService.updateById(order);
                             }
                         } else {
-                            // 交易确认失败
-                            trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
-                            trade.setMsg(result.getMsg());
-                            tradeService.updateById(trade);
+                            // 交易确认失败，该交易不存在，有可能存在前端刚广播出去，主网还未收到该交易，此时定时任务去查询该交易查询不到记录
+                            if (StringUtils.isNotBlank(result.getMsg()) || notSameDay) {
+                                trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);
+                                trade.setMsg(result.getMsg());
+                                tradeService.updateById(trade);
+                            }
                         }
                     } else {
-                        // 广播时间超过一天，且不存在的交易，修改状态为交易失败
-                        boolean notSameDay = DateUtils.getDate(new Date()) != DateUtils.getDate(trade.getUpdateTime());
                         // 交易确认失败，该交易不存在，有可能存在前端刚广播出去，主网还未收到该交易，此时定时任务去查询该交易查询不到记录
                         if (StringUtils.isNotBlank(result.getMsg()) || notSameDay) {
                             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_FAIL);

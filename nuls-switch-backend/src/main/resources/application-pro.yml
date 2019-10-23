@@ -11,7 +11,7 @@ spring:
     console:
       enabled: true
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/nuls_switch?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/nuls_switch?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     initialize: true #指定初始化数据源，是否用data.sql来初始化，默认: true
     driver-class-name: com.mysql.jdbc.Driver
     username: root
@@ -58,5 +58,8 @@ jwt:
   expiration: 86400
   tokenHead: "Bearer "
 nuls:
+  token:
+    chainId: 2
+    assetsId: 1
   api:
     address: http://beta.api.nuls.io/
