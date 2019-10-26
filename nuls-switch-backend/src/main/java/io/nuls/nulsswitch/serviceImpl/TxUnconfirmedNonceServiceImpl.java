@@ -13,6 +13,7 @@ import io.nuls.nulsswitch.service.TradeService;
 import io.nuls.nulsswitch.service.TxUnconfirmedNonceService;
 import io.nuls.nulsswitch.util.NulsUtils;
 import io.nuls.nulsswitch.util.StringUtils;
+import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,29 +51,32 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNonc
     public void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String txHash) {
         // 根据最新交易hash计算nonce
         String nonce = NulsUtils.getNonceEncodeByTxHash(txHash);
-        // 如果已存在nonce记录，则更新
-        TxUnconfirmedNonce unconfirmedNonce = this.getTxUnconfirmedNonce(address, assetsChainId, assetsId);
-        if (unconfirmedNonce != null) {
-            unconfirmedNonce.setTxHash(txHash);
-            unconfirmedNonce.setNonce(nonce);
-            unconfirmedNonce.setUpdateTime(new Date());
-            txUnconfirmedNnoceMapper.updateById(unconfirmedNonce);
-        } else {
-            // 不存在nonce记录，则新增
-            TxUnconfirmedNonce txUnconfirmedNonce = new TxUnconfirmedNonce();
-            txUnconfirmedNonce.setAddress(address);
-            txUnconfirmedNonce.setChainId(assetsChainId);
-            txUnconfirmedNonce.setAssetId(assetsId);
-            txUnconfirmedNonce.setTxHash(txHash);
-            txUnconfirmedNonce.setNonce(nonce);
-            txUnconfirmedNnoceMapper.insert(txUnconfirmedNonce);
+        // 新增交易nonce
+        TxUnconfirmedNonce txUnconfirmedNonce = new TxUnconfirmedNonce();
+        txUnconfirmedNonce.setAddress(address);
+        txUnconfirmedNonce.setChainId(assetsChainId);
+        txUnconfirmedNonce.setAssetId(assetsId);
+        txUnconfirmedNonce.setTxHash(txHash);
+        txUnconfirmedNonce.setNonce(nonce);
+        txUnconfirmedNnoceMapper.insert(txUnconfirmedNonce);
+    }
+
+    @Override
+    public void saveTxUnconfirmedNonce(TradeVO trade) {
+        // 保存吃单用户转出资产nonce
+        this.saveTxUnconfirmedNonce(trade.getAddress(), trade.getAssetsChainId(), trade.getAssetsId(), trade.getTxHash());
+
+        // 保存挂单用户转出资产nonce
+        this.saveTxUnconfirmedNonce(trade.getOrderAddress(), trade.getOrderAssetsChainId(), trade.getOrderAssetsId(), trade.getTxHash());
+        // 如果挂单用户转出资产不等于手续费NULS资产，则保存NULS最新nonce
+        if (!Objects.equals(trade.getOrderAssetsChainId(), trade.getNulsChainId()) || !Objects.equals(trade.getOrderAssetsId(), trade.getNulsAssetsId())) {
+            this.saveTxUnconfirmedNonce(trade.getOrderAddress(), trade.getNulsChainId(), trade.getNulsAssetsId(), trade.getTxHash());
         }
     }
 
     @Override
     public void saveTxUnconfirmedNonceForTxFail(Trade trade, Order order, boolean isForTrade) {
         // 根据交易类型计算转出代币
-        //Integer tokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
         Integer tradeTokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
         Integer orderTokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getToTokenId() : order.getFromTokenId();
         Token tradeToken = tokenMapper.selectById(tradeTokenId);
@@ -92,7 +96,6 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNonc
         //}
 
         String orderLastTxHash = tradeService.queryLastTxHashByTokenAndOrder(order.getOrderId(), orderTokenId, tradeDate);
-        //orderLastTxHash = orderLastTxHash != null ? orderLastTxHash : lastTxHash;
         if (StringUtils.isNotBlank(orderLastTxHash)) {
             // 保存挂单用户转出资产nonce
             this.saveTxUnconfirmedNonce(order.getAddress(), orderToken.getChainId(), orderToken.getAssetId(), orderLastTxHash);
@@ -136,19 +139,19 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNonc
         Token tradeToken = tokenMapper.selectById(tradeTokenId);
         Token orderToken = tokenMapper.selectById(orderTokenId);
 
-        this.deleteNonceByAssets(trade.getAddress(), tradeToken.getChainId(), tradeToken.getAssetId());
-        log.info("deleteNonceByAddress tradeAddress:{},chainId:{},assetId:{}", trade.getAddress(), tradeToken.getChainId(), tradeToken.getAssetId());
+        this.deleteNonceByAssets(trade.getAddress(), trade.getTxHash(), tradeToken.getChainId(), tradeToken.getAssetId(), trade.getCreateTime());
+        log.info("deleteNonceByAddress tradeAddress:{},txHash:{},chainId:{},assetId:{}", trade.getAddress(), trade.getTxHash(), tradeToken.getChainId(), tradeToken.getAssetId());
 
-        this.deleteNonceByAssets(order.getAddress(), orderToken.getChainId(), orderToken.getAssetId());
-        log.info("deleteNonceByAddress orderAddress:{},chainId:{},assetId:{}", order.getAddress(), orderToken.getChainId(), orderToken.getAssetId());
+        this.deleteNonceByAssets(order.getAddress(), trade.getTxHash(), orderToken.getChainId(), orderToken.getAssetId(), trade.getCreateTime());
+        log.info("deleteNonceByAddress orderAddress:{},txHash:{},chainId:{},assetId:{}", order.getAddress(), trade.getTxHash(), orderToken.getChainId(), orderToken.getAssetId());
 
         // 挂单地址一定会转出NULS
-        this.deleteNonceByAssets(order.getAddress(), nulsChainId, nulsAssetsId);
-        log.info("deleteNonceByAddress orderAddress:{},chainId:{},assetId:{}", order.getAddress(), nulsChainId, nulsAssetsId);
+        this.deleteNonceByAssets(order.getAddress(), trade.getTxHash(), nulsChainId, nulsAssetsId, trade.getCreateTime());
+        log.info("deleteNonceByAddress orderAddress:{},txHash:{},chainId:{},assetId:{}", order.getAddress(), trade.getTxHash(), nulsChainId, nulsAssetsId);
     }
 
     @Override
-    public void deleteAndSaveNonceByTradeOrder(Trade trade, Order order) {
+    public void deleteAndSaveNonceByTradeOrder2(Trade trade, Order order) {
         // 需要重新计算nonce的代币
         Integer tradeTokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getFromTokenId() : order.getToTokenId();
         Integer orderTokenId = order.getTxType() == SwitchConstant.TX_TYPE_BUY ? order.getToTokenId() : order.getFromTokenId();
@@ -159,41 +162,62 @@ public class TxUnconfirmedNonceServiceImpl extends ServiceImpl<TxUnconfirmedNonc
             Token tradeToken = tokenMapper.selectById(tradeTokenId);
             Token orderToken = tokenMapper.selectById(orderTokenId);
 
-            this.deleteNonceByAssets(trade.getAddress(), tradeToken.getChainId(), tradeToken.getAssetId());
+            this.deleteNonceByAssets(trade.getAddress(), trade.getTxHash(), tradeToken.getChainId(), tradeToken.getAssetId(), trade.getCreateTime());
             log.info("deleteNonceByAddress tradeAddress:{},chainId:{},assetId:{}", trade.getAddress(), tradeToken.getChainId(), tradeToken.getAssetId());
 
             String orderTxHash = tradeService.queryLastTxHashByToken(null, order.getOrderId(), orderTokenId, null);
             // 如果该订单相关地址没有未确认交易，则删除本地未确认交易nonce
             if (StringUtils.isBlank(orderTxHash)) {
-                this.deleteNonceByAssets(order.getAddress(), orderToken.getChainId(), orderToken.getAssetId());
+                this.deleteNonceByAssets(order.getAddress(), trade.getTxHash(), orderToken.getChainId(), orderToken.getAssetId(), trade.getCreateTime());
                 log.info("deleteNonceByAddress orderAddress:{},chainId:{},assetId:{}", order.getAddress(), orderToken.getChainId(), orderToken.getAssetId());
 
                 // 挂单地址一定会转出NULS
-                this.deleteNonceByAssets(order.getAddress(), nulsChainId, nulsAssetsId);
+                this.deleteNonceByAssets(order.getAddress(), trade.getTxHash(), nulsChainId, nulsAssetsId, trade.getCreateTime());
                 log.info("deleteNonceByAddress orderAddress:{},chainId:{},assetId:{}", order.getAddress(), nulsChainId, nulsAssetsId);
             }
         }
     }
 
     @Override
-    public void deleteNonceByAddress(String tradeAddress, String orderAddress, int assetsChainId, int assetsId) {
-        this.deleteNonceByAssets(tradeAddress, assetsChainId, assetsId);
-        log.info("deleteNonceByAddress address:{},chainId:{},assetId:{}", tradeAddress, assetsChainId, assetsId);
+    public void deleteNonceByAddressAndHash(String tradeAddress, String orderAddress, String txHash, Date createTime) {
+        this.deleteNonceByAssets(tradeAddress, txHash, null, null, createTime);
+        log.info("deleteNonceByAddress address:{},txHash:{}", tradeAddress, txHash);
 
-        this.deleteNonceByAssets(orderAddress, assetsChainId, assetsId);
-        log.info("deleteNonceByAddress address:{},chainId:{},assetId:{}", orderAddress, assetsChainId, assetsId);
+        this.deleteNonceByAssets(orderAddress, txHash, null, null, createTime);
+        log.info("deleteNonceByAddress address:{},txHash:{}", orderAddress, txHash);
 
-        this.deleteNonceByAssets(orderAddress, nulsChainId, nulsAssetsId);
-        log.info("deleteNonceByAddress address:{},chainId:{},assetId:{}", orderAddress, nulsChainId, nulsAssetsId);
     }
 
     @Override
-    public void deleteNonceByAssets(String address, int assetsChainId, int assetsId) {
+    public void deleteNonceByAddress(String tradeAddress, String orderAddress, String txHash, Integer assetsChainId, Integer assetsId, Date createTime) {
+        this.deleteNonceByAssets(tradeAddress, txHash, assetsChainId, assetsId, createTime);
+        log.info("deleteNonceByAddress address:{},txHash:{},chainId:{},assetId:{}", tradeAddress, txHash, assetsChainId, assetsId);
+
+        this.deleteNonceByAssets(orderAddress, txHash, assetsChainId, assetsId, createTime);
+        log.info("deleteNonceByAddress address:{},txHash:{},chainId:{},assetId:{}", orderAddress, txHash, assetsChainId, assetsId);
+
+        this.deleteNonceByAssets(orderAddress, txHash, nulsChainId, nulsAssetsId, createTime);
+        log.info("deleteNonceByAddress address:{},txHash:{},chainId:{},assetId:{}", orderAddress, txHash, nulsChainId, nulsAssetsId);
+    }
+
+    @Override
+    public void deleteNonceByAssets(String address, String txHash, Integer assetsChainId, Integer assetsId, Date createTime) {
+        // 删除当前地址+交易hash+资产的nonce
         TxUnconfirmedNonce txUnconfirmedNonce = new TxUnconfirmedNonce();
         txUnconfirmedNonce.setAddress(address);
+        txUnconfirmedNonce.setTxHash(txHash);
         txUnconfirmedNonce.setChainId(assetsChainId);
         txUnconfirmedNonce.setAssetId(assetsId);
         EntityWrapper<TxUnconfirmedNonce> eWrapper = new EntityWrapper<>(txUnconfirmedNonce);
+        txUnconfirmedNnoceMapper.delete(eWrapper);
+
+        // 删除当前地址+资产，在当前交易之后交易的nonce
+        txUnconfirmedNnoceMapper.delete(eWrapper);
+        if (createTime != null) {
+            txUnconfirmedNonce.setTxHash(null);
+            eWrapper = new EntityWrapper<>(txUnconfirmedNonce);
+            eWrapper.ge("create_time", createTime);
+        }
         txUnconfirmedNnoceMapper.delete(eWrapper);
     }
 

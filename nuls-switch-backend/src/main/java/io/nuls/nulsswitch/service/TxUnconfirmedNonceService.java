@@ -7,6 +7,9 @@ import io.nuls.nulsswitch.entity.Trade;
 import io.nuls.nulsswitch.entity.TxUnconfirmedNonce;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderReqDto;
 import io.nuls.nulsswitch.web.dto.order.QueryOrderResDto;
+import io.nuls.nulsswitch.web.vo.trade.TradeVO;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -27,6 +30,13 @@ public interface TxUnconfirmedNonceService extends IService<TxUnconfirmedNonce> 
      * @param txHash        本地最新未确认交易hash
      */
     void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String txHash);
+
+    /**
+     * 保存该吃单地址（转出资产）、挂单地址（转出资产、手续费NULS）本地未确认交易nonce
+     *
+     * @param trade 交易
+     */
+    void saveTxUnconfirmedNonce(TradeVO trade);
 
     /**
      * 针对取消委托、交易失败等异常情况，根据保存该地址某资产本地未确认交易nonce
@@ -62,26 +72,41 @@ public interface TxUnconfirmedNonceService extends IService<TxUnconfirmedNonce> 
      * @param trade
      * @param order
      */
-    void deleteAndSaveNonceByTradeOrder(Trade trade, Order order);
+    void deleteAndSaveNonceByTradeOrder2(Trade trade, Order order);
 
     /**
      * 删除该地址某资产本地未确认交易nonce，包括吃单、挂单地址
      *
      * @param tradeAddress  交易地址
      * @param orderAddress  挂单地址
+     * @param txHash        交易hash
      * @param assetsChainId 资产链ID
      * @param assetsId      资产ID
+     * @param createTime    交易时间
      */
-    void deleteNonceByAddress(String tradeAddress, String orderAddress, int assetsChainId, int assetsId);
+    void deleteNonceByAddress(String tradeAddress, String orderAddress, String txHash, Integer assetsChainId, Integer assetsId, Date createTime);
+
+    /**
+     * 删除该地址某资产本地未确认交易nonce，包括吃单、挂单地址
+     * 如果取消交易或者交易失败等异常情况，必须传入交易时间用于删除该失败交易之后的所有交易nonce
+     *
+     * @param tradeAddress 交易地址
+     * @param orderAddress 挂单地址
+     * @param txHash       交易hash
+     * @param createTime   交易时间
+     */
+    void deleteNonceByAddressAndHash(String tradeAddress, String orderAddress, String txHash, Date createTime);
 
     /**
      * 删除该地址某资产本地未确认交易nonce
      *
      * @param address       交易地址
+     * @param txHash        交易hash
      * @param assetsChainId 资产链ID
      * @param assetsId      资产ID
+     * @param createTime    交易时间
      */
-    void deleteNonceByAssets(String address, int assetsChainId, int assetsId);
+    void deleteNonceByAssets(String address, String txHash, Integer assetsChainId, Integer assetsId, Date createTime);
 
     /**
      * 删除该地址指定交易本地未确认交易nonce

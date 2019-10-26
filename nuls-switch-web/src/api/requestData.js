@@ -175,7 +175,7 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
  * @param balanceInfo
  * @returns {*}
  **/
-export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, nonce) {
+export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, nonce, lastNulsNonce) {
     // 如果资产是NULS手续费直接增加到amount
     if (fee && transferInfo.assetsChainId === chainID()) {
         transferInfo.fee = 100000;
@@ -205,14 +205,14 @@ export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, no
     }];
     // 计算手续费，如果转账资产是跨链资产不是NULS，手续费需要一个单独From，因为手续费只收NULS
     if (fee && transferInfo.assetsChainId !== chainID()) {
-        //账户转出资产余额
+        // 账户转出资产余额
         let nulsbalance = await getBalanceOrNonceByAddress(chainID(), assetsID(), transferInfo.fromAddress);
         if (nulsbalance.data.balance < 100000) {
             console.log("余额小于手续费");
             return {success: false, data: "Your balance is not enough."}
         }
-        let nulsNonce = nonce;
-        // 如果没有本地交易则使用当前账户最新nonce
+        let nulsNonce = lastNulsNonce;
+        // 如果没有NULS转出的本地交易nonce，则使用当前账户最新nonce
         if (!nulsNonce) {
             nulsNonce = nulsbalance.data.nonce;
         }

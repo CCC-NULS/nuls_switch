@@ -970,7 +970,7 @@
                     let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
                     transferInfoA['amount'] = Number(Times(txAmountA, 100000000).toString());
                     //inOrOutputs = await inputsOrOutputs(transferInfoA, balanceInfoA);
-                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, newNonceA);
+                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, newNonceA, null);
                     if (!inOrOutputs.success) {
                         this.$message(inOrOutputs.data);
                         return false;
@@ -1011,12 +1011,26 @@
                     }).catch((error) => {
                         this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
                     });
-                    console.log("newNonceB-------"+newNonceB);
+                    console.log("newNonceB-------" + newNonceB);
+
+                    // 查询上次交易最新nonce
+                    let lastNulsNonce;
+                    if (assetsChainIdB !== chainID()) {
+                        await getLastOrderNonce(this.orderId, this.orderInfo.address, chainID(), assetsID()).then((response) => {
+                            if (response.success) {
+                                lastNulsNonce = response.data;
+                            } else {
+                                this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                            }
+                        }).catch((error) => {
+                            this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                        });
+                    }
                     // 挂单人转出交易总量，如果是买入，则为交易量 * 单价，如果是卖出，则为交易量
                     let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
                     transferInfoB['amount'] = Number(Times(txAmountB, 100000000).toString());
                     //inOrOutputsB = await inputsOrOutputs(transferInfoB, balanceInfoB, 1);
-                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, newNonceB);
+                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, newNonceB, lastNulsNonce);
 
                     // 将吃单和挂单的输入输出汇总到一次交易中
                     let inputs = [...inOrOutputs.data.inputs, ...inOrOutputsB.data.inputs];
