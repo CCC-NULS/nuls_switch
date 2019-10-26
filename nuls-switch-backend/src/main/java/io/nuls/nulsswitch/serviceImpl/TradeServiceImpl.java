@@ -21,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -99,17 +100,25 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public String queryLastTxHashByToken(String address, String orderId, Integer tokenId) {
-        List<TradeVO> tradeList = tradeMapper.queryTradeByToken(address, orderId, tokenId);
+    public String queryLastTxHashByToken(String address, String orderId, Integer tokenId, Date tradeDate) {
+        List<TradeVO> tradeList = tradeMapper.queryTradeByToken(address, orderId, tokenId, tradeDate);
         if (tradeList != null && tradeList.size() > 0) {
             return tradeList.get(0).getTxHash();
         }
         return null;
     }
 
+    @Override
+    public String queryLastTxHashByTokenAndOrder(String orderId, Integer tokenId, Date tradeDate) {
+        List<TradeVO> tradeList = tradeMapper.queryTradeByTokenAndOrder(orderId, tokenId, tradeDate);
+        if (tradeList != null && tradeList.size() > 0) {
+            return tradeList.get(0).getTxHash();
+        }
+        return null;
+    }
 
     @Override
-    public List<TradeVO> queryTradeByToken(String address, String orderId, Integer tokenId) {
-        return tradeMapper.queryTradeByToken(address, orderId, tokenId);
+    public List<TradeVO> queryTradeByToken(String address, String orderId, Integer tokenId, Date tradeDate) {
+        return tradeMapper.queryTradeByToken(address, orderId, tokenId, tradeDate);
     }
 }

@@ -7,6 +7,7 @@ import io.nuls.nulsswitch.web.dto.order.QueryTradeReqDto;
 import io.nuls.nulsswitch.web.vo.trade.TradeVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,9 +35,21 @@ public interface TradeMapper extends BaseMapper<Trade> {
     /**
      * 查询该地址+代币当前最新的未确认交易
      *
-     * @param address 地址
-     * @param tokenId 代币ID
+     * @param address   地址
+     * @param orderId   订单ID
+     * @param tokenId   代币ID
+     * @param tradeDate 交易时间
      * @return
      */
-    List<TradeVO> queryTradeByToken(@Param("address") String address, @Param("orderId") String orderId, @Param("tokenId") Integer tokenId);
+    List<TradeVO> queryTradeByToken(@Param("address") String address, @Param("orderId") String orderId, @Param("tokenId") Integer tokenId, @Param("tradeDate") Date tradeDate);
+
+    /**
+     * 查询该订单+代币当前最新的未确认交易
+     *
+     * @param orderId   订单ID
+     * @param tokenId   代币ID
+     * @param tradeDate 交易时间
+     * @return
+     */
+    List<TradeVO> queryTradeByTokenAndOrder(@Param("orderId") String orderId, @Param("tokenId") Integer tokenId, @Param("tradeDate") Date tradeDate);
 }

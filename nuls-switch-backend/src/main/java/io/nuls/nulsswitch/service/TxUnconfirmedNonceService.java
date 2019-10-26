@@ -29,12 +29,13 @@ public interface TxUnconfirmedNonceService extends IService<TxUnconfirmedNonce> 
     void saveTxUnconfirmedNonce(String address, int assetsChainId, int assetsId, String txHash);
 
     /**
-     * 根据保存该地址某资产本地未确认交易nonce
+     * 针对取消委托、交易失败等异常情况，根据保存该地址某资产本地未确认交易nonce
      *
-     * @param address 交易地址
-     * @param order   订单
+     * @param trade      交易
+     * @param order      订单
+     * @param isForTrade 订单是否重新计算nonce
      */
-    void saveTxUnconfirmedNonce(String address, Order order);
+    void saveTxUnconfirmedNonceForTxFail(Trade trade, Order order, boolean isForTrade);
 
     /**
      * 查询该地址某资产本地未确认交易nonce
@@ -56,11 +57,12 @@ public interface TxUnconfirmedNonceService extends IService<TxUnconfirmedNonce> 
 
     /**
      * 删除该交易相关地址某资产本地未确认交易nonce，包括吃单地址、挂单地址
+     * 并计算保存挂单地址最新nonce
      *
      * @param trade
      * @param order
      */
-    void deleteNonceByTradeOrder(Trade trade, Order order);
+    void deleteAndSaveNonceByTradeOrder(Trade trade, Order order);
 
     /**
      * 删除该地址某资产本地未确认交易nonce，包括吃单、挂单地址
