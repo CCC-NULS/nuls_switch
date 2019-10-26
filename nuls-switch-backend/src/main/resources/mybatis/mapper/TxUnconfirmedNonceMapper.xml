@@ -14,7 +14,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <delete id="deleteNonceByOrderId" parameterType="java.lang.String">>
+    <delete id="deleteNonceByOrderId" parameterType="java.lang.String">
         delete from tx_unconfirmed_nonce where tx_hash in (
           select tx.tx_hash from tx_trade tx where tx.order_id=#{orderId,jdbcType=VARCHAR} and tx.status=0
         )

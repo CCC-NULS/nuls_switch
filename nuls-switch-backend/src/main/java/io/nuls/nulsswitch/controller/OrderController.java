@@ -427,7 +427,6 @@ public class OrderController extends BaseController {
 
             // 查询本地最新未确认交易nonce（在交易完成、失败、取消时会删除未确认交易nonce）
             txNonce = txUnconfirmedNonceService.getTxNonce(tradeReq.getAddress(), tradeReq.getAssetsChainId(), tradeReq.getAssetsId());
-            //System.out.println("get txHash===" + txNonce + " ," + tradeReq.getAddress());
             log.info("getLastOrderNonce txNonce:{},address:{}, chainId:{},assetId:{}", txNonce, tradeReq.getAddress(), tradeReq.getAssetsChainId(), tradeReq.getAssetsId());
         } catch (NulsRuntimeException ex) {
             return WrapMapper.error(ex.getErrorCode());
