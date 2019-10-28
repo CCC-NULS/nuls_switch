@@ -365,6 +365,8 @@ const cn ={
     "operate": "操作",
     "cancel": "取消",
     "confirm": "确认",
+    "continueTx": "连续交易",
+    "priorTx": "优先交易",
     "details": "详情",
   },
 

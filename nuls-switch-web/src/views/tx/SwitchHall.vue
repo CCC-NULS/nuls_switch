@@ -231,7 +231,8 @@
             </el-form>
             <div slot="footer">
                 <el-button @click="buyTokenFormClose">{{$t('operateType.cancel')}}</el-button>
-                <el-button type="primary" @click="txTradeSubmit('buyTokenForm')">{{$t('operateType.confirm')}}</el-button>
+                <el-button type="primary" @click="txTradeSubmit('buyTokenForm',false)">{{$t('operateType.continueTx')}}</el-button>
+                <el-button type="primary" @click="txTradeSubmit('buyTokenForm',true)">{{$t('operateType.priorTx')}}</el-button>
             </div>
         </el-dialog>
         <!-- 卖出交易 -->
@@ -263,7 +264,8 @@
             </el-form>
             <div slot="footer">
                 <el-button @click="sellTokenFormClose">{{$t('operateType.cancel')}}</el-button>
-                <el-button type="primary" @click="txTradeSubmit('sellTokenForm')">{{$t('operateType.confirm')}}</el-button>
+                <el-button type="primary" @click="txTradeSubmit('sellTokenForm',false)">{{$t('operateType.continueTx')}}</el-button>
+                <el-button type="primary" @click="txTradeSubmit('sellTokenForm',true)">{{$t('operateType.priorTx')}}</el-button>
             </div>
         </el-dialog>
 
@@ -304,7 +306,7 @@
                                    v-show="tradeListPager.total > tradeListPager.rows"
                                    :total="tradeListPager.total"
                                    :current-page.sync="tradeListPager.page"
-                                   :pager-count=5
+                                   :pager-count=8
                                    :page-size="tradeListPager.rows" @current-change="pagesTradeList">
                     </el-pagination>
                 </div>
@@ -433,6 +435,8 @@
                 isMobile: true,
                 activeName: 'buyTab',
                 depositActiveName: 'depositTab',
+                //是否优先交易，默认为连续交易，优先交易使用主网最新nonce
+                isPrior: false,
                 //交易类型
                 txType: 0,
                 //交易数量
@@ -485,7 +489,7 @@
                 tradeListPager: {
                     total: 0,
                     page: 1,
-                    rows: 5,
+                    rows: 8,
                 },
                 //订单交易列表加载动画
                 tradeListLoading: true,
@@ -868,7 +872,7 @@
             },
 
             // 点击确定买卖后，弹出密码输入框
-            txTradeSubmit(formName) {
+            txTradeSubmit(formName, isPrior) {
                 if (!this.accountAddress) {
                     this.$message({message: this.$t('switch.mustLogin'), type: 'error', duration: 2000});
                     return false;
@@ -900,6 +904,7 @@
                             this.txNum = this.sellTokenForm.txNum;
                             this.sellTokenVisible = false;
                         }
+                        this.isPrior = isPrior;
                         this.$refs.txTradePassword.showPassword(true);
                     } else {
                         return false
@@ -913,10 +918,12 @@
             async txTradePassSubmit(password) {
                 const pri = nuls.decrypteOfAES(this.accountAddress.aesPri, password);
                 const newAddressInfo = nuls.importByKey(chainID(), pri, password);
-                // 当前吃单用户最新nonce
-                let newNonceA;
-                // 挂单用户最新nonce
-                let newNonceB;
+                // 挂单用户本地最新未确认nonce
+                let lastNulsNonce;
+                // 当前吃单用户本地最新未确认nonce
+                let lastNonceA;
+                // 挂单用户本地最新未确认nonce
+                let lastNonceB;
                 if (newAddressInfo.address === this.accountAddress.address) {
                     // 交易类型 1-买入、2-卖出
                     let txType = this.orderInfo.txType;
@@ -954,23 +961,26 @@
                         this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
 
-                    // 查询上次交易最新nonce
-                    await getLastOrderNonce(this.orderId, this.address, assetsChainIdA, assetsIdA).then((response) => {
-                        if (response.success) {
-                            newNonceA = response.data;
-                            console.log("newNonceA===" + newNonceA);
-                        } else {
-                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
-                        }
-                    }).catch((error) => {
-                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
-                    });
+                    // 连续交易才使用本地未确认交易
+                    if (!this.isPrior) {
+                        // 查询上次交易最新nonce
+                        await getLastOrderNonce(this.orderId, this.address, assetsChainIdA, assetsIdA).then((response) => {
+                            if (response.success) {
+                                lastNonceA = response.data;
+                                //console.log("lastNonceA===" + lastNonceA);
+                            } else {
+                                this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                            }
+                        }).catch((error) => {
+                            this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                        });
+                    }
 
                     // 吃单人转出交易总量，如果是买入，则为交易量，如果是卖出，则为交易量 * 单价
                     let txAmountA = txType === 1 ? this.txNum : Times(this.orderInfo.price, this.txNum);
                     transferInfoA['amount'] = Number(Times(txAmountA, 100000000).toString());
                     //inOrOutputs = await inputsOrOutputs(transferInfoA, balanceInfoA);
-                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, newNonceA, null);
+                    inOrOutputs = await inputsOrOutputsAddNonce(transferInfoA, balanceInfoA, 0, lastNonceA, null);
                     if (!inOrOutputs.success) {
                         this.$message(inOrOutputs.data);
                         return false;
@@ -1001,36 +1011,38 @@
                         this.$message({message: this.$t('public.getBalanceException') + ", " + error.data, type: 'error', duration: 3000});
                     });
 
-                    // 查询上次交易最新nonce
-                    await getLastOrderNonce(this.orderId, this.orderInfo.address, assetsChainIdB, assetsIdB).then((response) => {
-                        if (response.success) {
-                            newNonceB = response.data;
-                        } else {
-                            this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
-                        }
-                    }).catch((error) => {
-                        this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
-                    });
-                    console.log("newNonceB-------" + newNonceB);
-
-                    // 查询上次交易最新nonce
-                    let lastNulsNonce;
-                    if (assetsChainIdB !== chainID()) {
-                        await getLastOrderNonce(this.orderId, this.orderInfo.address, chainID(), assetsID()).then((response) => {
+                    // 连续交易才使用本地未确认交易
+                    if (!this.isPrior) {
+                        // 查询上次交易最新nonce
+                        await getLastOrderNonce(this.orderId, this.orderInfo.address, assetsChainIdB, assetsIdB).then((response) => {
                             if (response.success) {
-                                lastNulsNonce = response.data;
+                                lastNonceB = response.data;
                             } else {
                                 this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
                             }
                         }).catch((error) => {
                             this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
                         });
+                        //console.log("lastNonceB-------" + lastNonceB);
+
+                        // 查询上次交易最新nonce
+                        if (assetsChainIdB !== chainID()) {
+                            await getLastOrderNonce(this.orderId, this.orderInfo.address, chainID(), assetsID()).then((response) => {
+                                if (response.success) {
+                                    lastNulsNonce = response.data;
+                                } else {
+                                    this.$message({message: "get nonce fail, " + response.data, type: 'error', duration: 3000});
+                                }
+                            }).catch((error) => {
+                                this.$message({message: "get nonce exception, " + error.data, type: 'error', duration: 3000});
+                            });
+                        }
                     }
                     // 挂单人转出交易总量，如果是买入，则为交易量 * 单价，如果是卖出，则为交易量
                     let txAmountB = txType === 1 ? Times(this.orderInfo.price, this.txNum) : this.txNum;
                     transferInfoB['amount'] = Number(Times(txAmountB, 100000000).toString());
                     //inOrOutputsB = await inputsOrOutputs(transferInfoB, balanceInfoB, 1);
-                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, newNonceB, lastNulsNonce);
+                    inOrOutputsB = await inputsOrOutputsAddNonce(transferInfoB, balanceInfoB, 1, lastNonceB, lastNulsNonce);
 
                     // 将吃单和挂单的输入输出汇总到一次交易中
                     let inputs = [...inOrOutputs.data.inputs, ...inOrOutputsB.data.inputs];

@@ -175,7 +175,7 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, fee) {
  * @param balanceInfo
  * @returns {*}
  **/
-export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, nonce, lastNulsNonce) {
+export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, lastNonce, lastNulsNonce) {
     // 如果资产是NULS手续费直接增加到amount
     if (fee && transferInfo.assetsChainId === chainID()) {
         transferInfo.fee = 100000;
@@ -187,7 +187,7 @@ export async function inputsOrOutputsAddNonce(transferInfo, balanceInfo, fee, no
     if (balanceInfo.balance < newAmount) {
         return {success: false, data: "Your balance is not enough."}
     }
-    let newNonce = nonce;
+    let newNonce = lastNonce;
     // 如果没有本地交易则使用当前账户最新nonce
     if (!newNonce) {
         //newNonce="ffffffffffffffff";

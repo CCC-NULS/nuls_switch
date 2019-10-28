@@ -161,6 +161,8 @@ const en = {
     "operate": "Operation",
     "cancel": "Cancel",
     "confirm": "Confirm",
+    "continueTx": "ContinueTx",
+    "priorTx": "PriorTx",
     "details": "Details",
   },
 
