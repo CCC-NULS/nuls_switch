@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <jmxConfigurator/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!-- 定义日志格式变量 -->
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <property name="LOGBACK_LOGFILE_PATTERN"
+              value="%d{yyyyMMdd HH:mm:ss:SSS}[%-5p]%clr([${springAppName:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-B3-ParentSpanId:-},%X{X-Span-Export:-}]){yellow}%clr([%t]){magenta}%clr([%logger{3}:%L]){cyan}%m%n"/>
+
+    <property name="charset" value="UTF-8"></property>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOGBACK_LOGFILE_PATTERN}</pattern>
+            <charset>${charset}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.basepath:-logs}/switch.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.basepath:-logs}/switch.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <MaxHistory>3</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOGBACK_LOGFILE_PATTERN}</pattern>
+            <charset>${charset}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="io.nuls" level="${logbacklevel:-DEBUG}"/>
+    <logger name="druid.sql.Statement" level="WARN"/>
+    <logger name="com.alibaba.druid.filter.stat.StatFilter" level="WARN"/>
+    <!-- root -->
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="rollingFile"/>
+    </root>
+</configuration>
