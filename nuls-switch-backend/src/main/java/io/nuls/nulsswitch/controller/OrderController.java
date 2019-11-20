@@ -107,6 +107,7 @@ public class OrderController extends BaseController {
             order.setOrderId(IdUtils.getIncreaseIdByNanoTime());
             order.setStatus(SwitchConstant.TX_ORDER_STATUS_INIT);
             order.setTxNum(0L);
+            order.setCreateTime(new Date());
             orderService.insert(order);
             log.info("createOrder save orderId:{}", order.getOrderId());
         } catch (NulsRuntimeException ex) {
@@ -164,6 +165,7 @@ public class OrderController extends BaseController {
             // 交易ID生成
             trade.setTxId(IdUtils.getIncreaseIdByNanoTime());
             trade.setStatus(SwitchConstant.TX_TRADE_STATUS_WAIT);
+            trade.setCreateTime(new Date());
             // 根据价格和源代币交易量，计算目标代币数量，在前端计算
             tradeService.insert(trade);
             log.info("tradingOrder insertTrade orderId:{},txHash:{}", trade.getOrderId(), trade.getTxHash());
