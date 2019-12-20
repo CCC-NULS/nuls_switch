@@ -306,7 +306,7 @@
                                    v-show="tradeListPager.total > tradeListPager.rows"
                                    :total="tradeListPager.total"
                                    :current-page.sync="tradeListPager.page"
-                                   :pager-count=8
+                                   :pager-count=5
                                    :page-size="tradeListPager.rows" @current-change="pagesTradeList">
                     </el-pagination>
                 </div>

@@ -1,4 +1,4 @@
-# Chain-Factory
+# Nuls-Switch
 
 ## Project setup
 ```
