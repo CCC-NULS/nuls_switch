@@ -1,0 +1,36 @@
+package ${package}.domain;
+
+#if(${hasDatetime})
+#end
+#if(${hasBigDecimal})
+#end
+
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import io.nuls.nulsswitch.common.base.BaseDO;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 
+ * <pre>
+ * ${comments}
+ * </pre>
+ * <small> ${datetime} | ${author}</small>
+ */
+@Data
+@SuppressWarnings("serial")
+@TableName("${tableName}")
+@EqualsAndHashCode(callSuper=true) 
+public class ${className}DO extends BaseDO {
+	@TableId
+	private Long id;
+#foreach ($column in $columns)
+#if ($column.attrname != $pk.attrname)
+    /** $column.comments */
+    private $column.attrType $column.attrname;
+#end
+
+#end
+}
