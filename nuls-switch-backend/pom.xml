@@ -5,17 +5,15 @@
 
     <groupId>io.nuls.switch</groupId>
     <artifactId>nuls-switch-backend</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>nuls-switch-backend</name>
     <description>nuls-switch-backend</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>io.nuls.switch</groupId>
+        <artifactId>nuls-switch</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>

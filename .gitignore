@@ -4,3 +4,4 @@ nuls-switch-backend/target
 nuls-switch-web/node_modules
 nuls-switch-web/.idea
 nuls-switch-web/dist
+.idea
