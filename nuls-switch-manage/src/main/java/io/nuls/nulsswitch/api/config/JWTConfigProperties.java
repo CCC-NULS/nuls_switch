@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * <pre>
  * </pre>
  * 
- * <small> 2018年4月28日 | Aron</small>
+
  */
 @Component
 @ConfigurationProperties(prefix = "nulsswitch.jwt")

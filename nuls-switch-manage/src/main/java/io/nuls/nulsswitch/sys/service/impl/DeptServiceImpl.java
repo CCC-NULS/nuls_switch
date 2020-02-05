@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 @Service
 public class DeptServiceImpl extends CoreServiceImpl<DeptDao, DeptDO> implements DeptService {

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {  
     HttpServletRequest orgRequest = null;  

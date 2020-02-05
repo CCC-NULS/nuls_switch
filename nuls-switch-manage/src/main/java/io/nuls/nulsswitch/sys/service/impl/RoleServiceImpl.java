@@ -23,7 +23,7 @@ import io.nuls.nulsswitch.common.base.CoreServiceImpl;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 @Service
 public class RoleServiceImpl extends CoreServiceImpl<RoleDao, RoleDO> implements RoleService {

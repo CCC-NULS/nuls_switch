@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <pre>
  * 短信测试
  * </pre>
- * <small> 2018/8/30 19:17 | Aron</small>
+
  */
 @RestController
 @RequestMapping("/api/sms")

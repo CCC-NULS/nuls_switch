@@ -16,7 +16,7 @@ import java.util.Date;
  * <pre>
  * 基础表
  * </pre>
- * <small> 2018-08-03 11:56:37 | Aron</small>
+
  */
 @Data
 @SuppressWarnings("serial")

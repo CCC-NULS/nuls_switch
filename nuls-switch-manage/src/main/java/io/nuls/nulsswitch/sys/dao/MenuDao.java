@@ -9,7 +9,7 @@ import io.nuls.nulsswitch.sys.domain.MenuDO;
  * <pre>
  * 菜单管理
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 public interface MenuDao extends BaseDao<MenuDO> {
 	

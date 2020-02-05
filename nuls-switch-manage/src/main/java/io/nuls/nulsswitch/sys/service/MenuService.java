@@ -12,7 +12,7 @@ import io.nuls.nulsswitch.common.base.CoreService;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 @Service
 public interface MenuService extends CoreService<MenuDO> {

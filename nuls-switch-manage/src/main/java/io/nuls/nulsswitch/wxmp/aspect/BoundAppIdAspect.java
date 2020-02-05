@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * 切 wxmp下的controller，
  * 将参数appId设绑定为当前的微信SDK处理的公众号，保证微信API调用时，不会错乱
  * </pre>
- * <small> 2018/11/22 17:25 | Aron</small>
+
  */
 @Aspect
 @Component

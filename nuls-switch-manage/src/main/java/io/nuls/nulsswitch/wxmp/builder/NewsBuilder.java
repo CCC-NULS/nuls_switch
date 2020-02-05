@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <pre>
  * </pre>
  * 
- * <small> 2018年6月13日 | Aron</small>
+
  */
 public class NewsBuilder extends AbstractBuilder {
 

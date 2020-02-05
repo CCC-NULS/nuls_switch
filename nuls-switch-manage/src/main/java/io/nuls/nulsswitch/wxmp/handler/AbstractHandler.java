@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * </pre>
  * 
- * <small> 2018年6月13日 | Aron</small>
+
  */
 public abstract class AbstractHandler implements WxMpMessageHandler {
 

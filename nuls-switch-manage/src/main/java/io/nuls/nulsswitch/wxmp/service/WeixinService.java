@@ -34,7 +34,7 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
  * <pre>
  * </pre>
  * 
- * <small> 2018年6月13日 | Aron</small>
+
  */
 @Service
 @EnableAsync(proxyTargetClass = true)

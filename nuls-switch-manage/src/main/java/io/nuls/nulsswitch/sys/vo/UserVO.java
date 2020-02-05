@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 @Data
 public class UserVO {

@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * <pre>
  * </pre>
- * <small> 2018年4月22日 | Aron</small>
+
  */
 @Slf4j
 public class JWTAuthenticationFilter extends AuthenticatingFilter {

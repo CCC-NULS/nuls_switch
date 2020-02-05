@@ -17,7 +17,7 @@ import java.io.IOException;
  *  基于jwt实现的API测试类
  * </pre>
  *
- * <small> 2018年4月27日 | Aron</small>
+ *
  */
 @RestController
 @RequestMapping("/api/oss/")

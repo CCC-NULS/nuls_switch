@@ -9,7 +9,7 @@ import java.io.File;
  * <pre>
  * 文件上传
  * </pre>
- * <small> 2018年4月6日 | Aron</small>
+
  */
 public interface FileService extends CoreService<FileDO> {
 
@@ -20,7 +20,7 @@ public interface FileService extends CoreService<FileDO> {
      *      如：http://p6r7ke2jc.bkt.clouddn.com/ifast/20180406/cat001-123412412431.jpeg
      * </pre>
      *
-     * <small> 2018年4月6日 | Aron</small>
+
      *
      * @param uploadBytes 文件字节数组
      * @param fileName    简单文件名，带后缀，如：mycat.png

@@ -10,7 +10,7 @@ import io.nuls.nulsswitch.common.base.CoreService;
  * <pre>
  * 定时任务
  * </pre>
- * <small> 2018年3月22日 | Aron</small>
+ *
  */
 public interface JobService extends CoreService<TaskDO> {
 	

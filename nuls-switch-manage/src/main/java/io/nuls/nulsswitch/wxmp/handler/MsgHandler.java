@@ -17,7 +17,7 @@ import java.util.Map;
  * <pre>
  * </pre>
  * 
- * <small> 2018年6月13日 | Aron</small>
+
  */
 @Component
 public class MsgHandler extends AbstractHandler {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 七牛对象存储配置
  * </pre>
  * 
- * <small> 2018年4月6日 | Aron</small>
+
  */
 @Data
 @Component

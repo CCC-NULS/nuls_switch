@@ -19,7 +19,7 @@ import java.util.Hashtable;
  * <pre>
  * </pre>
  *
- * <small> 2018年6月13日 | Aron</small>
+
  */
 @Component
 public class WxMpConfigHolder implements InitializingBean {

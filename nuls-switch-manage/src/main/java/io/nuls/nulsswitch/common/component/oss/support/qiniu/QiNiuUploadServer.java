@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * 七牛对象存储服务
  * </pre>
  * 
- * <small> 2018年4月6日 | Aron</small>
+
  */
 public class QiNiuUploadServer implements UploadServer {
 

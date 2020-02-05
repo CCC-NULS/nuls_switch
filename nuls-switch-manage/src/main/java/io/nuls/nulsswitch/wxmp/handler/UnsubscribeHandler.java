@@ -17,8 +17,7 @@ import java.util.Map;
  * <pre>
  *     取消关注
  * </pre>
- * 
- * <small> 2018年6月13日 | Aron</small>
+ *
  */
 @Component
 public class UnsubscribeHandler extends AbstractHandler {

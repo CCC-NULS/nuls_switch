@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * <pre>
  * </pre>
- * <small> 2018年3月23日 | Aron</small>
+
  */
 @Data
 public class ScheduleJobDO implements Serializable, Job {

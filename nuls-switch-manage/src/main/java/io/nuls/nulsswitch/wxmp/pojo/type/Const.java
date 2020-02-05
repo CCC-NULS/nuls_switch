@@ -4,7 +4,7 @@ package io.nuls.nulsswitch.wxmp.pojo.type;
  * <pre>
  *
  * </pre>
- * <small> 2018/11/6 23:11 | Aron</small>
+
  */
 public class Const {
 

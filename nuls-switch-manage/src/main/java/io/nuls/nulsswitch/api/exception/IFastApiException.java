@@ -7,7 +7,7 @@ import io.nuls.nulsswitch.common.exception.IFastException;
  * API异常基类
  * </pre>
  * 
- * <small> 2018年4月19日 | Aron</small>
+
  */
 public class IFastApiException extends IFastException {
 

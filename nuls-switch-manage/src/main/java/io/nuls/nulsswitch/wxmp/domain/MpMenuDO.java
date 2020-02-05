@@ -15,7 +15,7 @@ import java.util.Date;
  * <pre>
  * 微信菜单表
  * </pre>
- * <small> 2018-10-19 15:47:16 | Aron</small>
+
  */
 @Data
 @TableName("wx_mp_menu")

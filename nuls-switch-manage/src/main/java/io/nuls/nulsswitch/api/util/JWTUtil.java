@@ -30,7 +30,7 @@ import java.util.Date;
  * jwt工具类
  * </pre>
  *
- * <small> 2018年4月28日 | Aron</small>
+
  */
 @Slf4j
 @Component
@@ -73,7 +73,7 @@ public class JWTUtil {
      * <pre>
      * </pre>
      *
-     * <small> 2018年4月28日 | Aron</small>
+
      *
      * @param token  即jwt
      * @param userId 用户id
@@ -108,7 +108,7 @@ public class JWTUtil {
      * 获得token中的信息无需secret解密也能获得
      * </pre>
      *
-     * <small> 2018年4月28日 | Aron</small>
+
      *
      * @param token token
      */
@@ -127,7 +127,7 @@ public class JWTUtil {
      * <pre>
      * </pre>
      *
-     * <small> 2018年4月28日 | Aron</small>
+
      *
      * @param userId 用户标识
      * @param secret 加密密钥
@@ -148,7 +148,7 @@ public class JWTUtil {
      * <pre>
      * </pre>
      *
-     * <small> 2018年4月28日 | Aron</small>
+
      *
      * @param userId 用户标识
      * @param secret 加密密钥

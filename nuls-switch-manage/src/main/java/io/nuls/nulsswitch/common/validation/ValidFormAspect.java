@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * <pre>
  * 全局表单自动验证
  * </pre>
- * <small> 2018年3月22日 | Aron</small>
+ *
  */
 @Aspect
 @Component

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * 通过Jsoup过滤请求参数内的特定字符
  * </pre>
  * 
- * <small> 2018年3月23日 | Aron</small>
+
  */
 public class XssFilter implements Filter {
     private static Logger logger = LoggerFactory.getLogger(XssFilter.class);
